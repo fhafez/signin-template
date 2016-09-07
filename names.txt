@@ -1,0 +1,9 @@
+./add_appt.sh TOSI  DORCAS "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh TOSI  MARCELO "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh WELLER  SARAH "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh GRAY MARNIE "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh SAVOIE  JEAN-MARIE "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh MCLEAN TYLER "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh RIVERS  RAY "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh ATKINSON  ROBERT "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com
+./add_appt.sh BUTTERS  JACQUELINE "2016-06-02 15:00:00" "2016-06-02 15:45:00" parcontario.com

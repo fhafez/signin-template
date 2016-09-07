@@ -1,0 +1,211 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script src="libs/jquery-min.js"></script>
+    <script src="libs/underscore-min.js"></script>
+    <script src="libs/backbone-min.js"></script>
+    <script src="libs/moment-min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+
+        div {
+            margin-top:1em;
+            margin-bottom:1em;
+        }
+        input {
+            padding: .5em;
+            margin: .5em;
+        }
+        select {
+            padding: .5em;
+            margin: .5em;
+        }
+
+        #signatureparent {
+            border: 0px transparent #007ACC;
+            border-radius: 5px;
+            color:  #007ACC;
+            background-color:transparent;
+            /*max-width:600px;*/
+            padding:5px;        
+            width:650px;
+            position: relative;
+            margin-left:auto; 
+            margin-right:auto;
+            margin-top: 0px; 
+            font-family: sans-serif;
+        }
+
+        /*This is the div within which the signature canvas is fitted*/
+        #signature {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color:white;
+            color:#007ACC;
+            decor-color:#000;
+            margin-left:auto; 
+            margin-right:auto;
+            width:100%;
+            font-family: sans-serif;
+            font-size:18px;
+            padding:10px;
+        }
+        
+        .errordivshow {
+            position: fixed;
+            align-self: center;
+            left:49%;
+            width:50%;
+            /*background-color:#FFE6F0;*/
+            background-color: rgba(255,230,240,1.0);
+            color:#CC0000;
+            border: 1px solid #CC0000;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:85px;
+            margin: 0 0 0 -25%;
+            display: '';
+            z-index: 100;
+        }
+        
+        .errordivhide {
+            position: fixed;
+            align-self: center;
+            left:50%; 
+            width:50%; 
+            background-color:#FFE6F0;
+            color:#CC0000;
+            border: 1px solid #CC0000;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:90px;
+            margin: 0 0 0 -25%;
+            display: none;
+        }
+
+        .successdivshow {
+            position: fixed;
+            align-self: center;
+            left:49%;
+            width:50%;
+            /*background-color:#FFE6F0;*/
+            background-color: rgba(0,122,204,1.0);
+            color:#FFFFFF;
+            border: 2px solid white;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:85px;
+            margin: 0 0 0 -25%;
+            display: '';
+            z-index: 100;
+        }
+        
+        .datefieldshow { 
+            border: solid 1px #AAAAAA;
+        }
+
+        .copyright {
+            padding: 20px 0px 20px 0px;
+            width: 100%;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Drawing the 'gripper' for touch-enabled devices */ 
+        html.touch #content {
+            float:left;
+            width:92%;
+        }
+        html.touch #scrollgrabber {
+            float:right;
+            width:4%;
+            margin-right:2%;
+            /*
+            background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAFCAAAAACh79lDAAAAAXNSR0IArs4c6QAAABJJREFUCB1jmMmQxjCT4T/DfwAPLgOXlrt3IwAAAABJRU5ErkJggg==)
+            */
+        }
+        html.borderradius #scrollgrabber {
+            border-radius: 1em;
+        }
+
+    </style>
+    <script id='local_main'>
+
+      function submitForm(action) {
+          if (document.loginform.firstname.value.length == 0 || document.loginform.lastname.value.length == 0) {
+              document.getElementById("errors").innerHTML = 'Firstname and Lastname fields cannot be blank';
+              document.getElementById("errors").style.display = 'block';
+              if (document.loginform.firstname.value.length == 0)
+                    document.getElementById("firstname").style.borderColor = '#cc0000';
+              if (document.loginform.lastname.value.length == 0)
+                    document.getElementById("lastname").style.borderColor = '#cc0000';
+          } else {
+            //document.getElementById('loginform').submit();
+              if (action === "index.php") {
+                    var $sigdiv = $('#signature')            
+                    var data = $sigdiv.jSignature('getData', "svgbase64")
+                    //$('signature_value', $tools).val(data.join(','))
+                    //$.publish(pubsubprefix + data[0], data);
+                    document.forms["loginform"].signature_value.value = data;
+                    document.forms["loginform"].submit();
+                } else if (action === "signout.php") {
+                    document.loginform.action = 'signout.php';
+                    document.forms['loginform'].submit();                  
+                }
+            }
+        }
+        
+        function resetForm() {
+            document.forms["registerform"].reset();
+        }
+        
+                
+    </script>
+    <script lang="text/template" id='signin-template'>
+    </script>
+    <script type='text/template' id='services-template'>
+            <div class="radiodiv"><label><%= provider_name %>: <%= service_name %> (<%= remaining_appts %> appointments remaining)</label></div>
+    </script>
+    <div id='errordiv'></div>
+</head>
+<body>
+    <header><h1><!--?=$sitename?--></h1></header>
+    <div style="margin-top:100px;"></div>
+    <!--div><p align=center id="errors"></p></div-->
+    <h3>Already Registered? <a href="index.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
+    <form name='registerform' id='loginform' action="index.php" method="POST">
+        <div class='registercontainer'>
+            <input id='firstname' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
+            <input id='lastname' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
+            <label id='datefieldmsg'>date of birth</label>
+            <div id="dob" class="datefieldshow">
+                <input id="year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/
+                <input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/
+                <input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
+            </div>
+        </div>
+        <div class="registercontainer" align=center>
+            <div id='registerbtn' class='buttons' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+            </div>
+            <div id='clearbtn' class='buttons' onclick='resetForm();'>
+                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+            </div>
+        </div>
+        <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
+    </form>
+    <script src="libs/modernizr.js"></script>
+    <script src="libs/errors.js"></script>
+    <script src="js/register.js"></script>
+
+</body>
+</html>

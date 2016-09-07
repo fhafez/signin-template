@@ -1,0 +1,94 @@
+<html>
+<head>
+<script>
+	
+	function clicked() {
+		console.log('button clicked');
+	}
+
+</script>
+<style>
+body {
+	margin: 0;
+}
+.divs {
+	background-color: orange;
+	padding: 5px;
+	border: dotted;
+}
+* { box-sizing: border-box; }
+.header {
+	border: dotted;
+	width: 100%;
+	height: 50px;
+	margin: 0;
+	text-align: center;
+	display: table;
+	vertical-align: middle;
+}
+.content {
+	border: solid 1px;
+	width: 60%;
+	height: 200px;
+	margin: 5px;
+	float: right;
+}
+.footer {
+	position: absolute;
+	border: dotted;
+	bottom: 0;
+	width: 100%;
+	padding: 10px;
+	text-align: center;
+}
+.dropdown {
+	outline: none;
+	font-size: 24px;
+	font-weight: 100;
+}
+
+</style>
+</head>
+
+	<body>
+	<div id='1' class='header'>HEADER</div>
+	<div id='2' class='content'>
+		<select class='dropdown'>
+			<option class="dropdown">one</option>
+			<option>two</option>
+			<option>three</option>
+		</select>
+	</div>
+	<div id='3' class='content'>here is some more content</div>
+	<div id='10' class='footer'>FOOTER</div>
+	<script>
+		"use strict";
+
+		var divs = document.getElementsByClassName('divs');
+
+		for (var n=0; n<divs.length; n++) {
+			console.log(n);
+		}
+
+		for (var d=0; d < divs.length; d++) {
+
+			(function() {
+				var i = d;
+				console.log(divs[i]);
+				divs[i].addEventListener('click', function(e) {
+
+					//alert(i);
+					//if (i === 3) {
+					//	e.stopPropagation();
+					//}
+					e.preventDefault();
+					console.log(divs[i],e.name, 'sweet');
+
+				}, true);
+
+			})();
+		}
+		
+	</script>
+	</body>
+</html>

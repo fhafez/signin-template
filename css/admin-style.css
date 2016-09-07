@@ -1,0 +1,807 @@
+    @font-face {
+        font-family: "Lato-Heavy";
+        src: url('../fonts/Lato2OFL/Lato-Bold.ttf');
+    }
+
+  html {
+      margin: 0px;
+  }
+  body {
+      background: linear-gradiant(white, whitesmoke);
+      background: -webkit-linear-gradient(white, whitesmoke);
+      /* For Safari 5.1 to 6.0 */
+
+      background: -o-linear-gradient(white, whitesmoke);
+      /* For Opera 11.1 to 12.0 */
+
+      background: -moz-linear-gradient(white, whitesmoke);
+      /* For Firefox 3.6 to 15 */
+
+      background: linear-gradient(white, whitesmoke);
+      /* Standard syntax */
+
+      color: #007ACC;
+      text-align: left;
+      padding: 0px;
+      margin: 0px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-weight: 300;
+  }
+  h1 {
+      color: #e5e5ec;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      text-align: center;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 25px;
+      letter-spacing: 0.34000;
+  }
+  h2 {
+      /* color:#007ACC; */
+      color: #888888;
+      font-family: "Helvetica Neue", sans-serif;
+      letter-spacing: 0.34000;
+      text-align: left;
+      font-size: 24px;
+      font-weight: 200;
+      padding: 0px 5px 0px 5px;
+  }
+  .section-title {
+      color: #888888;
+      font-family: "Lucida Sans", arial, sans-serif;
+      letter-spacing: 0.34000;
+      text-align: left;
+      font-size: 16px;
+      margin-top: 30px;
+      background-color: #FFFFFF;
+      border-style: solid none solid none;
+      border-color: #555555;
+      border-width: 1px;
+      padding: 0px;
+      width: 100%;
+  }
+  h3 {
+      color: #007ACC;
+      font-family: Roboto, arial, sans-serif;
+      letter-spacing: 0.34000;
+      text-align: center;
+      font-size: 16px;
+      margin-top: 35px;
+      /* background-color: #007ACC; */
+
+      background-color: transparent;
+      border-bottom: 0px transparent;
+      border-color: #DDDDDD;
+      padding: 0px;
+  }
+
+  #services-table, #appointments-table, #providers-table {
+      font-family: "Helvetica Neue";
+      color: #4C6680;
+      border-spacing: 0px;
+      border-width: 0px;
+      border-color: #009aff;
+      width: 90%;
+  }
+
+  #services-table td, #appointments-table td, #providers-table td {
+      padding: 10px;
+      border-radius: 0px;
+      vertical-align: middle;
+      border-color: #808080;
+      border-width: 1px 1px 0 0;
+  }
+  #appointments-table td:last-child {
+      padding: 10px;
+      border-radius: 0px;
+      vertical-align: middle;
+      border-color: #808080;
+      border-width: 1px 1px 1px 0;
+  }
+  #services-table td:first-child, #appointments-table td:first-child, #providers-table td:first-child {
+      padding: 10px;
+      border-radius: 0px;
+      vertical-align: middle;
+      border-color: #808080;
+      border-width: 1px 1px 0 1px;
+  }
+  #services-table tr:last-child td, #appointments-table tr:last-child td, #providers-table tr:last-child td {
+      border-bottom: 1px solid black;
+  }
+  #services-table th, #appointments-table th, #providers-table th {
+      padding: 10px;
+      border-radius: 0px;
+      background-color: #27a9e1;
+      color: #FFFFFF;
+      border: 1px solid #27a9e1;
+      border-color: #5991d9;
+      vertical-align: bottom;
+      font-family: 'helvetica heue', arial, sans-serif;
+      font-weight: 100;
+  }
+
+
+  .title_td {
+      padding: 10px;
+      border-radius: 0px;
+      background-color: #007ACC;
+      color: #FFFFFF;
+      border: 1px solid #007ACC;
+      border-color: #5991d9;
+      vertical-align: bottom;
+      font-family: 'helvetica heue', arial, sans-serif;
+      font-weight: 100;
+  }
+  #appointments-table td {
+      height: 80px;
+  }
+  .filter-left {
+      padding: 10px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 300;
+      text-align: center;
+      letter-spacing: 0.34000;
+      width: 90%;
+      display: inline-block;
+  }
+  .filter-left button {
+      font-size: 16px;
+      font-family: 'helvetica neue';
+      padding: 6px;
+  }
+  .filter-left input {
+      font-size: 16px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+      border: 1px solid darkgray;
+      padding: 5px;
+      width: 120px;
+      text-align: center;
+  }
+  .filter-right {
+      padding-top: 10px;
+      padding-left: 0px;
+      padding-right: 0px;
+      font-family: 'helvetica neue', arial, sans-serif;
+      text-align: center;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: 0.34000;
+      width: 100%;
+      display: inline-block;
+      align-self: center;
+  }
+  .filter-right button {
+      font-size: 16px;
+      font-family: 'helvetica neue';
+      vertical-align: middle;
+      font-weight: 300;
+      padding: 10px;
+  }
+  .filter-right input {
+      font-size: 16px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+      vertical-align: middle;
+      border: 1px solid black;
+      padding: 0px;
+  }
+  .footer {
+      padding: 10px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      text-align: right;
+      font-style: normal;
+      font-weight: 300;
+      font-size: 14px;
+      letter-spacing: 0.34000;
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+  }
+  .filters {
+      width: 100%;
+      height: 140px;
+      background-color: whitesmoke;
+      border-style: solid none solid none;
+      border-width: 1px;
+      border-color: #007ACC;
+      border-radius: 0px;
+      align-self: center;
+      padding: 0px;
+      margin: 0px;
+  }
+  #clients-table {
+      position:inherit;
+      height: 60%;
+      width:80%;
+      border:1;
+  }
+  #clients-table .new {
+      font-size: 16px;
+      font-family: 'helvetica neue'
+  }
+  #clients-list input {
+      font-size: 14px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 300;
+      padding: 3px;
+      border: 1px solid darkgray;
+      letter-spacing: 0.34000;
+
+  }
+  #clients-list input.edit, #clients-list label.edit {
+      display: none;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+  }
+  #clients-list .editing {
+      border-bottom: none;
+      margin-top: -1px;
+      padding: 0;
+  }
+  #clients-list .editing:last-child {
+      margin-bottom: -1px;
+  }
+  #clients-list .editing input.edit {
+      display: block;
+      width: 180px;
+      padding: 5px 5px 5px 5px;
+      margin: 0;
+      font-weight: 300;
+  }
+  #clients-list .editing label.edit {
+      display: inline;
+      width: 180px;
+      margin: 0;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+      cursor: pointer;
+  }
+  #clients-list .view {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 300;
+      font-family: 'helvetica neue'
+  }
+  #clients-list .editing .view {
+      display: none;
+  }
+  label.signout {
+      display: none;
+      align-content: center;
+      cursor: pointer;
+  }
+    /*
+  #appointments-table .signingout {
+      border-bottom: none;
+      margin-top: -1px;
+      padding: 0;
+  }
+    #appointments-table tr:last-child {
+        border-bottom: 1px solid black;
+    }
+    */
+  #appointments-table .signingout label.signout {
+      display: block;
+      padding: 5px 5px 5px 5px;
+      margin: 0;
+  }
+  #appointments-table .signingout .view {
+      display: none;
+      align-content: center;
+  }
+  #appointments-table .highlightrow td {
+      /* border: 1px solid orange; */
+      /*background-color: rgba(255, 215, 0, 0.2); */
+      background-color: rgba(39, 169, 255, 0.1);
+  }
+  #appointments-table .destroycellhide {
+      display: none;
+  }
+  #appointments-table .destroycellshow {
+      display: "";
+  }
+  #edit_service, #save_service, #destroy_service, #edit_provider, #save_provider, #destroy_provider {
+      cursor: pointer;
+      color: #007ACC;          
+  }
+  #services-table, #providers-table {
+      width: 50%
+  }
+  #services-table .new, #providers-table .new {
+      font-size: 16px;
+      font-family: 'helvetica neue'
+  }
+  #services-table input.edit, #services-table a.edit, #providers-table input.edit, #providers-table a.edit {
+      display: none;
+  }
+  #services-table .editing, #providers-table .editing {
+      border-bottom: none;
+      margin-top: -1px;
+      padding: 0;
+  }
+  #services-table .editing:last-child, #providers-table .editing:last-child {
+      margin-bottom: -1px;
+  }
+  #services-table .editing input.edit, #providers-table .editing input.edit {
+      display: block;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+      width: 200px;
+      padding: 5px 5px 5px 5px;
+      margin: 0;
+  }
+  #services-table .editing a.edit, #providers-table .editing a.edit {
+      display: inline;
+  }
+  #services-table .editing .view {
+      display: none;
+  }
+  #providers-table .editing .view {
+      display: none;
+  }
+  #client-services-list input.service-edit, .client-service-data select.service-edit, div.client-service-data input.service-edit {
+      display: none;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+  }
+  #client-services-list .editing {
+      border-bottom: none;
+      margin-top: -1px;
+      padding: 0;
+  } 
+  #client-services-list .editing input.service-edit, .client-service-data .editing select.service-edit {
+      display: block;
+      width: 200px;
+      padding: 5px 5px 5px 5px;
+      margin: 0;
+  }
+  #client-services-list .editing .view {
+      display: none;
+  }
+  #client-services-list {
+      text-align: left;
+      list-style-type: none;
+  }
+  div div.client-service-data button#saveservicedetails {
+      display: none;
+  }        
+  div.editing div.client-service-data button#saveservicedetails, div.editing select.service-edit, div.editing input.service-edit {
+      display: inline-block;
+  }
+  div.editing div.client-service-data button#editservicedetails, div.editing label {
+      display: none;
+  }
+  .th_underline {
+      text-decoration: underline;
+  }
+  div#upperprevpage.firstpage, div#lowerprevpage.firstpage {
+      display: none;
+  }
+  div#uppernextpage.lastpage, div#lowernextpage.lastpage {
+      display: none;
+  }        
+  .prevpage {
+    display:inline-block; 
+    margin: 10px 0 10px 0;
+    text-align: left;         
+  }
+  .nextpage {
+      display:inline-block; 
+      margin: 10px 0 10px 0; 
+      text-align: right;
+  }
+  .errordivshow {
+      position: fixed;
+      align-self: center;
+      left: 50%;
+      width: 50%;
+      background-color: #FFE6F0;
+      color: #CC0000;
+      border: 1px solid #CC0000;
+      border-radius: 5px;
+      padding: 25px;
+      font-family: verdana;
+      font-size: 12px;
+      text-align: center;
+      top: 85px;
+      margin: 0 0 0 -25%;
+      display: '';
+      z-index: 100;
+  }
+  .errordivhide {
+      position: fixed;
+      align-self: center;
+      left: 50%;
+      width: 50%;
+      background-color: #FFE6F0;
+      color: #CC0000;
+      border: 1px solid #CC0000;
+      border-radius: 5px;
+      padding: 25px;
+      font-family: verdana;
+      font-size: 12px;
+      text-align: center;
+      top: 90px;
+      margin: 0 0 0 -25%;
+      display: none;
+  }
+  .successdivshow {
+      position: fixed;
+      align-self: center;
+      left: 50%;
+      width: 50%;
+      background-color: #FFE6F0;
+      color: #CC0000;
+      border: 1px solid #CC0000;
+      border-radius: 5px;
+      padding: 25px;
+      font-family: verdana;
+      font-size: 12px;
+      text-align: center;
+      top: 85px;
+      margin: 0 0 0 -25%;
+      display: '';
+      z-index: 100;
+  }
+  .wrapper {
+      padding: 0;
+  }
+  .title {
+      width: inherit;
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      padding: 10px 0px 10px 0px;
+      margin: 0px;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+      text-align: center;
+      border-bottom: 2px solid white;
+      /* background-color: rgba(255, 255, 255, 0.6); */
+      background-color: rgba(39, 169, 225, 1.0);
+      /* 27a9e1 */
+      z-index: 100;
+  }
+  .title-item {
+      font-family: "Helvetica Neue", sans-serif;
+      display: inline-block;
+      border: 1px solid lightblue;
+      border-radius: 2px;
+      /* background-color: whitesmoke; */
+      background-color: #27a9e1;
+      padding: 10px;
+      /* color: #007ACC; */
+      color: white;
+      font-weight: 400;
+      cursor: pointer;
+  }
+  .title-item-selected {
+      display: inline-block;
+      border: 1px solid #007ACC;
+      border-radius: 2px;
+      /* background-color: #007ACC; */
+      background-color: white;
+      padding: 10px;
+      /* color: white; */
+      color: #27a9e1;
+      font-weight: 400;
+  }
+  .title-item:hover {
+      /* color:#007ACC; */
+      color: #27a9e1;
+      background-color: white;
+      border: 1px solid lightblue;
+  }
+  #appspace {
+
+      position: relative;
+      top:20px;
+      left:0px;
+      right:0px;
+      /* height: 300px; */
+
+  }
+  .service-footer {
+      width: inherit;
+      position: fixed;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      padding: 10px 0px 10px 0px;
+      margin: 0px;
+      font-size: 18px;
+      font-family: 'helvetica neue';
+      text-align: center;
+      border-top: 2px solid orange;
+      background-color: rgba(255, 255, 255, 1.0);
+  }
+  .btn {
+      cursor: pointer;
+      margin: 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      padding: 5px;
+      font-size: 16px;
+      transition: .3s;
+      -webkit-transition: .3s;
+      -moz-transition: .3s;
+      -o-transition: .3s;
+      display: inline-block;
+      color: #55acee;
+      background: white;
+      border: 1px #55acee solid;
+  }
+  .btn:hover {
+      background-color: #55acee;
+      color: #fff
+  }
+  .addnewbtn {
+      cursor: pointer;
+      margin: 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      padding: 5px;
+      font-size: 16px;
+      transition: .3s;
+      -webkit-transition: .3s;
+      -moz-transition: .3s;
+      -o-transition: .3s;
+      display: inline-block;
+      color: #55acee;
+      background: white;
+      border: 1px #55acee solid;
+  }
+  .addnewbtn:hover {
+      background-color: #55acee;
+      color: #fff
+  }
+  .copyright {
+      padding: 20px 0px 20px 0px;
+      width: 100%;
+      font-size: 10px;
+      text-align: center;
+  }
+  .clientsapp {
+      padding: 0px;
+      /* margin: 0px; */
+  }
+  .appointmentsapp {
+      padding: 0px;
+      margin: 0px;
+      width: 100%;
+  }
+  .sortablecolumn {
+      cursor: pointer;
+  }
+
+
+    .outer-clients-content {
+        position: relative;
+        padding: 20px;
+    }
+
+    .inner-clients-content {
+        position: relative;
+        width: 80%;
+        margin: auto;
+        padding: 2px;
+    }
+
+    .clients-header {
+        display: inline-block;
+        width: 200px;
+        background-color: aliceblue;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid black;
+        font-weight: 450;
+        font-size: 18px;
+    }
+
+    .client-data {
+        display: inline-block;
+        width: 200px;
+        background-color: ghostwhite;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid gray;
+        font-size: 14px;
+        font-weight: 300;
+    }
+
+    .client-details-hide {
+        display: none;
+    }
+
+    .client-details {
+        position: relative;
+        display: block;
+        width: 840px;
+        background-color: ghostwhite;
+        text-align: left;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+    }
+
+    .client-service-data {
+        display: inline-block;
+        text-align: left;
+        padding-top: 5px;
+        padding-left: 5px;
+        font-family: "Helvetica Neue", sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+    }
+
+    .client-service-data-centre {
+        text-align: center;
+    }
+
+    .client-service-data-header {
+        display: inline-block;
+        height: 25px;
+        text-align: center;
+        color: darkslategrey;
+        text-transform: uppercase;
+        font-weight: normal;
+        font-size: 14px;
+        border-width: 0 0 1px 0;
+        border-color: gray;
+        border-style: solid;
+        padding-left: 5px;
+    }
+
+    .deletebutton {
+      cursor: pointer;
+      margin: 2px;
+      border-radius: 5px;
+      text-decoration: none;
+      padding: 2px;
+      font-size: 12px;
+      transition: .3s;
+      -webkit-transition: .3s;
+      -moz-transition: .3s;
+      -o-transition: .3s;
+      display: inline-block;
+      color: #55acee;
+      background: white;
+      border: 1px #55acee solid;
+    }
+
+    .deletebutton:hover {
+        background: red;
+        color: white;
+        border: 1px white solid;
+    }
+
+    .searchbutton {
+      cursor: pointer;
+      margin: 2px;
+      border-radius: 5px;
+      text-decoration: none;
+      padding: 5px;
+      font-size: 12px;
+      transition: .3s;
+      -webkit-transition: .3s;
+      -moz-transition: .3s;
+      -o-transition: .3s;
+      display: inline-block;
+      color: #55acee;
+      background: white;
+      border: 1px #55acee solid;
+    }
+
+    .searchbutton:hover {
+        background: #007ACC;
+        color: white;
+        border: 1px white solid;
+    }
+
+    .patient_waiting {
+        background: gold;
+    }
+
+    .patient_treated {
+        background: #abe996;
+    }
+
+  #printheader {
+      display: none;
+      text-align: center;
+      width: 100%;
+      font-size: 14px;
+      font-family: 'helvetica neue';
+  }
+
+  li.service-details {
+    list-style-type: none;
+    display: inline-block;
+  }
+  li.service-details-header {
+    list-style-type: none;
+    display: inline-block;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 5px 0px;
+    background-color: aliceblue;
+  }
+  label.clickable {
+      cursor: pointer;
+  }        
+  #hidebutton {
+      font-weight: bold;
+      font-size: 12px;
+      color: crimson;
+      font-family: "Lucida Grande", sans-serif;
+      display: block;
+      align-content: center;
+      cursor: pointer;
+  }
+
+  footer {
+      display: block;
+  }
+
+#calendar {
+    
+    font-family: "Lucida Grande", sans-serif;
+    font-size: 14px;
+    padding: 50px;
+    color: darkgrey;
+    
+}
+
+  @media print {
+      h1 {
+          color: #000;
+          background: none;
+      }
+      header,
+      nav,
+      aside,
+      .title,
+      .btn {
+          display: none;
+      }
+      h2,
+      h3 {
+          page-break-after: avoid;
+          page-break-before: avoid;
+          page-break-inside: avoid;
+      }
+      @page {
+          margin: 0.5cm;
+      }
+      body {
+          margin-top: 5px;
+          line-height: 1.3;
+          font: 8pt Georgia, "Times New Roman", Times, serif;
+          font-size: 8pt;
+      }
+      #appointments-table {
+          width: 100%;
+          font-size: 8pt;
+          border-style: none;
+      }
+      #appointments-table tr {
+          page-break-after: auto;
+          page-break-before: auto;
+          page-break-inside: avoid;
+          border-color: darkgray;
+      }
+      input {
+          font-size: 8pt;
+      }
+      #printheader {
+          display: inline-block;
+      }
+
+  }

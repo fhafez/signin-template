@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta name="apple-mobile-web-app-capable" content="true" />
+    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <script src="libs/jquery-min.js"></script>
+    <script src="libs/underscore-min.js"></script>
+    <script src="libs/backbone-min.js"></script>
+    <script src="libs/moment-min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+
+        div {
+            margin-top:1em;
+            margin-bottom:1em;
+        }
+        input {
+            padding: .5em;
+            margin: .5em;
+        }
+        select {
+            padding: .5em;
+            margin: .5em;
+        }
+
+        #signatureparent {
+            border: 0px transparent #007ACC;
+            border-radius: 5px;
+            color:  #007ACC;
+            background-color:transparent;
+            /*max-width:600px;*/
+            padding:5px;        
+            width:650px;
+            position: relative;
+            margin-left:auto; 
+            margin-right:auto;
+            margin-top: 0px; 
+            font-family: sans-serif;
+        }
+
+        /*This is the div within which the signature canvas is fitted*/
+        #signature {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color:white;
+            color:#007ACC;
+            decor-color:#000;
+            margin-left:auto; 
+            margin-right:auto;
+            width:100%;
+            font-family: sans-serif;
+            font-size:18px;
+            padding:10px;
+        }
+        
+        .errordivshow {
+            position: fixed;
+            align-self: center;
+            left:49%;
+            width:50%;
+            max-height: 300px;
+            /*background-color:#FFE6F0;*/
+            background-color: rgba(255,230,240,1.0);
+            color:#CC0000;
+            border: 1px solid #CC0000;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:85px;
+            margin: 0 0 0 -25%;
+            display: '';
+            overflow: auto;
+            z-index: 100;
+        }
+        
+        .errordivhide {
+            position: fixed;
+            align-self: center;
+            left:50%; 
+            width:50%; 
+            background-color:#FFE6F0;
+            color:#CC0000;
+            border: 1px solid #CC0000;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:90px;
+            margin: 0 0 0 -25%;
+            display: none;
+        }
+
+        .successdivshow {
+            position: fixed;
+            align-self: center;
+            left:49%;
+            width:50%;
+            max-height: 300px;
+            /*background-color:#FFE6F0;*/
+            background-color: rgba(0,122,204,1.0);
+            color:#FFFFFF;
+            border: 2px solid white;
+            border-radius: 5px;
+            padding: 25px;
+            font-family: verdana;
+            font-size: 16px;
+            text-align: center;
+            top:85px;
+            margin: 0 0 0 -25%;
+            display: '';
+            overflow: auto;
+            z-index: 100;
+        }
+        
+        .signincontainer {
+            background-color:transparent; 
+            border: 0px transparent; 
+            border-color:#4C6680; 
+            padding:0px;
+            width:100%;
+            position: relative;
+            margin-left:auto; 
+            margin-right:auto;
+            margin-top: 0px;
+            text-align: center;
+        }
+
+        #services-inner-container {
+            max-height: 300px;
+            width: 640px;
+            overflow: auto;
+        }
+
+        .hiddensignincontainer {
+            display: none;
+        }
+
+        .pleasewaithidden {
+            display: none;
+        }
+
+        .copyright {
+            padding: 20px 0px 20px 0px;
+            width: 100%;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        /* Drawing the 'gripper' for touch-enabled devices */ 
+        html.touch #content {
+            float:left;
+            width:92%;
+        }
+        html.touch #scrollgrabber {
+            float:right;
+            width:4%;
+            margin-right:2%;
+            /*
+            background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAFCAAAAACh79lDAAAAAXNSR0IArs4c6QAAABJJREFUCB1jmMmQxjCT4T/DfwAPLgOXlrt3IwAAAABJRU5ErkJggg==)
+            */
+        }
+        html.borderradius #scrollgrabber {
+            border-radius: 1em;
+        }
+
+    </style>
+    <script id='local_main'>
+
+      function submitForm(action) {
+          if (document.loginform.firstname.value.length == 0 || document.loginform.lastname.value.length == 0) {
+              document.getElementById("errors").innerHTML = 'Firstname and Lastname fields cannot be blank';
+              document.getElementById("errors").style.display = 'block';
+              if (document.loginform.firstname.value.length == 0)
+                    document.getElementById("firstname").style.borderColor = '#cc0000';
+              if (document.loginform.lastname.value.length == 0)
+                    document.getElementById("lastname").style.borderColor = '#cc0000';
+          } else {
+            //document.getElementById('loginform').submit();
+              if (action === "index.php") {
+                    var $sigdiv = $('#signature')            
+                    var data = $sigdiv.jSignature('getData', "svgbase64")
+                    //$('signature_value', $tools).val(data.join(','))
+                    //$.publish(pubsubprefix + data[0], data);
+                    document.forms["loginform"].signature_value.value = data;
+                    document.forms["loginform"].submit();
+                } else if (action === "signout.php") {
+                    document.loginform.action = 'signout.php';
+                    document.forms['loginform'].submit();                  
+                }
+            }
+        }
+        
+        function resetForm() {
+            $("#signature").jSignature("reset");
+            document.forms["loginform"].reset();
+            $("#datefieldmsg").removeClass("datefieldmsgshow");
+            $("#datefieldmsg").addClass("datefieldhide");
+            $('#dob').removeClass('datefieldshow');
+            $('#dob').addClass('datefieldhide');
+            $('#services-container').html('');
+            $('#services-outer-container').hide();
+            $('#signature').show();
+            $('#buttonscontainer').show();
+        }
+        
+        $('#signature').keypress(function(e) {
+            console.log(e.which);
+        });
+        
+                
+    </script>
+    <script lang="text/template" id='signin-template'>
+    </script>
+    <script type='text/template' id='services-template'>
+            <%=provider_name%>: <%= service_name %> (<%if (remaining_appts >= 0) { %><%=remaining_appts%> appointments remaining<% } else { %><%=-remaining_appts%> appointments had<% } %>)
+    </script>
+    <div id='errordiv'></div>
+</head>
+<body>
+    <header><h1><!--?=$sitename?--></h1></header>
+    <div style="margin-top:100px;"></div>
+    <!--div><p align=center id="errors"></p></div-->
+    
+    <h3>Haven't got an account yet?  <a href="register_ls.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">REGISTER</a> first</h3>
+    <form name='loginform' id='loginform'>
+        <div class='signincontainer'>
+            <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
+            <input id='lastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
+
+            <div id="dob" class="datefieldhide">
+                <input id="year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/<input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/<input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
+            </div>
+            <label id='datefieldmsg' class="datefieldhide">please enter your date of birth</label>
+        </div>
+        <div class="signincontainer" id="services-outer-container" style="width:680px">
+            <div class="signincontainer" id="services-inner-container" style="width:600px"></div>
+            <div id='finished' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Finished</label>
+            </div>
+            <div id='servicesselected' class='buttonsls' onclick='resetForm();' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Cancel</label>
+            </div>
+        </div>
+        <div id="signatureparent" style='text-align:center; color:#FFFFFF'>        
+          <div id="signature" style='text-align:center; color:#007ACC'>Sign Here</div>
+        </div>
+
+        <div class="signincontainer" id="buttonscontainer" align=center>
+            <div id='signinbtn' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Sign In</label>
+            </div>
+            <div id='signoutbtn' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" href="#">Sign Out</label>
+            </div>
+            <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
+                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+            </div>
+        </div>
+        <div id="pleasewait" align="center" class="pleasewaithidden">
+            <label style="font-size: 24px; font-weight: 100;">Signing in/out, please wait...</label>
+        </div>
+        <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
+    </form>
+    <script src="libs/modernizr.js"></script>
+    <script src="src/jSignature.js"></script>
+
+    <script src="src/plugins/jSignature.CompressorBase30.js"></script>
+    <script src="src/plugins/jSignature.CompressorSVG.js"></script>
+    <script src="libs/jSignature.min.js"></script>
+    <script src="libs/errors.js"></script>
+    <script src="js/signin.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $sigdiv = $("#signature").jSignature({lineWidth:1});
+            $('#services-outer-container').hide();
+            $(document).bind('touchmove', false);
+        });
+    </script>
+
+</body>
+</html>

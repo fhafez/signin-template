@@ -1,0 +1,620 @@
+body {
+    /*background-color:whitesmoke; */
+    background: linear-gradiant(whitesmoke, white);
+    background: -webkit-linear-gradient(whitesmoke, white); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(whitesmoke, white); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(whitesmoke, white); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(whitesmoke, white); /* Standard syntax */
+    color:#007ACC;
+    text-align:left;
+    padding:5px;
+    font-family: "anivers", Helvetica, Arial, sans-serif;
+}
+p {
+    color:blue;
+    font-family: verdana;
+    border: 0px transparent;
+    padding: 0px;
+    display: block;
+
+}
+h1 {
+    color:#e5e5ec;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    text-align: center;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 25px;
+    letter-spacing: 0.34000;
+}
+h2 {
+    /* color:#007ACC; */
+    color:#AAAAAA;
+    font-family: Roboto, arial, sans-serif;
+    letter-spacing: 0.34000;
+    text-align: right;
+    font-size: 16px;
+    margin-top: 47px;
+    /* background-color: #007ACC; */
+    background-color: #FFFFFF;
+    border-bottom: 0px transparent;
+    border-color: #AAAAAA;
+    padding: 0px;
+}
+h3 {
+    color:#007ACC;
+    font-family: Roboto, arial, sans-serif;
+    letter-spacing: 0.34000;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 35px;
+    /* background-color: #007ACC; */
+    background-color: transparent;
+    border-bottom: 0px transparent;
+    border-color: #AAAAAA;
+    padding: 0px;
+}
+.headerdiv {
+    color:#4C6680;
+    font-family: Roboto, arial, sans-serif;
+    letter-spacing: 0.34000;
+    text-align: center;
+    font-size: 32px;
+    margin-top: 25px;
+    background-color: transparent;
+    border-bottom: 0px transparent;
+    padding: 0px;    
+}
+.lsheaderdiv {
+    color:#4C6680;
+    font-family: Roboto, arial, sans-serif;
+    letter-spacing: 0.34000;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 15px;
+    background-color: transparent;
+    border-bottom: 0px transparent;
+    padding: 0px;    
+}
+.signincontainer {
+    background-color:transparent; 
+    border: 0px transparent; 
+    border-color:#4C6680; 
+    padding:10px;
+    width:370px;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+}
+
+.registercontainer {
+    background-color:transparent; 
+    border: 0px transparent; 
+    border-color:#4C6680; 
+    padding:10px;
+    width:370px;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+}
+
+.signinlsdiv {
+    background-color:transparent; 
+    border: 0px transparent; 
+    border-color:#4C6680; 
+    padding:0px;
+    width:100%;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+}
+
+.servicesdiv {
+    background-color:white; 
+    border:1px solid #AAAAAA;
+    border-radius: 5px;
+    padding:10px; 
+    width:100%;
+    /* position: relative; */
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+    text-color:#AAAAAA;
+    font-family: sans-serif;
+}
+.radiodiv {
+    background-color:white; 
+    /*border: 0px transparent; */
+    border:1px solid;
+    border-color:#AAAAAA; 
+    padding:10px; 
+    width:100%;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+}
+.checkboxdivunselected {
+    background-color:white; 
+    /*border: 0px transparent; */
+    border:1px solid;
+    border-color:#AAAAAA; 
+    padding:10px; 
+    width:95%;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+    cursor: pointer;
+}
+.checkboxdivselected {
+    background-color: #4C6680;
+    /*border: 0px transparent; */
+    border:1px solid;
+    border-color:#AAAAAA; 
+    padding:10px; 
+    width:95%;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+    color: azure;
+    cursor: pointer;
+}
+.manageClientDiv {
+    background-color:transparent; 
+    border: 0px transparent; 
+    border-color:#4C6680; 
+    padding:10px;
+    width:80%;
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: 0px;
+    text-align: center;
+}
+nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:100px;
+    float:left;
+    padding:5px; 
+}
+.section {
+    background-color:white;
+    width:650px;
+    float:left;
+    padding:10px; 
+    word-wrap:break-word;
+}
+header {
+    background: #47476B;
+    position: fixed;
+    background-image: url('../images/oc-chiro.jpg');
+    background-repeat: no-repeat;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 67px;
+    z-index: 10;
+}
+.footer {
+    background-color:gray;
+    color:black;
+    clear:both;
+    text-align:left;
+    padding:5px; 
+    font-family:sans-serif;
+    border: 2px solid red;
+}
+#errors {
+    display: none;
+    margin-left:auto; 
+    margin-right:auto;
+    width:380px; 
+    background-color:#FFE6F0;
+    color:#CC0000;
+    border: 1px solid #CC0000;
+    border-radius: 5px;
+    padding: 15px;
+    font-family: verdana;
+    font-size: 12px;
+    text-align: center;
+}
+#failedlogin {
+    margin-top: 5px;
+    margin-left:auto;
+    margin-right:auto;
+    width:380px;
+    background-color:#FFE6F0;
+    color:#CC0000;
+    border: 1px solid #CC0000;
+    border-radius: 5px;
+    padding: 15px;
+    font-family: verdana;
+    font-size: 12px;
+    text-align: center;
+}
+#successfulsignin {
+    margin-top: 100px;
+    margin-left:auto; 
+    margin-right:auto; 
+    width:380px; 
+    background-color:#E6E6FF;
+    border: 1px solid #0000FF;
+    border-radius: 5px;
+    padding: 20px;
+    color:#007ACC;
+    font-family: verdana;
+    font-size: 24px;
+    text-align: center;
+}
+
+.buttons {
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: #007ACC;
+    padding:15px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration:none;
+    cursor: pointer;
+}
+
+.buttonsls {
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: #007ACC;
+    padding:15px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 220px;
+    text-decoration:none;
+    margin-left:auto;
+    margin-right:auto;
+    display: inline-block;
+}
+
+#signinlsbtn {
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: #007ACC;
+    padding:15px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 5px;
+    width: 220px;
+    text-decoration:none;
+    margin-left:auto;
+    margin-right:auto;
+    display: inline-block;
+}
+input {
+    color:#4C6680;
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: white;
+    padding:15px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 5px;
+    width: 95%;
+}
+.inputls {
+    color:#4C6680;
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: white;
+    padding:15px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 5px;
+    width: 220px;
+}
+
+::-webkit-input-placeholder {
+    color: #AAAAAA;
+    font-size: 18px;
+    font-family: sans-serif;
+}
+.listappts {
+    color:white;
+    background-color: white;
+    font-family: verdana;
+    border: 1px solid #AAAAAA ;
+    border-radius: 5px;
+    padding: 10px;
+
+}
+/*
+table {
+    font-family: "Helvetica Neue";
+    color: #4C6680;
+    border-spacing: 0px;
+    border-color: #009aff;
+}
+table td {
+    padding: 10px;
+    border-radius: 5px;
+    vertical-align: middle;
+    border-color: #007ACC;
+    border: 1px solid #DDDDDD;
+}
+
+table th {
+    padding: 10px;
+    border-radius: 0px;
+    background-color: #007ACC;
+    color: #FFFFFF;
+    border: 1px solid #007ACC;
+    border-color: #5991d9;
+    vertical-align: bottom;
+    font-family: 'helvetica heue', arial, sans-serif;
+    font-weight: 100;
+}
+*/
+
+/*tr:nth-child(even) td { background: #F5FAFF; padding: 0px} */
+/*tr:nth-child(odd) td { background: #E0F0FF ; padding: 0px }*/
+
+tr:nth-child(even) td { background: #F5FAFF; padding: 0px} 
+tr:nth-child(odd) td { background: #F5FAFF ; padding: 0px }
+tr td:hover { background: #007ACC; color: #eeeeee; }
+
+tr.tr-no-hover td:hover { background-color: transparent; color: #AAAAAA; }
+
+
+.signupForm {
+    font-family: sans-serif;
+    color: #FFFFFF;
+    padding: 15px;
+}
+.signupFormTD, .signupFormTR {
+    padding: 10px;
+    border-radius: 5px;
+    vertical-align: middle;
+    padding: 10px;
+}
+
+.signupFormTH {
+    padding: 10px;
+    border-radius: 5px;
+    border: 0px solid #007ACC;
+    vertical-align: bottom;
+}
+
+
+.signupFormTR:nth-child(even) td { background: #FFFFFF; }
+.signupFormTR:nth-child(odd) td { background: #FFFFFF ; }
+.signupFormTD:hover { background: #FFFFFF; color: #FFFFFF; }
+
+.signoutdiv {
+    background-color:#007ACC;
+    border: 1px solid; 
+	border-radius:5px;
+    border-color:#4C6680; 
+    padding:10px; 
+    position: relative;
+    margin-left:auto; 
+    margin-right:auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    color: white;
+}
+
+.signoutdiv:hover { background: #FFFFFF; color: #007ACC; padding: 10px; }
+.signoutA { text-decoration:none; color:inherit;font-family:verdana; }
+
+/*
+.signoutformTR:nth-child(even) td { background: #E0F0FF; padding: 10px; border-radius: 0px; color: #4C6680; }
+.signoutformTR:nth-child(odd) td { background: #F5FAFF ; padding: 10px; border-radius: 0px; color: #4C6680; }
+*/
+
+.signoutformTR:nth-child(even) td { background: white; padding: 10px; border-radius: 0.5px; color: #4C6680; }
+.signoutformTR:nth-child(odd) td { background: white ; padding: 10px; border-radius: 0.5px; color: #4C6680; }
+
+
+.signoutformTD { background: #FFFFFF; color: #FFFFFF; padding: 5px; }
+.signoutformTD:hover { background: #FFFFFF; color: #FFFFFF; padding: 5px; }
+
+input[type=radio] {
+    display:none;
+    margin: 10px;
+}
+
+input[type=checkbox] {
+    display:none;
+    margin: 10px;
+}
+
+label {
+	display: inline-block;
+	cursor: pointer;
+	position: relative;
+	padding-left: 5px;
+	margin-right: 15px;
+	font-size: 18px;
+    font-family: sans-serif;
+    color: #007ACC;
+    border-radius: 5px;
+}
+
+input[type=radio] + label {
+    display:inline-block;
+    margin:-2px;
+    padding: 4px 12px;
+    background-color: #FFFFFF;
+    border-color: #ddd;
+}
+
+input[type=radio]:checked + label { 
+   background-image: none;
+    background-color:#007ACC;
+    color: #FFFFFF;
+}
+
+input[type=checkbox] + label {
+    display:inline-block;
+    margin:-2px;
+    padding: 4px 12px;
+    background-color: #FFFFFF;
+    border-color: #ddd;
+}
+
+input[type=checkbox]:checked + label { 
+   background-image: none;
+    background-color:#007ACC;
+    color: #FFFFFF;
+}
+
+.datefieldhide {
+    display: none;
+}
+
+.datefieldmsgshow {
+    display: inline-block;
+    font-size: 12px;
+    color: red;
+}
+
+.datefieldshow { 
+    display: inline-block; 
+    padding: 2px;
+    border: solid 1px #FF0000; 
+    background: #FFF; 
+    border-radius: 5px;
+    color: #666;
+    width: 280px;
+    margin: 0px;
+}
+
+.datefieldshow * { 
+    display: inline-block;
+}
+
+.datefieldshow input { 
+    width: 4em;
+    padding:5px 5px; 
+    border: none; 
+    font-size: 18px; 
+    background: none;
+    color:#4C6680;
+}
+
+.datefieldshow input#year { width:70px; }
+.datefieldshow input#month { width:50px; }
+.datefieldshow input#day { width:50px; }
+.datefieldshow input:focus { outline:none; }
+
+
+
+.expiry_datefield { 
+    display: inline; 
+    padding: 5px;
+    border: solid 1px #AAAAAA; 
+    background: #FFF; 
+    border-radius: 5px;
+    color: #666;
+}
+
+.expiry_datefield * { 
+    display: inline-block;
+}
+
+.expiry_datefield input { 
+    width: 4em; 
+    padding:10px 10px; 
+    border: none; 
+    font-size: 12px; 
+    background: none;
+    color:#4C6680;
+}
+
+input.expiry_datefield::-webkit-input-placeholder {
+    color: #AAAAAA;
+    font-size: 10px;
+    font-family: sans-serif;
+}
+
+
+
+.expiry_datefield input#year { width:70px; }
+.expiry_datefield input#month { width:50px; }
+.expiry_datefield input#day { width:50px; }
+.expiry_datefield input:focus { outline:none; }
+
+
+
+table.delAppts {
+    margin:50px auto auto auto; 
+    width:90%; 
+    border-radius:5px; 
+    border: 1px solid #4C6680; 
+    padding:0px; 
+    background:#F5FAFF;
+}
+
+td.delAppts {
+    padding:10px;
+    width:80px; 
+    background: transparent; 
+    text-align:center; 
+    border-color: #4C6680; 
+    border-style:none none none solid; 
+    border-width:1px; 
+    border-radius:0px;
+}
+
+TR.delAppointmentFormTR TD{ background: #EEEEEE; padding: 5px; border-radius: 0px; font-family: 'helvetica heue', arial, sans-serif; font-size: 14px; color: #007ACC; }
+TD.delAppointmentFormTD:hover { background: #007ACC; padding: 5px; border-radius: 0px; font-family: 'helvetica heue', arial, sans-serif; font-size: 14px; color: #F5FAFF; text-align: center; }
+td.delAppts:hover { background-color: #007ACC; color: #F5FAFF; }
+
+
+table.filterAppts {
+    margin:15px auto auto auto; 
+    width:50%; 
+    border-radius:5px; 
+    border: 1px solid #4C6680; 
+    padding:10px; 
+    background:#F5FAFF;
+}
+
+td.filterAppts {
+    border: 0px none;
+}
+
+/*
+.filterAppts tr { 
+    background-color: transparent; 
+    color: #4C6680;
+    border-radius: 0px 0px 0px 0px;
+}
+*/
+.filterAppts tr td:hover { background-color: transparent; color: #4C6680; border-radius: 0px;}
+
+.searchInput {
+    color:#4C6680;
+    font-family: vedrana, sans-serif;
+    font-size: 18px;
+    background: white;
+    padding:10px;
+    border: 1px solid #AAAAAA;
+    text-align: center;
+    border-radius: 0px;
+    width: 95%;
+}

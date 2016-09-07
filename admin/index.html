@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script src="../js/libs/jquery-min.js"></script>
+    <script src="../js/libs/underscore-min.js"></script>
+    <script src="../js/libs/backbone-min.js"></script>
+    <script src="../js/libs/moment.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/fullcalendar-2.6.1/fullcalendar.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/admin-style.css"/>
+    
+    <div id='errordiv'></div>
+    <!-- APPOINTMENTS TEMPLATES -->
+    <script type='text/template' id='client-service-template'>
+        <div class='client-service-data' style='width:50px'><button id='editservicedetails'>edit</button><button id='saveservicedetails'>save</button></div>
+        <div class='client-service-data' style='width:150px'><label><%= provider_name %></label><select id="provider_name<%= id %>" class="service-edit"><option value="<%- provider_name %>" selected><%- provider_name %></option></select></div>
+        <div class='client-service-data' style='width:250px'><label><%= service_name %></label><select id="service_name<%= id %>" class="service-edit"><option value="<%- service_name %>"><%- service_name %></option></select>: <label><%= remaining_appts %></label><input id='remaining_appts' type='text' style="width:30px;" class="service-edit" value='<%= remaining_appts %>' /></div>
+        <div class='client-service-data client-service-data-centre' style='width:150px'><label><%= active_on %></label><input type='text' class="service-edit" value='<%= active_on %>' /></div>
+        <div class='client-service-data client-service-data-centre' style='width:100px'><label><%= mva %></label><select id="mva" class="service-edit"><option value="<%- mva %>"><%= mva %></option><option value="<%- mva === "no" ? "yes" : "no" %>"><%- mva === "no" ? "yes" : "no" %></option></select></div>
+        <div class='client-service-data' style='width:50px'><button id='deleteservicedetails' class='deletebutton'>delete</button></div>
+    </script>
+    <script type="text/template" id="providers-select-template">
+        <select id="provider_name">
+            <% _(providers).each(function(provider) { %>
+                <option value="<%= provider.name %>"><%= provider.name %></option>
+            <% }); %>
+        </select>
+    </script>
+    <script type='text/template' id='appointments-template'>
+        <td><div><label><%= firstname %></label></div></td>
+        <td><div><label><%= lastname %></label></div></td>
+        <!--td><div><label><%= dob %></label></div></td-->
+        <td><div align='center'><label><%= start_datetime %></label></div></td>
+        <td align='center' class='signout'><div class="view"><label><%= end_datetime %></label></div><label class="signout">Signout now? <a class="yes" href="#">Yes</a> <a class="no" href="#">No</a></label></td>
+        <td align='center'><img style="max-width:150px; max-height:60px;" src="../signatures/<%= signature_filename %>"/></td>
+        <td align='center' <%if (staff.staff_firstname === "nobody") { %>class='patient_waiting'<% } else { %> class='patient_treated' <% }%>>
+            <div>
+                <% //console.log("staff firstname is " + staff_firstname); %>
+                <select id='staff' class='dropdown'>
+                <%_.forEach(this.staffCollection.toArray(), function(s,i) { %>
+                    <option <%if (staff.staff_firstname === s.get('firstname') && staff.staff_lastname === s.get('lastname')) { %>selected<% } %> value=<%=s.get('id') %>>
+                    <%= s.get('firstname') %>
+                    </option>
+                <% }); %>
+                </select>
+            </div>
+        </td>
+        <td align='center'><div title='Motor Vehicle Accident'><input id="mva" class="edit" type="checkbox" <%= mva === "1" ? 'checked' : '' %> /></div></td>
+        <td align='center' class='destroycellhide' width='5%'><label class="destroy">Delete</label></td>
+    </script>
+    <script type="text/template" id='appointmentsapp-template'>
+        <div class='section-title'><h2>Appointments</h2></div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <div align='center' class="filters">
+            <div class="filter-right">
+                <label>FILTERS</label>
+            </div>
+            <div class="filter-left">
+                <label><input id="firstname_filter" type="text" placeholder='firstname' /></label>
+                <label><input id="lastname_filter" type="text" placeholder='lastname'/></label>&nbsp;&nbsp;&nbsp;
+                <label for="date_from">from </label><input id="date_from" type="date" placeholder='YYYY-MM-DD' style='width:160px;'/>
+                <label for="date_to">to </label><input id="date_to" type="date" placeholder='YYYY-MM-DD' style='width:160px;'/>
+                <br>
+                <a class='btn' id='day'>today</a>
+                <a class='btn' id='week'>week</a>
+                <a class='btn' id='month'>month</a>
+            </div>
+        </div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <table id="appointments-table" border='1' cellspacing='1' cellpadding='5'>
+        </table>
+        <div style="padding:30px; text-align:center">
+            <div id='printbutton' class='btn' style='margin: 0 auto; width:20%' onclick="printAppointments();">&nbsp;&nbsp;PRINT&nbsp;&nbsp;</div>
+        </div>
+        <div class="footer" align='center'><label></label></div>
+    </script>
+    <script type='text/template' id='appointments-header'>
+    <tr>
+        <th width='10%' id='firstname' class='sortablecolumn'>First Name</th>
+        <th width='10%' id='lastname' class='sortablecolumn'>Last Name</th>
+        <!--th width='5%'><b>DOB</b></th-->
+        <th width='15%' id='signedin_at' class='sortablecolumn'>Signed In</th>
+        <th width='15%' id='signedout_at' class='sortablecolumn'>Signed Out</th>
+        <th width='15%'>Signature</th>
+        <th width='10%' id='staff' class='sortablecolumn'>Practitioner</th>
+        <th width='3%'>MVA</th>
+        <th width='5%' class='' style='background: transparent; border: none;'></th>        
+    </tr>
+    </script>
+    <!-- CLIENTS TEMPLATES -->
+    <script type='text/template' id='clientsapp-template'>
+        <div class='section-title'><h2>Clients</h2></div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <div id="clientdetails" class="clientsapp" align='center'></div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <div class='outer-clients-content' id='clients-list'>
+        </div>
+    </script>
+    <script type='text/template' id='detailed-client-template'>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <table id="client-details-table" width='50%' border='1' cellspacing='1' cellpadding='5' style='width:50%'>
+            <tr><td class='title_td'>firstname</td><td><input type='text' id='' value='<%= firstname %>' /></td></tr>
+            <tr><td class='title_td'>lastname</td><td><input type='text' id='' value='<%= lastname %>'/></td></tr>
+            <tr><td class='title_td'>date of birth</td><td><input type='text' id='' value='<%= dob %>'/></td></tr>
+            <tr><td class='title_td'>address</td><td><input type='text' id='' value='<%= address %>'/></td></tr>
+            <tr><td class='title_td'>city</td><td><input type='text' id='' value='<%= city %>'/></td></tr>
+            <tr><td class='title_td'>postal code</td><td><input type='text' id='' value='<%= postalcode %>'/></td></tr>
+        </table>
+    </script>
+    <script type='text/template' id='clients-template'>
+        <div class='client-data'><div class='view'><label class='clickable'><%= firstname %></label></div><input id="firstname" class="edit" type="text" value="<%- firstname %>" /></div>
+        <div class='client-data'><div class='view'><label class='clickable'><%= lastname %></label></div><input id="lastname" class="edit" type="text" value="<%- lastname %>" /></div>
+        <div class='client-data'><div class='view'><label class='clickable'><%= dob %></label></div><input id="dob" class="edit" type="text" value="<%- dob %>" /></div>
+        <div class='client-data'><div class='view'><label id="edit_link" class="clickable">edit</label></div><label id="done_link" class="edit">done</label> | <label id="destroy" class="clickable">delete</label></div>
+        <div id='client-details<%= id %>' class='client-details-hide'>
+        </div>
+        <div id='add-new-client-services<%= id %>' class='client-details-hide'>
+            <div class='client-service-data' style='width:50px'>&nbsp;</div>
+            <select id='new-client-services<%= id %>' class='client-service-data' style='display:inline-block; width:200px;'>
+            </select>
+            <select id='new-client-providers<%= id %>' class='client-service-data' style='display:inline-block; width:200px;'>
+            </select>
+            <input id='remaining_appts<%= id %>' type="text" value="0" class='service-edit' style="width:30px;"/>
+            <input id='active_on<%= id %>' type="date" class='client-service-data'/>
+            <select id="mva<%= id %>" class="service-edit"><option value="yes">yes</option><option value="no">no</option></select>
+            <button id='addclientservice' class='addnewbtn'>add new</button>
+        </div>
+    </script>
+    <script type='text/template' id='clients-header'>
+            <div class='inner-clients-content'>
+                <div style='display:inline-block; margin: 10px 0 10px 0;'>PAGE <%=thispage%> of <%=totalpages%></div>
+            </div>
+            <div id='uppernavsearchbar' class='inner-clients-content'>
+                <div class='<%=prevpageclasses%>' id='upperprevpage'><label class='clickable'>LAST 25</label></div>
+                <div style='display:inline-block; width:700px; height: 30px; border: 1px solid gray; padding:5px; margin: 0 25px 10px 25px; border-radius:3px; background:ghostwhite'><input type='text' id='firstname_lookup' placeholder='FIRSTNAME'/>&nbsp;<input type='text' id='lastname_lookup' placeholder='LASTNAME'/><button id='client_name_search' class='searchbutton'>search</button><button id='cancel_name_search' class='searchbutton'>cancel</button></div>
+                <div class='<%=nextpageclasses%>' id='uppernextpage'><label class='clickable'>NEXT 25</label></div>
+            </div>
+            <div class='inner-clients-content'>                
+                <div class='clients-header'>First Name</div>
+                <div class='clients-header'>Last Name</div>
+                <div class='clients-header'>Date of Birth</div>
+                <div class='clients-header'>Action</div>
+            </div>
+            <div>
+                <div class='client-data'><div class='view'></div><input id="new_firstname" type="text" /></div>
+                <div class='client-data'><div class='view'></div><input id="new_lastname" type="text" /></div>
+                <div class='client-data'><div class='view'></div><input id="new_dob" type="text" /></div>
+                <div class='client-data'><div class='view'><label id="newclient" class="clickable">add new</label></div>
+            </div>
+    </script>
+    <script type='text/template' id='clients-footer'>
+            <div id='lowernavbar' class='inner-clients-content'>
+                <div class='<%=prevpageclasses%>' id='lowerprevpage'><label class='clickable'>LAST 25</label></div>
+                <div style='display:inline-block; width:770px; height: 30px;'>PAGE <%=thispage%> of <%=totalpages%></div>
+                <div class='<%=nextpageclasses%>' id='lowernextpage'><label class='clickable'>NEXT 25</label></div>
+            </div>
+    </script>
+    <!-- SERVICES TEMPLATES -->
+    <script type='text/template' id='servicesapp-template'>
+        <div class='section-title'><h2>Services</h2></div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <table id="services-table" border='1' cellspacing='1' cellpadding='5'>
+        </table>
+    </script>
+    <script type='text/template' id='services-header'>
+        <tr>
+          <th width='25%'><b>Service Description</b></th>
+          <th width='15%' align='center'><b>action</b></th>
+        </tr>
+        <tr>
+          <td><input id="new_service_description" class="new" type="text" placeholder="Service Description" /></td>
+          <td align="center"><button id="newservice" class="new">Add New</button></td>    
+        </tr>
+    </script>
+    <script type='text/template' id='services-template'>
+            <td><div class="view"><label><%= description %></label></div><input id="description" class="edit" type="text" value="<%- description %>" /></td>
+            <td align='center'><a id="edit_service" class="view">Edit</a><a id="save_service" class="edit">Save</a> | <a id="destroy_service">Delete</a></td>
+    </script>
+    <script type='text/template' id='client-services-list-template'>
+        <td colspan=4>
+        </td>
+    </script>
+    <!-- PROVIDERS TEMPLATES -->
+    <script type='text/template' id='providersapp-template'>
+        <div class='section-title'><h2>Providers</h2></div>
+        <div id='bufferspace' height='20px'>&nbsp;</div>
+        <table id="providers-table" border='1' cellspacing='1' cellpadding='5'>
+        </table>
+    </script>
+    <script type='text/template' id='providers-template'>
+            <td><div class="view"><label><%= description %></label></div><input id="description" class="edit" type="text" value="<%- description %>" /></td>
+            <td align='center'><a id="edit_provider" class="view">Edit</a><a id="save_provider" class="edit">Save</a> | <a id="destroy_provider">Delete</a></td>
+    </script>
+    <script type='text/template' id='providers-header'>
+        <tr>
+          <th width='25%'><b>Provider Description</b></th>
+          <th width='15%' align='center'><b>action</b></th>
+        </tr>
+        <tr>
+          <td><input id="new_provider_description" class="new" type="text" placeholder="Provider Description" /></td>
+          <td align="center"><button id="newprovider" class="new">Add New</button></td>    
+        </tr>
+    </script>
+
+    <script type="application/javascript">
+    
+        var button_selected;
+
+        function mark_selected(menu_item) {
+            if (button_selected !== undefined) {
+                button_selected.className = 'title-item';
+            }
+            menu_item.className = 'title-item-selected';
+            button_selected = menu_item;
+        }
+        
+        function hidedetailedservices() {
+            console.log('abc');
+            $('#service_details').hide();
+        }
+
+        function printAppointments() {
+            //$('#printheader').display='inline-block';
+            this.print();
+            //$('#printheader').display='none';
+        }
+        
+    </script>    
+</head>
+<body>
+    <nav>
+        <div class='wrapper'>
+            <div id="menu" class="title">
+                <div data-url="clients/p1" id="clients-menu-item" class="title-item" onclick="mark_selected(this);">CLIENTS</div>
+                <div data-url="appointments" id="appointments-menu-item" class="title-item" onclick="mark_selected(this);">APPOINTMENTS</div>
+                <div data-url="services" id="services-menu-item" class="title-item" onclick="mark_selected(this);">SERVICES</div>
+                <div data-url="providers" id="providers-menu-item" class="title-item" onclick="mark_selected(this);">PROVIDERS</div>
+                <div data-url="calendar" id="calendar-menu-item" class="title-item" onclick="mark_selected(this);">CALENDAR</div>
+            </div>
+        </div>
+    </nav>
+    <div id="servicesremaining-template"></div>
+    <section id="signinmanagementapp">
+        <div id='bufferspace' style="padding-top:10px;padding-bottom:10px">&nbsp;</div>
+        <div id='printheader'>Scarborough Physioterapy and Rehabilitation Centre<br>2100 Ellesmere Road. Suite 242 Scarborough, ON M1H 3B7</div>
+        <div id="appspace" class="clientsapp" align='center'><p>loading...</p>            
+        </div>
+    </section>
+    <script src="../js/errors.js"></script>
+    <script src="../js/clients.js"></script>
+    <script src="../js/appointments.js"></script>
+    <script src="../js/services.js"></script>
+    <script src="../js/providers.js"></script>
+    <script src="../js/appRouter.js"></script>
+    <script src="../js/calendar.js"></script>
+    <script src="../js/fullcalendar-2.6.1/fullcalendar.js"></script>
+    <script>
+        mark_selected(document.getElementById('appointments-menu-item'));
+    </script>
+    <!--button onclick="fade('cl');">Fade</button-->
+    <footer>
+        <div class='wrapper'>
+            <!--div id="service_details" class="service-footer">
+                <ul id="client-services-list"></ul>
+                <div id='hidebutton' onclick="hidedetailedservices();">hide</div>
+            </div-->
+                    <!--ul>
+            <li class='service-details-header' style='width:50px'></li>
+            <li class='service-details-header' style='width:150px'>provider</li>
+            <li class='service-details-header' style='width:250px'>service: appointments left</li>
+            <li class='service-details-header' style='width:150px'>active on</li>
+            <li class='service-details-header' style='width:100px'>MVA</li>
+        </ul-->
+        </div>
+        <div class='copyright'>Copyright &copy; 2016 by Fadi Hafez. All rights reserved.</div>
+    </footer>
+</body>
+</html>

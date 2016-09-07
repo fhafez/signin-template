@@ -1,0 +1,8 @@
+./add_appt.sh Esmatyar Anna '2016-05-03 16:45:00' '2016-05-03 17:15:00'
+./add_appt.sh Ly "Lai Yiu" '2016-05-03 17:45:00' '2016-05-03 18:40:00'
+./add_appt.sh sivaguru Tharmalingam '2016-05-03 17:50:00' '2016-05-03 18:30:00'
+./add_appt.sh Dias Jacqueline '2016-05-03 17:55:00' '2016-05-03 18:40:00'
+./add_appt.sh Mathew Aloysius '2016-05-03 18:00:00' '2016-05-03 18:45:00'
+./add_appt.sh "Iyathurai Vadivelu" Kirubakaran '2016-05-03 18:00:00' '2016-05-03 18:45:00'
+./add_appt.sh Markandu senthilkumaran '2016-05-03 18:10:00' '2016-05-03 18:55:00'
+./add_appt.sh Mardirossian Silva '2016-05-03 17:50:00' '2016-05-03 18:30:00'
