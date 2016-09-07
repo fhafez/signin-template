@@ -2,6 +2,6 @@
 #AddHandler application/x-httpd-php54 .php
 
 AuthName "Admin's Only"
-AuthUserFile /home2/parconta/public_html/signin-scar/.htpasswd
+AuthUserFile /i/really/dont/know
 AuthType Basic
 require user administrator
