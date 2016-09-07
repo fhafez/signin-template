@@ -2,8 +2,7 @@
 #AddHandler application/x-httpd-php54 .php
 
 AuthName "Member's Area Name"
-AuthUserFile /Users/fadihafez/Sites/signin-template/.htpasswd
-#AuthUserFile /home2/parconta/public_html/signin-scar/.htpasswd
+AuthUserFile /i/really/dont/know/.htpasswd
 DirectoryIndex index_ls.html index.html
 AuthType Basic
 require valid-user
