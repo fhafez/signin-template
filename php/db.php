@@ -1,11 +1,11 @@
 <?php
 
 $servername = "localhost";
-$username = "###";
-$password = "###";
-$dbname = "###";
+$username = "parconta_root";
+$password = "rigardo88";
+$dbname = "parconta_scar_physiotherapy";
 
-$sitename = "physio site A";
-$print_header = "###";
+$sitename = "Local Physiotherapy";
+$print_header = "Home";
 
 ?>

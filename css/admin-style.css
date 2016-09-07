@@ -53,7 +53,21 @@
       text-align: left;
       font-size: 16px;
       margin-top: 30px;
-      background-color: #FFFFFF;
+      /*background-color: #FFFFFF; */
+
+      background: linear-gradiant(white, whitesmoke);
+      background: -webkit-linear-gradient(white, whitesmoke);
+      /* For Safari 5.1 to 6.0 */
+
+      background: -o-linear-gradient(white, whitesmoke);
+      /* For Opera 11.1 to 12.0 */
+
+      background: -moz-linear-gradient(white, whitesmoke);
+      /* For Firefox 3.6 to 15 */
+
+      background: linear-gradient(white, whitesmoke);
+      /* Standard syntax */
+
       border-style: solid none solid none;
       border-color: #555555;
       border-width: 1px;
@@ -117,7 +131,8 @@
       border-color: #5991d9;
       vertical-align: bottom;
       font-family: 'helvetica heue', arial, sans-serif;
-      font-weight: 100;
+      font-size: 18px;
+      font-weight: 400;
   }
 
 
@@ -465,16 +480,28 @@
       border-bottom: 2px solid white;
       /* background-color: rgba(255, 255, 255, 0.6); */
       background-color: rgba(39, 169, 225, 1.0);
+
+
+      background: linear-gradiant(#606c88, #3f4c6b);
+      background: -webkit-linear-gradient(#606c88, #3f4c6b);
+      /* For Safari 5.1 to 6.0 */
+      background: -o-linear-gradient(#606c88, #3f4c6b);
+      /* For Opera 11.1 to 12.0 */
+      background: -moz-linear-gradient(#606c88, #3f4c6b);
+      /* For Firefox 3.6 to 15 */
+      background: linear-gradient(#606c88, #3f4c6b);
+
       /* 27a9e1 */
       z-index: 100;
   }
   .title-item {
       font-family: "Helvetica Neue", sans-serif;
       display: inline-block;
-      border: 1px solid lightblue;
+      border: 1px solid whitesmoke;
       border-radius: 2px;
       /* background-color: whitesmoke; */
-      background-color: #27a9e1;
+      /* background-color: #27a9e1; */
+      background-color: #3a7bd5;
       padding: 10px;
       /* color: #007ACC; */
       color: white;
@@ -483,20 +510,23 @@
   }
   .title-item-selected {
       display: inline-block;
-      border: 1px solid #007ACC;
+      border: 1px solid whitesmoke;
       border-radius: 2px;
       /* background-color: #007ACC; */
-      background-color: white;
+      /* background-color: white; */
+      background-color: whitesmoke;
+
       padding: 10px;
       /* color: white; */
-      color: #27a9e1;
+      /* color: #27a9e1; */
+      color: #3a7bd5;
       font-weight: 400;
   }
   .title-item:hover {
       /* color:#007ACC; */
-      color: #27a9e1;
+      color: #3a7bd5;
       background-color: white;
-      border: 1px solid lightblue;
+      border: 1px solid whitesmoke;
   }
   #appspace {
 
