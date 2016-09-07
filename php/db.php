@@ -1,11 +1,11 @@
 <?php
 
 $servername = "localhost";
-$username = "parconta_root";
-$password = "rigardo88";
-$dbname = "parconta_scar_physiotherapy";
+$username = "###";
+$password = "###";
+$dbname = "###";
 
-$sitename = "Scarborough Physiotherapy";
-$print_header = "2100 Ellesmere Road. Suite 242 Scarborough, ON M1H 3B7";
+$sitename = "physio site A";
+$print_header = "###";
 
 ?>
