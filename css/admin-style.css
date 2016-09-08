@@ -41,7 +41,7 @@
       color: #888888;
       font-family: "Helvetica Neue", sans-serif;
       letter-spacing: 0.34000;
-      text-align: left;
+      text-align: center;
       font-size: 24px;
       font-weight: 200;
       padding: 0px 5px 0px 5px;
@@ -52,23 +52,20 @@
       letter-spacing: 0.34000;
       text-align: left;
       font-size: 16px;
-      margin-top: 30px;
+      margin-top: 20px;
       /*background-color: #FFFFFF; */
 
       background: linear-gradiant(white, whitesmoke);
       background: -webkit-linear-gradient(white, whitesmoke);
       /* For Safari 5.1 to 6.0 */
-
       background: -o-linear-gradient(white, whitesmoke);
       /* For Opera 11.1 to 12.0 */
-
       background: -moz-linear-gradient(white, whitesmoke);
       /* For Firefox 3.6 to 15 */
-
       background: linear-gradient(white, whitesmoke);
       /* Standard syntax */
 
-      border-style: solid none solid none;
+      border-style: none none solid none;
       border-color: #555555;
       border-width: 1px;
       padding: 0px;
@@ -125,10 +122,18 @@
   #services-table th, #appointments-table th, #providers-table th {
       padding: 10px;
       border-radius: 0px;
-      background-color: #27a9e1;
+      /* background-color: #27a9e1; */
+      background: linear-gradiant(#606c88, #3f4c6b);
+      background: -webkit-linear-gradient(#606c88, #3f4c6b);
+      background: -o-linear-gradient(#606c88, #3f4c6b);
+      background: -moz-linear-gradient(#606c88, #3f4c6b);
+      background: linear-gradient(#606c88, #3f4c6b);
+
       color: #FFFFFF;
       border: 1px solid #27a9e1;
-      border-color: #5991d9;
+      /* border-color: #5991d9; */
+      border-color: #808080;
+
       vertical-align: bottom;
       font-family: 'helvetica heue', arial, sans-serif;
       font-size: 18px;
@@ -179,13 +184,13 @@
       padding-right: 0px;
       font-family: 'helvetica neue', arial, sans-serif;
       text-align: center;
-      font-style: normal;
-      font-weight: 500;
+      font-weight: 300;
       font-size: 16px;
       letter-spacing: 0.34000;
       width: 100%;
       display: inline-block;
       align-self: center;
+      color: #55acee;
   }
   .filter-right button {
       font-size: 16px;
@@ -481,7 +486,6 @@
       /* background-color: rgba(255, 255, 255, 0.6); */
       background-color: rgba(39, 169, 225, 1.0);
 
-
       background: linear-gradiant(#606c88, #3f4c6b);
       background: -webkit-linear-gradient(#606c88, #3f4c6b);
       /* For Safari 5.1 to 6.0 */
@@ -497,11 +501,12 @@
   .title-item {
       font-family: "Helvetica Neue", sans-serif;
       display: inline-block;
-      border: 1px solid whitesmoke;
-      border-radius: 2px;
+      border: 1px transparent whitesmoke;
+      /* border-radius: 2px; */
       /* background-color: whitesmoke; */
       /* background-color: #27a9e1; */
-      background-color: #3a7bd5;
+      /* background-color: #3a7bd5; */
+      background: transparent;
       padding: 10px;
       /* color: #007ACC; */
       color: white;
@@ -514,28 +519,29 @@
       border-radius: 2px;
       /* background-color: #007ACC; */
       /* background-color: white; */
-      background-color: whitesmoke;
+      /* background-color: whitesmoke; */
 
       padding: 10px;
-      /* color: white; */
+      color: whitesmoke;
       /* color: #27a9e1; */
-      color: #3a7bd5;
+      /* color: #3a7bd5; */
       font-weight: 400;
   }
   .title-item:hover {
       /* color:#007ACC; */
-      color: #3a7bd5;
-      background-color: white;
-      border: 1px solid whitesmoke;
+      /* color: #3a7bd5; */
+      /* background-color: #ffffff; */
+      background: transparent;
+      border-bottom: 1px solid whitesmoke;
+      border-radius: 0px;
+      font-style: underline;
   }
   #appspace {
-
       position: relative;
       top:20px;
       left:0px;
       right:0px;
       /* height: 300px; */
-
   }
   .service-footer {
       width: inherit;
