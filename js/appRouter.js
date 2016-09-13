@@ -41,7 +41,7 @@ var AppRoutes = Backbone.Router.extend({
         //this.loadView(this.clientsview);
         clientsappview.trigger('reset');
         clientsappview.addAll();
-        clientsappview.render();
+//        clientsappview.render();
     },
     /*
     clients: function() {

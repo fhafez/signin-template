@@ -41,7 +41,7 @@ function AppointmentsApp(el) {
         initialize: function(options) {
             //this.listenTo(this.model, 'change', this.render);
             this.listenTo(this.model, 'destroy', this.remove);
-            //this.model.on('change', this.render, this);
+            this.model.on('change', this.render, this);
             //this.model.on('destroy', this.remove, this);
             
             if (options) {
@@ -54,10 +54,9 @@ function AppointmentsApp(el) {
 
         },
         render: function() {
-            //console.log('rendering AppointmentView');
+            console.log('rendering AppointmentView');
 
             this.$el.html(this.template(this.model.toJSON()));
-            
             return this;
         },
         events: {
@@ -71,7 +70,11 @@ function AppointmentsApp(el) {
         changeStaff: function(s) {
             //console.log(this.model);
             //console.log("new target value is " + s.target.value);
-            this.model.attributes.staff.staff_id = s.target.value;
+            //this.model.attributes.staff.staff_id = s.target.value;
+            console.log(this.model.staff);
+
+            this.model.set('staff', { 'staff_id': s.target.value });
+
             this.model.save({
                 end_datetime: function(m) {
                     return m.get('end_datetime') === null ? null : moment(m.get('end_datetime'), "DD-MMMM-YYYY hh:mmA").format('YYYY-MM-DD HH:mm:ss');
@@ -84,13 +87,13 @@ function AppointmentsApp(el) {
         changeMVA: function(m) {
             //console.log(this.model);
             //console.log("new target value is " + m.target.checked);
-            this.model.attributes.mva = m.target.checked;
+            //this.model.attributes.mva = m.target.checked;
+            this.model.set('mva', m.target.checked);
             this.model.save({
                 end_datetime: function(m) {
                     return m.get('end_datetime') === null ? null : moment(m.get('end_datetime'), "DD-MMMM-YYYY hh:mmA").format('YYYY-MM-DD HH:mm:ss');
                 }(this.model),
                 start_datetime: function(m) {
-                    console.log(m.get('start_datetime'));
                     return moment(m.get('start_datetime'), "DD-MMMM-YYYY hh:mmA").format('YYYY-MM-DD HH:mm:ss');
                 }(this.model)
             });
@@ -180,7 +183,8 @@ function AppointmentsApp(el) {
             this.first_record = 1;
             this.page_size = 1000;
             this.page = 1;
-            //this.listenTo(this, 'sync', this.syncComplete);
+            
+            this.listenTo(this, 'sync', this.syncComplete);
 
             //this.on('sync', this.syncComplete, this);
             
@@ -268,6 +272,8 @@ function AppointmentsApp(el) {
 
             console.log(this);
 
+            this.displayedAppts = this.displayedAppts || [];
+
             this.$el.html(this.template());
             
             this.appointmentsCollection = new AppointmentsCollection([], {date_from: $('#date_from'), date_to: $('#date_to')});
@@ -285,12 +291,6 @@ function AppointmentsApp(el) {
             this.listenTo(this.appointmentsCollection, 'sort', this.reloadAppointments);
             //appointmentsCollection.on('sort', this.reloadAppointments, this);
             this.descending = false;
-
-            this.listenTo(this.appointmentsCollection, 'all', 
-                function(a) {
-                    console.log(a);
-                    console.log("appointemts collection has synced!!  Time to clear the table");
-                });
 
             _.bindAll(this, "renderAppointments");
 
@@ -330,12 +330,23 @@ function AppointmentsApp(el) {
            //console.log(appointmentModel);
 
             var view_appt = new AppointmentView({model: appointmentModel, staffCollection: this.staffCollection, parent: this});
+            this.displayedAppts.push(view_appt);
             $('#appointments-table').append(view_appt.render().el);
+        },
+        removeAppts: function() {
+
+            while (this.displayedAppts.length > 0) {
+                var d = this.displayedAppts.pop();
+                this.appointmentsCollection.remove(d.model);
+                d.remove();
+                console.log('removed one');
+            }
         },
         addAll: function() {
            console.log('addall() called from ');
            console.log(this);
             
+            this.removeAppts();
             this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
            //console.log("appointmentsCollection has " + appointmentsCollection.length);
             
@@ -424,6 +435,7 @@ function AppointmentsApp(el) {
             
            //console.log('reloading');
            //console.log('sorted by ' + this.sortedBy);
+            this.removeAppts();
 
             //appointmentsCollection = new AppointmentsCollection([], {date_from: $('#date_from').val(), date_to: $('#date_to').val()});
             this.appointmentsCollection.setRange({date_from: $('#date_from').val(), date_to: $('#date_to').val()});
@@ -529,7 +541,8 @@ function AppointmentsApp(el) {
             this.unbind();
             this.appointmentsCollection.unbind('reset', this.addAll);
             this.appointmentsCollection.unbind('sort', this.reloadAppointments);
-            this.appointmentsCollection = null;
+            this.removeAppts();
+            //this.appointmentsCollection = null;
             this.staffCollection = null;
             $('#appointments-table').remove();
             this.remove();

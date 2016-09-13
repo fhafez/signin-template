@@ -302,11 +302,23 @@
       display: inline-block;
       font-size: 14px;
       font-weight: 300;
-      font-family: 'helvetica neue'
+      font-family: 'helvetica neue';
   }
+
   #clients-list .editing .view {
       display: none;
   }
+
+  #page_counter.pleasewait-hidden {
+      display:inline-block; 
+      margin: 10px 0 10px 0;
+  }
+
+  #page_counter.pleasewait-showing {
+      display: none;
+      background-color: black;
+  }
+
   label.signout {
       display: none;
       align-content: center;

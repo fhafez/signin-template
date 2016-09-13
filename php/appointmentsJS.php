@@ -352,6 +352,9 @@ $app->put('/:id', function ($id) use ($app) {
     $mva = ($input->mva == 1) ? "true" : "false";
 
     /*
+    var_dump($input);
+    exit();
+    /*
     $dob_year = (int)explode("-", $dob)[0];
     $dob_month = (int)explode("-", $dob)[1];
     $dob_day = (int)explode("-", $dob)[2]; 
@@ -375,7 +378,24 @@ $app->put('/:id', function ($id) use ($app) {
     }    
     
     if ($conn->affected_rows == 1) {
+
+        $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva,
+                                    c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
+                                    DATE_FORMAT(a.signout_date, '%e-%M-%Y  %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
+                                    FROM 
+                                        Clients c, Appointments a
+                                    LEFT JOIN Staff s ON a.staff_id = s.id 
+                                    WHERE 
+                                        a.id = " . $id;
+
+        $result = query($conn, $query_str);
+        $row = $result->fetch_assoc();
+        $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
+
+        $app->response['Content-Type'] = 'application/json';
+        echo json_encode($a->toJSON());
         $app->response()->status(200);
+
     } else {
 
         $app->response()->status(500);

@@ -1,3 +1,5 @@
+"use strict";
+
 var ClientModel = Backbone.Model.extend({
     urlRoot: '../php/clientsJS.php/hello/',
     defaults: {
@@ -503,10 +505,10 @@ var ClientServicesView = Backbone.View.extend({
     
     addService: function(clientServiceModel) {
         
-        clientServiceView = new ClientServiceView({model: clientServiceModel, parent:this});
+        this.clientServiceView = new ClientServiceView({model: clientServiceModel, parent:this});
 
         //$('#client-details' + this.model.id).html(clientServiceView.render().el);
-        $('#client-details' + this.model.id).append(clientServiceView.render().el);
+        $('#client-details' + this.model.id).append(this.clientServiceView.render().el);
         
         //console.log(clientServiceView.render().el);
         
@@ -686,9 +688,9 @@ var ClientView = Backbone.View.extend({
     },
     close: function (e) {
         
-        firstname_val = this.input_firstname.val().trim();
-        lastname_val = this.input_lastname.val().trim();
-        dob_val = this.input_dob.val().trim();
+        var firstname_val = this.input_firstname.val().trim();
+        var lastname_val = this.input_lastname.val().trim();
+        var dob_val = this.input_dob.val().trim();
 
         // check that all values have been provided
         if (firstname_val.length && lastname_val.length && dob_val.length) {
@@ -736,8 +738,11 @@ var ClientsAppView = Backbone.View.extend({
     initialize: function(options) {
         
         console.log('init in clientsappview');
-        clientsCollection = new ClientsCollection();
-        displayedClients = [];
+        console.log($('#page_counter'));
+
+
+        this.clientsCollection = new ClientsCollection();
+        this.displayedClients = this.displayedClients || [];
         
         /*
         clientsCollection.on('fetch', function() { 
@@ -755,14 +760,18 @@ var ClientsAppView = Backbone.View.extend({
         //clientsCollection.fetch();
 
         this.$el.html(this.template());
-        this.listenTo(clientsCollection, 'add', this.addClient);
-        this.listenTo(clientsCollection, 'reset', this.addAll);
+        this.listenTo(this.clientsCollection, 'add', this.addClient);
+        this.listenTo(this.clientsCollection, 'reset', this.addAll);
         
-        clientsCollection.fetch({data: {page: this.page, per_page: 25}, reset:true});
+        this.clientsCollection.fetch({data: {page: this.page, per_page: 25}, reset:true});
 
     },
     render: function() {
        console.log('clientsappview render() called');
+        console.log($('#page_counter'));
+       $('#page_counter').removeClass('pleasewait-showing');
+       $('#page_counter').addClass('pleasewait-hidden');
+
         return this;
     },
     events: {
@@ -779,11 +788,11 @@ var ClientsAppView = Backbone.View.extend({
         
         if (this.page > 1) {
             this.page--;
-            clientsCollection.fetch({data: {page: this.page, per_page: 25}, 
+            this.clientsCollection.fetch({data: {page: this.page, per_page: 25}, 
                                      reset: true,
                                     success: function() {
                //console.log('got the clients for page ' + clientsCollection.page);
-                self.page = clientsCollection.page;
+                self.page = self.clientsCollection.page;
                 router.navigate('clients/p' + self.page, {trigger: false});            
             }});
 
@@ -792,13 +801,14 @@ var ClientsAppView = Backbone.View.extend({
     },
     nextpage: function() {
        //console.log('nextpage');
+       this.removeAll();
         this.page++;
         var self = this;
-        clientsCollection.fetch({data: {page: this.page, per_page: 25}, 
+        this.clientsCollection.fetch({data: {page: this.page, per_page: 25}, 
                                  reset: true,
                                  success: function() {
            //console.log('got the clients for page ' + clientsCollection.page);
-            self.page = clientsCollection.page;
+            self.page = self.clientsCollection.page;
             router.navigate('clients/p' + self.page, {trigger: false});
         }});
         
@@ -813,8 +823,8 @@ var ClientsAppView = Backbone.View.extend({
         //    .each(this.addClient, this);
         */
         if ($('#firstname_lookup').val().length > 0 || $('#lastname_lookup').val().length > 0) {
-            clientsCollection.url = '../php/clientsJS.php/search/';
-            clientsCollection.fetch({data: {firstname: $('#firstname_lookup').val(), lastname: $('#lastname_lookup').val()}, 
+            this.clientsCollection.url = '../php/clientsJS.php/search/';
+            this.clientsCollection.fetch({data: {firstname: $('#firstname_lookup').val(), lastname: $('#lastname_lookup').val()}, 
                                      reset: true,
                                      success: function() {
                //console.log('got the clients for page ' + clientsCollection.page);
@@ -825,14 +835,14 @@ var ClientsAppView = Backbone.View.extend({
     },
     cancelSearch: function() {
         console.log('canceling');
-        clientsCollection.url = '../php/clientsJS.php/';
+        this.clientsCollection.url = '../php/clientsJS.php/';
         router.navigate('clients/p' + this.page, {trigger: true});
         //this.addAll();
     },
     addClient: function(clientModel){
         //console.log('in addClient() .. clientModel says ' + JSON.stringify(clientModel.toJSON()));
         var view = new ClientView({model: clientModel, parent: this});
-        displayedClients.push(view);
+        this.displayedClients.push(view);
         $('#clients-list').append(view.render().el);
         
         //var clientServicesListView = new ClientServicesListView({model: clientModel, parent:this});
@@ -848,30 +858,29 @@ var ClientsAppView = Backbone.View.extend({
         console.log('adding all.. page is ' + this.page)
         if (this.page == 1) {
             prevpageclasses = 'firstpage';
-        } else if (this.page == clientsCollection.total_pages) {
+        } else if (this.page == this.clientsCollection.total_pages) {
             nextpageclasses = 'lastpage';
         }
         
         
         this.removeAll();
-        this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: clientsCollection.page, totalpages: clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
-        clientsCollection.each(this.addClient, this);
-        this.$('#clients-list').append(_.template($('#clients-footer').html())({thispage: clientsCollection.page, totalpages: clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
+        this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
+        this.clientsCollection.each(this.addClient, this);
+        this.$('#clients-list').append(_.template($('#clients-footer').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
 
        //console.log('finished addall()');
     },
     removeAll: function() {
-        this.$('#clients-list').html('');
+        //this.$('#clients-list').html('');
         
-        /*
-        while (displayedClients.length > 0) {
-            var d = displayedClients.pop();
-            clientsCollection.remove(d.model);
+        
+        while (this.displayedClients.length > 0) {
+            var d = this.displayedClients.pop();
+            this.clientsCollection.remove(d.model);
             d.remove();
             console.log('removed one');
            //console.log(displayedClients.pop().render().el);
         }
-        */
         
     },
     addClicked: function() {
@@ -938,8 +947,9 @@ var ClientsAppView = Backbone.View.extend({
         
         // triggering close:all will alert the children ClientViews to close as well
         this.trigger('close:all');
-        clientsCollection.unbind('add', this.addClient);
-        clientsCollection.unbind('reset', this.addAll);
+        this.clientsCollection.unbind('add', this.addClient);
+        this.clientsCollection.unbind('reset', this.addAll);
+        this.removeAll();
         this.stopListening();
         this.remove();
     }
