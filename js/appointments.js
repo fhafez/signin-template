@@ -180,7 +180,7 @@ function AppointmentsApp(el) {
             this.first_record = 1;
             this.page_size = 1000;
             this.page = 1;
-            this.listenTo(this, 'sync', this.syncComplete);
+            //this.listenTo(this, 'sync', this.syncComplete);
 
             //this.on('sync', this.syncComplete, this);
             
@@ -285,6 +285,12 @@ function AppointmentsApp(el) {
             this.listenTo(this.appointmentsCollection, 'sort', this.reloadAppointments);
             //appointmentsCollection.on('sort', this.reloadAppointments, this);
             this.descending = false;
+
+            this.listenTo(this.appointmentsCollection, 'all', 
+                function(a) {
+                    console.log(a);
+                    console.log("appointemts collection has synced!!  Time to clear the table");
+                });
 
             _.bindAll(this, "renderAppointments");
 
@@ -405,7 +411,7 @@ function AppointmentsApp(el) {
         },
         renderAppointments: function(c, response) {
             
-            //console.log(c);
+            console.log(c);
             this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
 
             if (c.length) {
@@ -454,9 +460,12 @@ function AppointmentsApp(el) {
         monthClicked: function(e) {
 
             console.log(this);
+            this.$('#appointments-table').html('<tr><td bgcolor="white" border="0" align="center">loading appointments, please wait.</tr></td>'); // clean the appointments table
+
             $('#date_from').val(moment().subtract(1,'M').format("YYYY-MM-DD"));
             $('#date_to').val(moment().add(1,'d').format("YYYY-MM-DD"));
             this.reloadAppointments();
+
         },
         weekClicked: function() {
             $('#date_from').val(moment().subtract(1,'w').format("YYYY-MM-DD"));
