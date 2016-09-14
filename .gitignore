@@ -1,6 +1,0 @@
-.htaccess
-.htpasswd
-php/db.php
-admin/.htaccess
-admin/.htpasswd
-.DS_Store
