@@ -822,22 +822,41 @@ var ClientsAppView = Backbone.View.extend({
         }
         //    .each(this.addClient, this);
         */
-        if ($('#firstname_lookup').val().length > 0 || $('#lastname_lookup').val().length > 0) {
+        this.firstname_filter = $('#firstname_lookup').val();
+        this.lastname_filter = $('#lastname_lookup').val();
+        if (this.firstname_filter.length > 0 || this.lastname_filter.length > 0) {
+
+            this.removeAll();
+
             this.clientsCollection.url = '../php/clientsJS.php/search/';
-            this.clientsCollection.fetch({data: {firstname: $('#firstname_lookup').val(), lastname: $('#lastname_lookup').val()}, 
+            this.clientsCollection.fetch({data: {firstname: this.firstname_filter, lastname: this.lastname_filter}, 
                                      reset: true,
                                      success: function() {
                //console.log('got the clients for page ' + clientsCollection.page);
-                router.navigate('clients/search/');
+                //router.navigate('clients/search/');
             }});
         }
         
     },
     cancelSearch: function() {
         console.log('canceling');
+        this.removeAll();
+
+        this.firstname_filter = "";
+        this.lastname_filter = "";
+
+        var self = this;
         this.clientsCollection.url = '../php/clientsJS.php/';
-        router.navigate('clients/p' + this.page, {trigger: true});
+        //router.navigate('clients/p' + this.page, {trigger: true});
         //this.addAll();
+        this.clientsCollection.fetch({data: {page: this.page, per_page: 25}, 
+                                 reset: true,
+                                 success: function() {
+           //console.log('got the clients for page ' + clientsCollection.page);
+            self.page = self.clientsCollection.page;
+            router.navigate('clients/p' + self.page, {trigger: false});
+        }});
+
     },
     addClient: function(clientModel){
         //console.log('in addClient() .. clientModel says ' + JSON.stringify(clientModel.toJSON()));
@@ -858,13 +877,14 @@ var ClientsAppView = Backbone.View.extend({
         console.log('adding all.. page is ' + this.page)
         if (this.page == 1) {
             prevpageclasses = 'firstpage';
-        } else if (this.page == this.clientsCollection.total_pages) {
+        }
+        if (this.page == this.clientsCollection.total_pages) {
             nextpageclasses = 'lastpage';
         }
         
         
         this.removeAll();
-        this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
+        this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses, firstname_filter: this.firstname_filter, lastname_filter: this.lastname_filter})); // clean the clients table
         this.clientsCollection.each(this.addClient, this);
         this.$('#clients-list').append(_.template($('#clients-footer').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
 

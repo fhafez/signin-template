@@ -386,6 +386,7 @@ $app->put('/:id', function ($id) use ($app) {
                                         Clients c, Appointments a
                                     LEFT JOIN Staff s ON a.staff_id = s.id 
                                     WHERE 
+                                        a.client_id = c.id AND
                                         a.id = " . $id;
 
         $result = query($conn, $query_str);

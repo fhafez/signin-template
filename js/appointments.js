@@ -181,7 +181,7 @@ function AppointmentsApp(el) {
             console.log(this);
 
             this.first_record = 1;
-            this.page_size = 1000;
+            this.page_size = 3000;
             this.page = 1;
             
             this.listenTo(this, 'sync', this.syncComplete);
