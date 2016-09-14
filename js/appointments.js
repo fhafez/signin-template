@@ -54,7 +54,7 @@ function AppointmentsApp(el) {
 
         },
         render: function() {
-            console.log('rendering AppointmentView');
+           //console.log('rendering AppointmentView');
 
             this.$el.html(this.template(this.model.toJSON()));
             return this;
@@ -71,7 +71,7 @@ function AppointmentsApp(el) {
             //console.log(this.model);
             //console.log("new target value is " + s.target.value);
             //this.model.attributes.staff.staff_id = s.target.value;
-            console.log(this.model.staff);
+           //console.log(this.model.staff);
 
             this.model.set('staff', { 'staff_id': s.target.value });
 
@@ -178,7 +178,7 @@ function AppointmentsApp(el) {
         */
         initialize: function(models, options) {
 
-            console.log(this);
+           //console.log(this);
 
             this.first_record = 1;
             this.page_size = 3000;
@@ -231,8 +231,8 @@ function AppointmentsApp(el) {
         },
         syncComplete: function() {
 
-            console.log(this);
-            console.log('appointmentsCollection sync completed!');
+           //console.log(this);
+           //console.log('appointmentsCollection sync completed!');
             var from_record = this.first_record;
             var to_record = Math.min(this.first_record + this.page_size, this.length);
             if (this.length) {
@@ -270,7 +270,7 @@ function AppointmentsApp(el) {
         template: _.template($('#appointmentsapp-template').html()),
         initialize: function() {
 
-            console.log(this);
+           //console.log(this);
 
             this.displayedAppts = this.displayedAppts || [];
 
@@ -339,12 +339,12 @@ function AppointmentsApp(el) {
                 var d = this.displayedAppts.pop();
                 this.appointmentsCollection.remove(d.model);
                 d.remove();
-                console.log('removed one');
+               //console.log('removed one');
             }
         },
         addAll: function() {
-           console.log('addall() called from ');
-           console.log(this);
+          //console.log('addall() called from ');
+          //console.log(this);
             
             this.removeAppts();
             this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
@@ -360,7 +360,7 @@ function AppointmentsApp(el) {
                 var date_from_filter = $('#date_from').val();
                 var date_to_filter = $('#date_to').val();
                 
-               console.log('date_from_filter is ' + date_from_filter);
+              //console.log('date_from_filter is ' + date_from_filter);
                 
                 var date_from = moment(date_from_filter, "YYYY-MM-DD").subtract(1,'d');
                 var date_to = moment(date_to_filter, "YYYY-MM-DD");
@@ -402,8 +402,8 @@ function AppointmentsApp(el) {
                         }
                     });
                     
-                    console.log(ac);
-                    console.log(this.appointmentsCollection);
+                   //console.log(ac);
+                   //console.log(this.appointmentsCollection);
 
                     */
                     //this.addAppointment(ac);
@@ -422,7 +422,7 @@ function AppointmentsApp(el) {
         },
         renderAppointments: function(c, response) {
             
-            console.log(c);
+           //console.log(c);
             this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
 
             if (c.length) {
@@ -471,7 +471,7 @@ function AppointmentsApp(el) {
         },
         monthClicked: function(e) {
 
-            console.log(this);
+           //console.log(this);
             this.$('#appointments-table').html('<tr><td bgcolor="white" border="0" align="center">loading appointments, please wait.</tr></td>'); // clean the appointments table
 
             $('#date_from').val(moment().subtract(1,'M').format("YYYY-MM-DD"));

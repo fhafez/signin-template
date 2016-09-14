@@ -770,8 +770,6 @@ var ClientsAppView = Backbone.View.extend({
        console.log('clientsappview render() called');
         console.log($('#page_counter'));
        $('#page_counter').removeClass('pleasewait-showing');
-       $('#page_counter').addClass('pleasewait-hidden');
-
         return this;
     },
     events: {
@@ -871,6 +869,8 @@ var ClientsAppView = Backbone.View.extend({
     addAll: function(){
        //console.log('in addall() ' + clientsCollection.length);
 
+
+
         var prevpageclasses = 'prevpage';
         var nextpageclasses = 'nextpage';
         
@@ -882,13 +882,19 @@ var ClientsAppView = Backbone.View.extend({
             nextpageclasses = 'lastpage';
         }
         
+        console.log('waiting to load');
         
         this.removeAll();
         this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses, firstname_filter: this.firstname_filter, lastname_filter: this.lastname_filter})); // clean the clients table
+
+
         this.clientsCollection.each(this.addClient, this);
         this.$('#clients-list').append(_.template($('#clients-footer').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses})); // clean the clients table
 
-       //console.log('finished addall()');
+        $('#page_counter').removeClass('pleasewait-showing');
+        $('#loading_msg').removeClass('pleasewait-showing');
+
+        console.log('finished addall()');
     },
     removeAll: function() {
         //this.$('#clients-list').html('');

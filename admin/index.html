@@ -91,6 +91,7 @@
     <script type='text/template' id='clientsapp-template'>
         <div class='section-title'><h2>Clients</h2></div>
         <div id='bufferspace' height='20px'>&nbsp;</div>
+        <div><label id='loading_msg' class='pleasewait-showing'>loading clients, please wait...</label></div>
         <div id="clientdetails" class="clientsapp" align='center'></div>
         <div id='bufferspace' height='20px'>&nbsp;</div>
         <div class='outer-clients-content' id='clients-list'>
@@ -128,8 +129,7 @@
     </script>
     <script type='text/template' id='clients-header'>
             <div id='clients-header-bar' class='inner-clients-content'>
-                <div>loading clients, please wait.</div>
-                <div id='page_counter' class='pleasewait-showing'>PAGE <%=thispage%> of <%=totalpages%></div>
+                <div><label id='page_counter' class='pleasewait-showing'>PAGE <%=thispage%> of <%=totalpages%></label></div>
             </div>
             <div id='uppernavsearchbar' class='inner-clients-content'>
                 <div class='<%=prevpageclasses%>' id='upperprevpage'><label class='clickable'>LAST 25</label></div>

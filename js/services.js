@@ -58,13 +58,13 @@ var ServiceView = Backbone.View.extend({
         'keypress #description' : 'updateOnEnter'
     },
     edit: function(e) {
-        console.log('editing service');
+       //console.log('editing service');
         this.$el.removeClass("view");
         this.$el.addClass("editing");
     },
     save: function(e) {
-        console.log('saving service');
-        console.log(this.$("#description").val());
+       //console.log('saving service');
+       //console.log(this.$("#description").val());
 
         this.model.set({description: this.$("#description").val()});
         if (this.model.isValid) {

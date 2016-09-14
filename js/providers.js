@@ -54,13 +54,13 @@ var ProviderView = Backbone.View.extend({
         'keypress #description' : 'updateOnEnter'
     },
     edit: function(e) {
-        console.log('editing provider');
+       //console.log('editing provider');
         this.$el.removeClass("view");
         this.$el.addClass("editing");
     },
     save: function(e) {
-        console.log('saving provider');
-        console.log(this.$("#description").val());
+       //console.log('saving provider');
+       //console.log(this.$("#description").val());
 
         this.model.set({description: this.$("#description").val()});
         if (this.model.isValid) {

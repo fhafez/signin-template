@@ -53,8 +53,8 @@ var SigninDetailedModel = Backbone.Model.extend({
     },
     
     parse: function(response, xhr) {
-        console.log("parse called!");
-        console.log(xhr);
+       //console.log("parse called!");
+       //console.log(xhr);
         return response;
     }
     
@@ -120,7 +120,7 @@ var SigninServicesView = Backbone.View.extend({
         
         if (!this.model.selected) {
             this.model.selected = true;
-            console.log('adding a service ' + JSON.stringify(this.model.toJSON));
+           //console.log('adding a service ' + JSON.stringify(this.model.toJSON));
             
             // add the selected model to the services array
             signinappview.signin_model.attributes.services.push(this.model);
@@ -401,7 +401,7 @@ var SigninAppView = Backbone.View.extend({
                             // record the appointment
                             var data_str = sigval.jSignature('getData','svgbase64');
                             
-                            console.log(this);
+                           //console.log(this);
                             
                             //console.log(data_str[1]);
                             self.signin_model.attributes['sig'] = data_str[1];
@@ -413,7 +413,7 @@ var SigninAppView = Backbone.View.extend({
                             self.signin_details.fetch({
                                 data: {cid: matchingPatients.at(0).id},
                                 success: function() {
-                                    console.log(self.signin_details);
+                                   //console.log(self.signin_details);
                                 
                                     // if client has services then list them and allow him/her to select today's services
                                     if (self.signin_details.length > 0) {
@@ -430,7 +430,7 @@ var SigninAppView = Backbone.View.extend({
                                         // client has no services, just save the appointment
                                         var committing = self.commitSignin.bind(self);
                                         committing();
-                                        console.log(self.signin_model);
+                                       //console.log(self.signin_model);
                                         
                                     }
                                     $('#buttonscontainer').removeClass('hiddensignincontainer');
