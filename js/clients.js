@@ -627,11 +627,11 @@ var ClientView = Backbone.View.extend({
     addnewservice: function() {
        //console.log('add new service clicked! ' + this.model.id);
         
-        service_id = $('#new-client-services' + this.model.id + ' option:selected').val();
-        provider_id = $('#new-client-providers' + this.model.id + ' option:selected').val();
-        remaining_appts = $('#remaining_appts' + this.model.id).val();
-        active_on = $('#active_on' + this.model.id).val();
-        mva = $('#mva' + this.model.id + ' option:selected').val();
+        var service_id = $('#new-client-services' + this.model.id + ' option:selected').val();
+        var provider_id = $('#new-client-providers' + this.model.id + ' option:selected').val();
+        var remaining_appts = $('#remaining_appts' + this.model.id).val();
+        var active_on = $('#active_on' + this.model.id).val();
+        var mva = $('#mva' + this.model.id + ' option:selected').val();
         
         var self = this;
         
@@ -737,8 +737,8 @@ var ClientsAppView = Backbone.View.extend({
     template: _.template($('#clientsapp-template').html()),
     initialize: function(options) {
         
-        console.log('init in clientsappview');
-        console.log($('#page_counter'));
+       //console.log('init in clientsappview');
+       //console.log($('#page_counter'));
 
 
         this.clientsCollection = new ClientsCollection();
@@ -746,7 +746,7 @@ var ClientsAppView = Backbone.View.extend({
         
         /*
         clientsCollection.on('fetch', function() { 
-            console.log('loading clients...');
+           //console.log('loading clients...');
             this.$el.html("loading...");
         }, this);
         */
@@ -767,8 +767,8 @@ var ClientsAppView = Backbone.View.extend({
 
     },
     render: function() {
-       console.log('clientsappview render() called');
-        console.log($('#page_counter'));
+      //console.log('clientsappview render() called');
+       //console.log($('#page_counter'));
        $('#page_counter').removeClass('pleasewait-showing');
         return this;
     },
@@ -837,7 +837,7 @@ var ClientsAppView = Backbone.View.extend({
         
     },
     cancelSearch: function() {
-        console.log('canceling');
+       //console.log('canceling');
         this.removeAll();
 
         this.firstname_filter = "";
@@ -874,7 +874,7 @@ var ClientsAppView = Backbone.View.extend({
         var prevpageclasses = 'prevpage';
         var nextpageclasses = 'nextpage';
         
-        console.log('adding all.. page is ' + this.page)
+       //console.log('adding all.. page is ' + this.page)
         if (this.page == 1) {
             prevpageclasses = 'firstpage';
         }
@@ -882,7 +882,7 @@ var ClientsAppView = Backbone.View.extend({
             nextpageclasses = 'lastpage';
         }
         
-        console.log('waiting to load');
+       //console.log('waiting to load');
         
         this.removeAll();
         this.$('#clients-list').html(_.template($('#clients-header').html())({thispage: this.clientsCollection.page, totalpages: this.clientsCollection.total_pages, prevpageclasses: prevpageclasses, nextpageclasses: nextpageclasses, firstname_filter: this.firstname_filter, lastname_filter: this.lastname_filter})); // clean the clients table
@@ -894,7 +894,7 @@ var ClientsAppView = Backbone.View.extend({
         $('#page_counter').removeClass('pleasewait-showing');
         $('#loading_msg').removeClass('pleasewait-showing');
 
-        console.log('finished addall()');
+       //console.log('finished addall()');
     },
     removeAll: function() {
         //this.$('#clients-list').html('');
@@ -904,7 +904,7 @@ var ClientsAppView = Backbone.View.extend({
             var d = this.displayedClients.pop();
             this.clientsCollection.remove(d.model);
             d.remove();
-            console.log('removed one');
+           //console.log('removed one');
            //console.log(displayedClients.pop().render().el);
         }
         
