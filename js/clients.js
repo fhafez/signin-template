@@ -923,9 +923,9 @@ var ClientsAppView = Backbone.View.extend({
         }
         
         // store values in global variables
-        firstname_val = this.input_firstname.val().trim();
-        lastname_val = this.input_lastname.val().trim();
-        dob_val = this.input_dob.val().trim();
+        var firstname_val = this.input_firstname.val().trim();
+        var lastname_val = this.input_lastname.val().trim();
+        var dob_val = this.input_dob.val().trim();
 
         var client = new ClientModel();
         client.set('firstname', firstname_val);
@@ -939,7 +939,7 @@ var ClientsAppView = Backbone.View.extend({
                 success: function() {
                     
                     // create a model inside clientsCollection
-                    clientsCollection.add(client, {wait: true});
+                    self.clientsCollection.add(client, {wait: true});
 
                     self.input_firstname.val(''); // clean input box
                     self.input_lastname.val(''); // clean input box
