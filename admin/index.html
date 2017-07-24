@@ -41,9 +41,11 @@
                 <% //console.log("staff firstname is " + staff_firstname); %>
                 <select id='staff' class='dropdown'>
                 <%_.forEach(this.staffCollection.toArray(), function(s,i) { %>
-                    <option <%if (staff.staff_firstname === s.get('firstname') && staff.staff_lastname === s.get('lastname')) { %>selected<% } %> value=<%=s.get('id') %>>
-                    <%= s.get('firstname') %>
-                    </option>
+                    <%if (s.get('firstname') != 'all') { %>
+                        <option <%if (staff.staff_firstname === s.get('firstname') && staff.staff_lastname === s.get('lastname')) { %>selected<% } %> value=<%=s.get('id') %>>
+                        <%= s.get('firstname') %>
+                        </option>
+                    <% } %>
                 <% }); %>
                 </select>
             </div>
@@ -90,11 +92,7 @@
                 <select id='staff' class='dropdown'>
                 <%_.forEach(this.staffCollection.toArray(), function(s,i) { %>
                     <option value=<%=s.get('id') %>>
-                    <%if (s.get('firstname') == 'nobody') { %>
-                        ---
-                    <%} else { %>
                         <%= s.get('firstname') %>
-                    <% } %>
                     </option>
                 <% }); %>
                 </select>

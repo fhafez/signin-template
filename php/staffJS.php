@@ -50,7 +50,7 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
     }
 
     if ($cid == -1) {
-        $result = query($conn, "SELECT * FROM Staff ORDER BY ID DESC");
+        $result = query($conn, "SELECT * FROM Staff ORDER BY ID");
 
     } else {
         $result = query($conn, "SELECT * FROM Staff WHERE ID=" . $cid);

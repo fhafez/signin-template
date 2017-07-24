@@ -145,7 +145,7 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
             $query_str .= " AND c.dob = '" . $client_dob . "'";
         }
 
-        if (strlen($staff_id) > 0) {
+        if (strlen($staff_id) > 0 && $staff_id != '1') {
             $query_str .= " AND a.staff_id = " . $staff_id;
         }
 

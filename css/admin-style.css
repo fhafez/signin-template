@@ -633,6 +633,21 @@
       right:0px;
       /* height: 300px; */
   }
+  .dropdown {
+        position: relative;
+        background-color: ghostwhite;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        text-align: left;
+        padding-top: 5px;
+        padding-left: 5px;
+        font-family: "Helvetica Neue", sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+
+  }
   .service-footer {
       width: inherit;
       position: fixed;
