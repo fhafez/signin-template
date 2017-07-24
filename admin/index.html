@@ -6,9 +6,12 @@
     <script src="../js/libs/underscore-min.js"></script>
     <script src="../js/libs/backbone-min.js"></script>
     <script src="../js/libs/moment.min.js"></script>
+    <script src="../js/libs/chartist/dist/chartist.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../js/fullcalendar-2.6.1/fullcalendar.min.css"/>
     <link rel="stylesheet" type="text/css" href="../css/admin-style.css"/>
-    
+
+    <link rel="stylesheet" href="../js/libs/chartist/dist/chartist.min.css"/>    
+
     <div id='errordiv'></div>
     <!-- APPOINTMENTS TEMPLATES -->
     <script type='text/template' id='client-service-template'>
@@ -55,15 +58,46 @@
             <div class="filter-right">
                 <label class="filter-heading">Filters</label>
             </div>
-            <div class="filter-left">
+            <!--div class='filter-right'>fill in any of the fields below and then click on one of 'day', 'week', 'month' or complete the date range</div-->
+            <div class='filter-category'>
+                <div class="filter-right">
+                    <label class="filter-heading">Search By Patient</label>
+                </div>
                 <label><input id="firstname_filter" type="text" placeholder='firstname' /></label>
-                <label><input id="lastname_filter" type="text" placeholder='lastname'/></label>&nbsp;&nbsp;&nbsp;
+                <label><input id="lastname_filter" type="text" placeholder='lastname'/></label>
+                <br>date of birth
+                <div id="dob_filter" class="dobfield">
+                    <input id="dob_year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/<input id="dob_month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/<input id="dob_day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
+                </div>
+            </div>
+
+            <div class='filter-category'>
+                <div class="filter-right">
+                    <label class="filter-heading">Search Between Dates</label>
+                </div>
                 <label for="date_from">from </label><input id="date_from" type="date" placeholder='YYYY-MM-DD' style='width:160px;'/>
                 <label for="date_to">to </label><input id="date_to" type="date" placeholder='YYYY-MM-DD' style='width:160px;'/>
                 <br>
                 <a class='btn' id='day'>today</a>
                 <a class='btn' id='week'>week</a>
                 <a class='btn' id='month'>month</a>
+            </div>
+
+            <div class='filter-category'>
+                <div class="filter-right">
+                    <label class="filter-heading">Search By Staff</label>
+                </div>
+                <select id='staff' class='dropdown'>
+                <%_.forEach(this.staffCollection.toArray(), function(s,i) { %>
+                    <option value=<%=s.get('id') %>>
+                    <%if (s.get('firstname') == 'nobody') { %>
+                        ---
+                    <%} else { %>
+                        <%= s.get('firstname') %>
+                    <% } %>
+                    </option>
+                <% }); %>
+                </select>
             </div>
         </div>
         <div id='bufferspace' height='20px'>&nbsp;</div>
@@ -116,6 +150,15 @@
         <div id='client-details<%= id %>' class='client-details-hide'>
         </div>
         <div id='add-new-client-services<%= id %>' class='client-details-hide'>
+            <div>
+            <div class='client-service-data-header' style='width:50px'>&nbsp;</div>
+            <div class='client-service-data-header' style='width:195px'>Coverage</div>
+            <div class='client-service-data-header' style='width:195px'>Service</div>
+            <div class='client-service-data-header' style='width:30px'>Num</div>
+            <div class='client-service-data-header' style='width:155px'>Active On</div>
+            <div class='client-service-data-header' style='width:50px'>MVA</div>
+            <div class='client-service-data-header' style='width:70px'>&nbsp;</div>
+            </div>
             <div class='client-service-data' style='width:50px'>&nbsp;</div>
             <select id='new-client-services<%= id %>' class='client-service-data' style='display:inline-block; width:200px;'>
             </select>
@@ -246,6 +289,7 @@
         <div id='printheader'>Local Physio<br>Home</div>
         <div id="appspace" class="clientsapp" align='center'><p>loading...</p>            
         </div>
+        <!--div class="ct-chart ct-perfect-fourth wrapper" style="width: 50%; height: 50%; left: 0px; right: 0px;"></div-->
     </section>
     <script src="../js/errors.js"></script>
     <script src="../js/clients.js"></script>
@@ -275,5 +319,20 @@
         </div>
         <div class='copyright'>Copyright &copy; 2016 by Fadi Hafez. All rights reserved.</div>
     </footer>
+    <!--script type="application/javascript">
+        var data = {
+            // A labels array that can contain any sort of values
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            // Our series array that contains series objects or in this case series data arrays
+            series: [
+                [5, 2, 4, 2, 0]
+            ]
+        };
+
+        // Create a new line chart object where as first parameter we pass in a selector
+        // that is resolving to our chart container element. The Second parameter
+        // is the actual data object.
+        new Chartist.Line('.ct-chart', data);
+    </script-->
 </body>
 </html>

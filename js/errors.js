@@ -1,3 +1,5 @@
+"use strict";
+
 var ErrorsView = Backbone.View.extend({
     id: 'errordiv',
     tagName: 'div',

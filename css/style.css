@@ -7,7 +7,9 @@ body {
     background: linear-gradient(whitesmoke, white); /* Standard syntax */
     color:#007ACC;
     text-align:left;
-    padding:5px;
+    padding:0;
+    margin:0;
+    height: 100%;
     font-family: "anivers", Helvetica, Arial, sans-serif;
 }
 p {
@@ -201,8 +203,9 @@ nav {
 header {
     background: #47476B;
     position: fixed;
-    background-image: url('../images/oc-chiro.jpg');
+    background-image: url('../images/yourlogo.png'), linear-gradient(ivory, whitesmoke);
     background-repeat: no-repeat;
+    background-size: contain;     
     top: 0;
     left: 0;
     right: 0;

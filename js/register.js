@@ -24,8 +24,8 @@ var RegisterModel = Backbone.Model.extend({
         }
         
         // if the date has been entered then confirm its a valid date
-        if (attrs.dob && !moment(attrs.dob, 'YYYY-MM-DD', true).isValid()) {
-            //console.log('not a valid date ' + attrs.dob);
+        if (attrs.dob && !moment(attrs.dob, 'YYYY-MM-DD', true).isValid() && !moment(attrs.dob, 'YYYY-M-DD', true).isValid() && !moment(attrs.dob, 'YYYY-M-D', true).isValid())  {
+            // console.log('not a valid date ' + attrs.dob);
             return "Birthdate is not a date";
         }
         
@@ -64,14 +64,51 @@ var RegisterAppView = Backbone.View.extend({
         
     },
     events: {
-        //'keypress #lastname': 'updateOnEnter',
+        'keypress #lastname': 'updateOnEnter',
+        'keypress #firstname': 'updateOnEnter',
+        'keypress #dob': 'updateOnEnter',
         'click #registerbtn': 'register',
     },
     updateOnEnter: function(e) {
+        //console.log(e);
+        
         if (e.which === 13) {
-            this.register();
-            e.currentTarget.blur();
+
+            switch (e.target.id) {
+
+                case 'firstname':
+                    $('#lastname').focus();
+                    break;
+
+                case 'lastname':
+                    $('#year').focus();
+                    break;
+
+                case 'year':
+                    $('#month').focus();
+                    break;
+
+                case 'month':
+                    $('#day').focus();
+                    break;
+
+                case 'day':
+                    this.register(e);
+                    break;
+
+            }
+
         }
+        
+    },
+    spinnerTemplate: '<img src="images/spinner.gif" height="100">',
+    showSpinner: function() {
+        //console.log('showing spinner');
+        $('#registerbuttonscontainer').html(this.spinnerTemplate);
+    },
+    hideSpinner: function() {
+        //console.log('hiding spinner');
+        $('#registerbuttonscontainer').html(_.template($('#buttonscontainer-template').html()));
     },
     register: function(e) {
         //console.log('signin clicked');
@@ -96,6 +133,8 @@ var RegisterAppView = Backbone.View.extend({
         if (registerModel.isValid()) {
             var registerView = new RegisterView({model: registerModel });
             var self = this;
+
+            this.showSpinner();
             
             matchingPatients = new MatchingPatients([], {firstname: firstname, lastname: lastname, dob: dob});
             //console.log(this);
@@ -111,23 +150,27 @@ var RegisterAppView = Backbone.View.extend({
                     //console.log('success ' + JSON.stringify(matchingPatients.toJSON()));
                     if (matchingPatients.length > 0) {
                         
+                        self.hideSpinner();
                         errorsdialog.show('A patient by that name and date of birth already exists', true);
                         return;
                         
-                    } else if (e.type === 'click') {                        
+                    } else if (e.type === 'click' || e.type === 'keypress') {                        
                         
                         registerModel.save({},{
                             success: function() {
+                                self.hideSpinner();
                                 self.reportSuccess("Registration complete.  Please sign in now");
                             },
                             error: function() {
                                 //console.log(this.errorThrown);
+                                self.hideSpinner();
                                 errorsdialog.show('issue connecting to database', true);
                             }
                         });
                     }
                 },
                 error: function() {
+                    self.hideSpinner();
                     errorsdialog.show('issue connecting to database', true);
                     return;
                 }
@@ -145,7 +188,7 @@ var RegisterAppView = Backbone.View.extend({
     reportSuccess: function(message) {
         //document.resetForm();
         //errorsdialog.show(message, '#00AAFF');
-        errorsdialog.show(message, false);
+        errorsdialog.show(message, false, "index_ls.html");
         document.forms["registerform"].reset();
     },
 });

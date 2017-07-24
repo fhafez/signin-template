@@ -5,6 +5,8 @@
     <script src="libs/underscore-min.js"></script>
     <script src="libs/backbone-min.js"></script>
     <script src="libs/moment-min.js"></script>
+    <script src="libs/modernizr.js"></script>
+
     <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
 
@@ -188,6 +190,14 @@
     <script type='text/template' id='services-template'>
             <div class="radiodiv"><label><%= provider_name %>: <%= service_name %> (<%= remaining_appts %> appointments remaining)</label></div>
     </script>
+    <script type='text/template' id='buttonscontainer-template'>
+        <div id='registerbtn' class='buttonsls' align=center>
+            <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+        </div>
+        <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
+            <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+        </div>    
+    </script>
     <div id='errordiv'></div>
 </head>
 <body>
@@ -206,7 +216,7 @@
                 <input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
             </div>
         </div>
-        <div class="registercontainer" align=center>
+        <div id="registerbuttonscontainer" class="registercontainer" align=center>
             <div id='registerbtn' class='buttonsls' align=center>
                 <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
             </div>
@@ -216,9 +226,27 @@
         </div>
         <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
     </form>
-    <script src="libs/modernizr.js"></script>
     <script src="libs/errors.js"></script>
     <script src="js/register.js"></script>
+
+    <script type="text/javascript">
+/*
+        for (let i=0; i<50; i++) {
+           (function(ind) {
+               setTimeout(function(){
+                    console.log('running ' + i);
+
+                    $('#firstname').val('stuart' + i);
+                    $('#lastname').val('little' + i);
+                    $('#year').val('1999');
+                    $('#month').val('11');
+                    $('#day').val('11');
+                    $('#registerbtn').click();                        
+            }, 500 + (1000 * ind));
+           })(i);
+        }
+*/
+    </script>    
 
 </body>
 </html>

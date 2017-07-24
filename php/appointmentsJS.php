@@ -84,9 +84,10 @@ class SimpleAppointment {
 function query($conn, $sql_query) {
 
     $result =  $conn->query($sql_query);
+
     if ($result == FALSE) {
         printf("DB Query Failure %s\n", $conn->error);
-        exit();
+        throw new Exception('DB Query Error ' . $conn->error);
     }
     
     return $result;
@@ -104,61 +105,83 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
     $page_size = $app->request()->params('page_size');
     $client_fname = $app->request()->params('firstname');
     $client_lname = $app->request()->params('lastname');
-    
+    $client_dob = $app->request()->params('dob');
+    $staff_id = $app->request()->params('staff_id');
+
     $rfr = ($page - 1) * $page_size;
     
     include "db.php";
+
+    try {
  
-    $conn = new mysqli($servername, $username, $password, $dbname);
+        $conn = new mysqli($servername, $username, $password, $dbname);
 
-   if ($conn->connect_errno) {
-        printf("DB Connection Failure %s\n", $conn->connect_error);
-        exit();
-    }
+       if ($conn->connect_errno) {
+            printf("DB Connection Failure %s\n", $conn->connect_error);
+            exit();
+        }
 
-    $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva,
-                                c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
-                                DATE_FORMAT(a.signout_date, '%e-%M-%Y  %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
-                                FROM 
-                                    Clients c, Appointments a
-                                LEFT JOIN Staff s ON a.staff_id = s.id 
-                                WHERE 
-                                    a.client_id = c.id
-                                    AND a.appt_date >= date('" . $dtfrom . "') 
-                                    AND a.appt_date <= date('" . $dtto . "')";
+        $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva, staff_id,
+                                    c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
+                                    DATE_FORMAT(a.signout_date, '%e-%M-%Y %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
+                                    FROM 
+                                        Clients c, Appointments a
+                                    LEFT JOIN Staff s ON a.staff_id = s.id 
+                                    WHERE 
+                                        a.client_id = c.id
+                                        AND a.appt_date >= date('" . $dtfrom . "') 
+                                        AND a.appt_date <= date('" . $dtto . "')";
 
 
-    if (strlen($client_fname) > 0) {
-        $query_str .= " AND lower(c.firstname) = '" . $client_fname . "'";
-    }
+        if (strlen($client_fname) > 0) {
+            $query_str .= " AND lower(c.firstname) = '" . $client_fname . "'";
+        }
 
-    if (strlen($client_lname) > 0) {
-        $query_str .= " AND lower(c.lastname) = '" . $client_lname . "'";
-    }
+        if (strlen($client_lname) > 0) {
+            $query_str .= " AND lower(c.lastname) = '" . $client_lname . "'";
+        }
 
-    if ($cid != -1) {
-        $query_str .= " AND c.id = " . $cid;
-    }
+        if (strlen($client_dob) > 0) {
+            $query_str .= " AND c.dob = '" . $client_dob . "'";
+        }
 
-    $query_str .= " ORDER BY a.appt_date LIMIT " . $rfr . "," . $page_size;
+        if (strlen($staff_id) > 0) {
+            $query_str .= " AND a.staff_id = " . $staff_id;
+        }
 
-    $result = query($conn, $query_str);
+        if ($cid != -1) {
+            $query_str .= " AND c.id = " . $cid;
+        }
 
-    $appointments = [];
-    
-    while ($row = $result->fetch_assoc()) {
-        $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
-        array_push($appointments, $a->toJSON());
-    }    
-    
-    $app->response['Content-Type'] = 'application/json';
-    echo json_encode($appointments);
+        $query_str .= " ORDER BY a.appt_date LIMIT " . $rfr . "," . $page_size;
+
+        $result = query($conn, $query_str);
+
+        $appointments = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
+            array_push($appointments, $a->toJSON());
+        }    
+        
+        $app->response['Content-Type'] = 'application/json';
+        echo json_encode($appointments);
+
+    } catch (Exception $e) {
+
+        $app->response()->status(500);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+
+    } //finally {
 
     $conn->close();
 
+    //}
+
+
 });
 
-
+/*
 $app->get('/signin/', function () use ($app) {
         
     include "db.php";
@@ -219,59 +242,80 @@ $app->put('/signin/:aid', function ($aid=-1) use ($app) {
     $conn->close();
 
 });
-
+*/
 
 //$app->delete('/hello/:id', function($id) {
 $app->delete('/:id', function ($id) use ($app) {    
 
     include "db.php";
 
+    $DEBUG = TRUE;
+
+    $auth_user = $app->request->headers->get('php-auth-user');
+
+//    var_dump($app->request->headers);
+
     if (ctype_digit((string)$id)) {
-        $conn = new mysqli($servername, $username, $password, $dbname);
 
-       if ($conn->connect_errno) {
-            printf("DB Connection Failure %s\n", $conn->connect_error);
-            exit();
-        }
+        try {
 
-        $conn->autocommit(FALSE);
-        //$result = query($conn,"START TRANSACTION");
-        
-        $conn->query('START TRANSACTION');
-        $conn->query("INSERT INTO Del_Appts select * from Appointments where id=" . $id);
-        if ($conn->errno > 0) {
-            echo "Error: " + $conn->errno;
-            $app->response()->status(410);
-            $conn->close();
-            return;
-        }
-        
-        $conn->query("DELETE FROM Appointments where id=" . $id);
-        if ($conn->errno > 0) {
-            echo "Error: " + $conn->errno;
-            $app->response()->status(411);
-            $conn->close();
-            return;
-        }
+            $conn = new mysqli($servername, $username, $password, $dbname);
 
-        $conn->query('COMMIT');
+           if ($conn->connect_errno) {
+                printf("DB Connection Failure %s\n", $conn->connect_error);
+                exit();
+            }
 
-        if ($conn->errno) {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+            $conn->autocommit(FALSE);
+            
+            $conn->query('START TRANSACTION');
+            //$conn->begin_transaction();
+
+            $conn->query("INSERT INTO Del_Appts SELECT * FROM Appointments WHERE id=" . $id);
+            
+            $conn->query("DELETE FROM Appointments WHERE id=" . $id);
+
+            if ($conn->affected_rows == 1) {
+                $conn->query("INSERT INTO Logs (severity, system, errorcode, description, dt) 
+                              VALUES ('INFO', 'appoinmentsJS.php->delete', 200, 'AppointmentID " . $id . " deleted by user " . $auth_user . "', now())");
+            } else {
+
+                if ($DEBUG) {
+                    throw new Exception('failed to delete ' . $id . '. ' . $conn->errno . ': ' . $conn->error);
+                } else {
+                    throw new Exception('failed to delete ' . $id);
+                }
+
+            }
+
+            $conn->query('COMMIT');
+            //$conn->commit();
+
+        } catch (Exception $e) {
+
             $conn->rollBack();
-            echo $conn->errno;
-            $app->response()->status(412);
-        } else {
-            $app->response()->status(200);
-        }
+            $app->response()->status(500);
+            $app->response()->header('X-Status-Reason', $e->getMessage());
+
+        } //finally {
 
         $conn->close();
+
+        //}
+
+
     } else {
+
         echo "{error: '$id non numeric'}";
         $app->response()->status(500);
+        $app->response()->header('X-Status-Reason', 'id is non numeric');
+
     }
 });
 
-
+/*
 $app->post('/hello/', function () use ($app) {
 
     include "db.php";
@@ -323,6 +367,7 @@ $app->post('/hello/', function () use ($app) {
     
     
 });
+*/
 
 $app->put('/:id', function ($id) use ($app) {
 
@@ -381,7 +426,7 @@ $app->put('/:id', function ($id) use ($app) {
 
         $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva,
                                     c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
-                                    DATE_FORMAT(a.signout_date, '%e-%M-%Y  %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
+                                    DATE_FORMAT(a.signout_date, '%e-%M-%Y %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
                                     FROM 
                                         Clients c, Appointments a
                                     LEFT JOIN Staff s ON a.staff_id = s.id 

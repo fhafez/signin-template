@@ -162,6 +162,9 @@ var OneServiceView = Backbone.View.extend({
     quit: function() {
         
        //console.log('quitting oneserviceview');
+       this.stopListening();
+       this.unbind();
+       this.remove();
         
     }
     
@@ -218,7 +221,9 @@ var AllServicesView = Backbone.View.extend({
         this.unbind();
         this.serviceViews = null;
         this.stopListening();
+        this.collection.reset();
         this.collection.remove();
+        this.collection = null;
         this.remove();
 
     }
@@ -281,7 +286,9 @@ var AllProvidersView = Backbone.View.extend({
         this.providerViews = null;
         this.unbind();
         this.stopListening();
+        this.collection.reset();
         this.collection.remove();
+        this.collection = null;
         this.remove();
         
     }
@@ -402,7 +409,7 @@ var ClientServicesView = Backbone.View.extend({
         }
         
         //this.$el.html(this.template());
-        
+
         // if the details are not hidden then hide them
         if ($('#client-details' + self.model.id).hasClass('client-details')) {
             
@@ -423,28 +430,58 @@ var ClientServicesView = Backbone.View.extend({
 
             // fetch this client's services
             //var clientServicesCollection = new ClientServicesCollection({ id: this.model.id });
-            self.collection = new ClientServicesCollection({ id: this.model.id });
+            this.collection = new ClientServicesCollection({ id: this.model.id });
+
+            this.listenTo(this.collection, 'add reset destroy change', this.collectionUpdated);
+
+            //self.collection.on("add remove", self.collectionUpdated, self);
+
+            // display 'no services' in the DOM for the time being
+            $('#client-details' + self.model.id).html("no services<p>\
+                <div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                <div class='client-service-data-header' style='width:150px'>Coverage</div>\
+                <div class='client-service-data-header' style='width:250px'>Service</div>\
+                <div class='client-service-data-header' style='width:150px'>Active On</div>\
+                <div class='client-service-data-header' style='width:100px'>MVA</div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                </div></p>");
+
             //clientServicesCollection.fetch({
-            self.collection.fetch({
+            this.collection.fetch({
                 reset: true,
                 data: { 
                     id: this.model.id
                 },
                 success: function() {
 
-                   //console.log('fetched successfully');
+/*
+                    if (self.collection.length > 0) {
+                        self.collection.each(self.addService, self);                        
+                    }
+*/
+                   // console.log('fetched successfully');
                    //console.log(self.model);
 
+/*
                     if (self.collection.length === 0) {
                         
-                        $('#client-details' + self.model.id).html('no services');
+                        $('#client-details' + self.model.id).html("no services<p>\
+                            <div>\
+                            <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                            <div class='client-service-data-header' style='width:150px'>Coverage</div>\
+                            <div class='client-service-data-header' style='width:250px'>Service</div>\
+                            <div class='client-service-data-header' style='width:150px'>Active On</div>\
+                            <div class='client-service-data-header' style='width:100px'>MVA</div>\
+                            <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                            </div></p>");
 
                     } else {
                         
                         // print the service details header
                         $('#client-details' + self.model.id).html("<div>\
                             <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
-                            <div class='client-service-data-header' style='width:150px'>Provider</div>\
+                            <div class='client-service-data-header' style='width:150px'>Coverage</div>\
                             <div class='client-service-data-header' style='width:250px'>Service</div>\
                             <div class='client-service-data-header' style='width:150px'>Active On</div>\
                             <div class='client-service-data-header' style='width:100px'>MVA</div>\
@@ -459,10 +496,11 @@ var ClientServicesView = Backbone.View.extend({
                     // make the services div visible
                     $('#client-details' + self.model.id).removeClass('client-details-hide');
                     $('#client-details' + self.model.id).addClass('client-details');
+*/
 
                 }
             });
-            
+
             // populate the drop down menus with all the services and providers (for adding new services/providers)
             self.allServicesCollection = new AllServicesCollection({});
             self.allProvidersCollection = new AllProvidersCollection({});
@@ -503,13 +541,52 @@ var ClientServicesView = Backbone.View.extend({
     allServicesView: {},
     allProvidersView: {},
     
+    collectionUpdated: function(m, c, o) {
+        /*
+        console.log('Collection Updated Event Triggered');
+        console.log(m);
+        console.log(c);
+        console.log(o);
+        */
+
+        if (arguments.length == 3 && o.add) {
+            // a collection add was triggered
+            //console.log('add was triggered');
+            this.addService.call(this, m);
+            this.render(true);
+        } else if (arguments.length == 3) {
+            // a collection add was triggered
+            //console.log('destroy on a model was triggered');
+            this.render(true);
+        } else if (c.reset == true) {
+            // a collection reset was triggered
+            //console.log('reset was triggered');
+            this.collection.forEach(this.addService, this);
+            this.render();
+        } else {
+            // a model has changed in the collection - just redraw
+            this.render(true);
+        }
+
+
+        //this.addService(m);
+        //this.render();
+    },
+
     addService: function(clientServiceModel) {
+        // add the service to the DOM only
         
+        // create a client service view for this client service
         this.clientServiceView = new ClientServiceView({model: clientServiceModel, parent:this});
 
         //$('#client-details' + this.model.id).html(clientServiceView.render().el);
+
+        // add the client service model to the client's services collection - this will not insert duplicates if the model already exists in the collection
+        this.collection.add(clientServiceModel);
+
+        // add the client service to the DOM
         $('#client-details' + this.model.id).append(this.clientServiceView.render().el);
-        
+
         //console.log(clientServiceView.render().el);
         
     },
@@ -518,9 +595,62 @@ var ClientServicesView = Backbone.View.extend({
         "keypress": "updateOnEnter",
     },
     
-    render: function() {
+    render: function(forceShow) {
+
+        // draw the list of services for selected client
+
+        //console.log('render in ClientServicesView called');
+/*
+        this.collection.fetch({
+            reset: true,
+            data: { 
+                id: this.model.id
+            },
+            success: function() {
+
+               //console.log('fetched successfully');
+               //console.log(self.model);
+*/
+
+        if (this.collection.length === 0) {
+            
+            $('#client-details' + this.model.id).html("no services<p>\
+                <!--div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                <div class='client-service-data-header' style='width:150px'>Coverage</div>\
+                <div class='client-service-data-header' style='width:250px'>Service</div>\
+                <div class='client-service-data-header' style='width:150px'>Active On</div>\
+                <div class='client-service-data-header' style='width:100px'>MVA</div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                </div--></p>");
+
+        } else {
+            
+            // print the service details header
+            $('#client-details' + this.model.id).html("<div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                <div class='client-service-data-header' style='width:150px'>Coverage</div>\
+                <div class='client-service-data-header' style='width:250px'>Service</div>\
+                <div class='client-service-data-header' style='width:150px'>Active On</div>\
+                <div class='client-service-data-header' style='width:100px'>MVA</div>\
+                <div class='client-service-data-header' style='width:50px'>&nbsp;</div>\
+                </div>");
+            
+            // render the services
+            this.collection.each(this.addService, this);
+            
+        }
+
+/*
+                // make the services div visible
+                $('#client-details' + self.model.id).removeClass('client-details-hide');
+                $('#client-details' + self.model.id).addClass('client-details');
+
+            }
+        });
+*/
         
-        if ($('#client-details' + this.model.id).hasClass('client-details')) {
+        if (!forceShow && $('#client-details' + this.model.id).hasClass('client-details')) {
             
             $('#client-details' + this.model.id).removeClass('client-details');                        
             $('#client-details' + this.model.id).addClass('client-details-hide');
@@ -563,12 +693,19 @@ var ClientServicesView = Backbone.View.extend({
     quit: function() {
        //console.log('quitting clientservicesview');
         this.trigger('close:all');
+        this.allServicesCollection.reset();
         this.allServicesCollection.remove();
+        this.allServicesCollection = null;
+        this.allProvidersCollection.reset();
         this.allProvidersCollection.remove();
+        this.allProvidersCollection = null;
         this.allServicesView.remove();
         this.allProvidersView.remove();
+        this.collection.reset();
         this.collection.remove();
+        this.collection = null;
         this.model = null;
+        this.stopListening();
 
         //console.log(this);
         this.unbind();
@@ -597,6 +734,8 @@ var ClientView = Backbone.View.extend({
         
     },
     render: function () {
+
+        //console.log('ClientView render called');
         
         //console.log('render client view');
         this.$el.html(this.template(this.model.toJSON()));
@@ -641,7 +780,7 @@ var ClientView = Backbone.View.extend({
                 
                 //console.log(m.urlRoot);
                 //clientServicesView.collection.add(m);
-                self.clientServicesView.addService(m);                
+                self.clientServicesView.addService(m); 
                 
             },
             error: function(model, response) {
@@ -678,11 +817,15 @@ var ClientView = Backbone.View.extend({
             }            
         });
         */
+
         if (!this.clientServicesView) {
+            // creating a new Client Services View will auto trigger render()
             this.clientServicesView = new ClientServicesView({el: "#client-details", model: this.model, parent: this});
-        } 
+        } else {
+            // if the Client Services View has already been created then either redisplay it or hide it
+            this.clientServicesView.render();  
+        }
         
-        this.clientServicesView.render();
         //$('#service_details').show();
         
     },
@@ -728,6 +871,7 @@ var ClientView = Backbone.View.extend({
         this.availableServiceModel = null;
         this.model.unbind('change', this.render);
         this.model.unbind('destroy', this.remove);
+        this.model = null;
         this.remove();
     }
 });
@@ -975,6 +1119,9 @@ var ClientsAppView = Backbone.View.extend({
         this.trigger('close:all');
         this.clientsCollection.unbind('add', this.addClient);
         this.clientsCollection.unbind('reset', this.addAll);
+        this.clientsCollection.reset();
+        this.clientsCollection.remove();
+        //this.clientsCollection = null;
         this.removeAll();
         this.stopListening();
         this.remove();

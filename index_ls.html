@@ -10,6 +10,9 @@
     <script src="libs/underscore-min.js"></script>
     <script src="libs/backbone-min.js"></script>
     <script src="libs/moment-min.js"></script>
+    <script src="libs/modernizr.js"></script>
+    <script src="libs/jSignature.min.js"></script>    
+
     <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
 
@@ -33,7 +36,7 @@
             background-color:transparent;
             /*max-width:600px;*/
             padding:5px;        
-            width:650px;
+            width:950px;
             position: relative;
             margin-left:auto; 
             margin-right:auto;
@@ -220,6 +223,17 @@
     <script type='text/template' id='services-template'>
             <%=provider_name%>: <%= service_name %> (<%if (remaining_appts >= 0) { %><%=remaining_appts%> appointments remaining<% } else { %><%=-remaining_appts%> appointments had<% } %>)
     </script>
+    <script type='text/template' id='buttonscontainer-template'>
+            <div id='signinbtn' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Sign In</label>
+            </div>
+            <div id='signoutbtn' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" href="#">Sign Out</label>
+            </div>
+            <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
+                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+            </div>
+    </script>
     <div id='errordiv'></div>
 </head>
 <body>
@@ -267,20 +281,34 @@
         </div>
         <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
     </form>
-    <script src="libs/modernizr.js"></script>
-    <script src="src/jSignature.js"></script>
-
-    <script src="src/plugins/jSignature.CompressorBase30.js"></script>
-    <script src="src/plugins/jSignature.CompressorSVG.js"></script>
-    <script src="libs/jSignature.min.js"></script>
+    <!--script src="src/jSignature.js"></script-->
+    <!--script src="src/plugins/jSignature.CompressorBase30.js"></script-->
+    <!--script src="src/plugins/jSignature.CompressorSVG.js"></script-->
     <script src="libs/errors.js"></script>
+    <script src="js/signin-models.js"></script>
+    <script src="js/signin-collections.js"></script>
     <script src="js/signin.js"></script>
     <script type="text/javascript">
+
         $(document).ready(function() {
             var $sigdiv = $("#signature").jSignature({lineWidth:1});
             $('#services-outer-container').hide();
             $(document).bind('touchmove', false);
         });
+
+/*
+        for (let i=0; i<50; i++) {
+           (function(ind) {
+               setTimeout(function(){
+                    console.log('running ' + i);
+
+                    $('#firstname').val('stuart');
+                    $('#lastname').val('little');
+                    $('#signinbtn').click();                        
+            }, 500 + (3000 * ind));
+           })(i);
+        }
+*/
     </script>
 
 </body>

@@ -92,6 +92,7 @@ function query($conn, $sql_query) {
 
 $app = new \Slim\Slim();
 
+/*
 $app->get('/:id', function ($id) {
     //echo "you requested id $id"; 
     
@@ -115,7 +116,11 @@ $app->get('/:id', function ($id) {
     $conn->close();
     
 });
+*/
 
+/*
+  purpose: to add a new appointment
+*/
 $app->post('/', function () use ($app) {
 
     date_default_timezone_set('America/Toronto');
@@ -245,6 +250,10 @@ $app->post('/', function () use ($app) {
     
 });
 
+/*
+  purpose: 
+*/
+/*
 $app->get('/', function () use ($app) {
 
     $firstname = utf8_decode($app->request()->params('firstname'));
@@ -273,7 +282,11 @@ $app->get('/', function () use ($app) {
     $conn->close();
 
 });
+*/
 
+/*
+  purpose: used to return the number of appointments remaining for a patient
+*/
 $app->get('/details/', function () use ($app) {
 
     $client_id = $app->request()->params('cid');
@@ -322,13 +335,18 @@ $app->get('/details/', function () use ($app) {
 
 });
 
+/*
 $app->put('/details/:id', function () use ($app) {
     
     $app->response['Content-Type'] = 'application/json';
     echo "{}";
     
 });
+*/
 
+/*
+  purpose: used for signing out appointments
+*/
 $app->put('/', function () use ($app) {
     
     $id = $app->request()->params('appointment_id');

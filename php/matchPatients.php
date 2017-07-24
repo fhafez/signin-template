@@ -39,6 +39,39 @@ class Client {
     }
 }
 
+class LogEntry {
+
+    public $severity;
+    public $system;
+    public $errorcode;
+    public $description;
+    public $dt;
+
+    public function __construct($severity, $system, $errorcode, $description) {
+        $this->severity = $severity;
+        $this->system = $system;
+        $this->errorcode = $errorcode;
+        $this->description = $description;
+    }
+}
+
+$app = new \Slim\Slim();
+
+// must define these for Slim
+$app->LOG_DEBUG = 0;
+$app->LOG_INFO = 1;
+$app->LOG_WARNING = 2;
+$app->LOG_ERROR = 3;
+$app->LOG_CRITICAL = 4;
+
+// LOGLEVEL:
+$LOG_DEBUG = 0;
+$LOG_INFO = 1;
+$LOG_WARNING = 2;
+$LOG_ERROR = 3;
+$LOG_CRITICAL = 4;
+
+$app->LOGLEVEL = 2;
 
 function query($conn, $sql_query) {
 
@@ -51,7 +84,15 @@ function query($conn, $sql_query) {
     return $result;
 }
 
-$app = new \Slim\Slim();
+function log_msg($app, $conn, $logEntry, $severity) {
+
+    if ($app->LOGLEVEL <= $severity) {
+        $result = query($conn, "INSERT INTO Logs (severity,system,errorcode,description,dt) 
+            VALUES ('" . $logEntry->severity . "', '" . $logEntry->system . "', " . $logEntry->errorcode . ", '" . $logEntry->description . "', now())");
+    }
+    return $result;
+}
+
 
 $app->get('/hello/:id', function ($id) {
     //echo "you requested id $id"; 
@@ -259,7 +300,15 @@ $app->get('/', function () use ($app) {
         array_push($clients, $c->toJSON());
     }
     
+    if (sizeof($clients) == 0) {
+        $desc = "Patient not found: [" . $lastname . ", " . $firstname . "].  DoB: " . $dob;
+        $le = new LogEntry('WARN','matchPatients.php->get', 404, $desc);
+        $result = log_msg($app, $conn, $le, $app->LOG_WARNING);
+    }
+
     $app->response['Content-Type'] = 'application/json';
+    $app->response->headers->set('Cache-Control','no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0');
+    $app->response->headers->set('Pragma','no-cache');
     echo json_encode($clients);
     
     $conn->close();
@@ -268,11 +317,6 @@ $app->get('/', function () use ($app) {
 
 
 $app->run();
-
-
-
-
-
 
 
 ?>
