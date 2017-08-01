@@ -142,8 +142,8 @@ $app->post('/', function () use ($app) {
         $body = $request->getBody();
         $input = json_decode($body);
 
-        $firstname = $conn->real_escape_string((string)$input->firstname);
-        $lastname = $conn->real_escape_string((string)$input->lastname);
+        $firstname = $conn->real_escape_string(trim((string)$input->firstname));
+        $lastname = $conn->real_escape_string(trim((string)$input->lastname));
         $client_id = $conn->real_escape_string((string)$input->client_id);
         $sig = $conn->real_escape_string((string)$input->sig);
         

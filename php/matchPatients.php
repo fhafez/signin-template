@@ -259,8 +259,8 @@ $app->put('/hello/', function () use ($app) {
 
 $app->get('/', function () use ($app) {
 
-    $firstname = utf8_decode($app->request()->params('firstname'));
-    $lastname = utf8_decode($app->request()->params('lastname'));
+    $firstname = utf8_decode(trim($app->request()->params('firstname')));
+    $lastname = utf8_decode(trim($app->request()->params('lastname')));
     $dob = $app->request()->params('dob');
 
     include "db.php";
@@ -269,6 +269,7 @@ $app->get('/', function () use ($app) {
     
     $firstname = strtolower($conn->real_escape_string((string)$firstname));
     $lastname = strtolower($conn->real_escape_string((string)$lastname));
+
     $dob = $conn->real_escape_string((string)$dob);
 
    if ($conn->connect_errno) {
