@@ -305,7 +305,8 @@ $app->get('/details/', function () use ($app) {
         from Available_Appts aa, Services s, Plans p where
         aa.client_id = " . $client_id . " and
         aa.service_id = s.id and 
-        aa.plan_id = p.ID;
+        aa.plan_id = p.ID and
+        active_on <= now();
     ");
 
     $available_appointments = [];

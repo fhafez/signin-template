@@ -6,7 +6,7 @@
     <script src="libs/backbone-min.js"></script>
     <script src="libs/moment-min.js"></script>
     <script src="libs/modernizr.js"></script>
-
+        
     <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
 
@@ -127,13 +127,6 @@
         .datefieldshow { 
             border: solid 1px #AAAAAA;
         }
-
-        .copyright {
-            padding: 20px 0px 20px 0px;
-            width: 100%;
-            font-size: 10px;
-            text-align: center;
-        }
         
         /* Drawing the 'gripper' for touch-enabled devices */ 
         html.touch #content {
@@ -192,24 +185,24 @@
     </script>
     <script type='text/template' id='buttonscontainer-template'>
         <div id='registerbtn' class='buttonsls' align=center>
-            <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+            <label style="font-size: 24px; text-decoration:none; color:indigo;font-family:verdana;" register="signin">Register</label>
         </div>
         <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
-            <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+            <label href="#" value="Reset" style="font-size: 24px; text-decoration:none; color:indigo;font-family:verdana">Clear</label>
         </div>    
-    </script>
+    </script>    
     <div id='errordiv'></div>
 </head>
 <body>
     <header><h1><!--?=$sitename?--></h1></header>
     <div style="margin-top:100px;"></div>
     <!--div><p align=center id="errors"></p></div-->
-    <h3>Already Registered? <a href="index_ls.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
+    <h3>Already Registered? <a href="index_ls.html" style="text-decoration:underline; color:indigo;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
     <form name='registerform' id='loginform' action="index.php" method="POST">
         <div class='registercontainer'>
             <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
             <input id='lastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
-            <label id='datefieldmsg'>date of birth</label>
+            <label id='datefieldmsg' style='color: ivory'>date of birth</label>
             <div id="dob" class="datefieldshow">
                 <input id="year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/
                 <input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/
@@ -218,10 +211,10 @@
         </div>
         <div id="registerbuttonscontainer" class="registercontainer" align=center>
             <div id='registerbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+                <label style="font-size: 24px; text-decoration:none; color:indigo;font-family:verdana;" register="signin">Register</label>
             </div>
             <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
-                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+                <label href="#" value="Reset" style="font-size: 24px; text-decoration:none; color:indigo;font-family:verdana">Clear</label>
             </div>
         </div>
         <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>

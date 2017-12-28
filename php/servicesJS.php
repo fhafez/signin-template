@@ -412,6 +412,7 @@ $app->put('/clientservice/:id', function ($id) use ($app) {
 
         $remaining_appts = $conn->real_escape_string((string)$input->remaining_appts);
         $mva = ($conn->real_escape_string((string)$input->mva) == "no") ? 0 : 1;
+        $active_on = $conn->real_escape_string((string)$input->active_on);
 
        if ($conn->connect_errno) {
             printf("DB Connection Failure %s\n", $conn->connect_error);
@@ -421,7 +422,7 @@ $app->put('/clientservice/:id', function ($id) use ($app) {
         $conn->autocommit(FALSE);
         
         $conn->query('START TRANSACTION');
-        $conn->query("UPDATE Available_Appts SET remaining_appts=" . $remaining_appts . ", mva=" . $mva . " where id=" . $id);
+        $conn->query("UPDATE Available_Appts SET remaining_appts=" . $remaining_appts . ", mva=" . $mva . " , active_on='" . $active_on . "' where id=" . $id);
         if ($conn->errno > 0) {
             echo "Error: " + $conn->errno;
             $app->response()->status(402);

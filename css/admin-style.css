@@ -987,6 +987,16 @@
       #printheader {
           display: inline-block;
       }
+      #search-by-client {
+        font-size: 8pt;
+      }
+      #search-by-staff {
+        display: none;
+      }
+      #search-by-date {
+        font-size: 8pt;
+      }
+      
 
   }
 

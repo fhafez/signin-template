@@ -350,7 +350,7 @@ var ClientServiceView = Backbone.View.extend({
 
        this.model.urlRoot="../php/servicesJS.php/clientservice";
 
-       this.model.set({remaining_appts: this.$('#remaining_appts').val(), mva: this.$('#mva').val()});
+       this.model.set({remaining_appts: this.$('#remaining_appts').val(), mva: this.$('#mva').val(), active_on: this.$('#active_on').val()});
        if (this.model.isValid) {
             this.model.save();
        }

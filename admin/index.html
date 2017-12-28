@@ -18,7 +18,7 @@
         <div class='client-service-data' style='width:50px'><button id='editservicedetails'>edit</button><button id='saveservicedetails'>save</button></div>
         <div class='client-service-data' style='width:150px'><label><%= provider_name %></label><select id="provider_name<%= id %>" class="service-edit"><option value="<%- provider_name %>" selected><%- provider_name %></option></select></div>
         <div class='client-service-data' style='width:250px'><label><%= service_name %></label><select id="service_name<%= id %>" class="service-edit"><option value="<%- service_name %>"><%- service_name %></option></select>: <label><%= remaining_appts %></label><input id='remaining_appts' type='text' style="width:30px;" class="service-edit" value='<%= remaining_appts %>' /></div>
-        <div class='client-service-data client-service-data-centre' style='width:150px'><label><%= active_on %></label><input type='text' class="service-edit" value='<%= active_on %>' /></div>
+        <div class='client-service-data client-service-data-centre' style='width:150px'><label><%= active_on %></label><input id='active_on' type='text' class="service-edit" value='<%= active_on %>' /></div>
         <div class='client-service-data client-service-data-centre' style='width:100px'><label><%= mva %></label><select id="mva" class="service-edit"><option value="<%- mva %>"><%= mva %></option><option value="<%- mva === "no" ? "yes" : "no" %>"><%- mva === "no" ? "yes" : "no" %></option></select></div>
         <div class='client-service-data' style='width:50px'><button id='deleteservicedetails' class='deletebutton'>delete</button></div>
     </script>
@@ -61,7 +61,7 @@
                 <label class="filter-heading">Filters</label>
             </div>
             <!--div class='filter-right'>fill in any of the fields below and then click on one of 'day', 'week', 'month' or complete the date range</div-->
-            <div class='filter-category'>
+            <div id='search-by-client' class='filter-category'>
                 <div class="filter-right">
                     <label class="filter-heading">Search By Patient</label>
                 </div>
@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div class='filter-category'>
+            <div id='search-by-date' class='filter-category'>
                 <div class="filter-right">
                     <label class="filter-heading">Search Between Dates</label>
                 </div>
@@ -85,7 +85,7 @@
                 <a class='btn' id='month'>month</a>
             </div>
 
-            <div class='filter-category'>
+            <div id='search-by-staff' class='filter-category'>
                 <div class="filter-right">
                     <label class="filter-heading">Search By Staff</label>
                 </div>
@@ -284,7 +284,7 @@
     <div id="servicesremaining-template"></div>
     <section id="signinmanagementapp">
         <div id='bufferspace' style="padding-top:10px;padding-bottom:10px">&nbsp;</div>
-        <div id='printheader'>Local Physio<br>Home</div>
+        <div id='printheader'>Local<br>Home</div>
         <div id="appspace" class="clientsapp" align='center'><p>loading...</p>            
         </div>
         <!--div class="ct-chart ct-perfect-fourth wrapper" style="width: 50%; height: 50%; left: 0px; right: 0px;"></div-->

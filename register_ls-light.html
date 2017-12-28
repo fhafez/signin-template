@@ -1,17 +1,11 @@
-<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <meta name="apple-mobile-web-app-capable" content="true" />
-    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
     <script src="libs/jquery-min.js"></script>
     <script src="libs/underscore-min.js"></script>
     <script src="libs/backbone-min.js"></script>
     <script src="libs/moment-min.js"></script>
     <script src="libs/modernizr.js"></script>
-    <script src="libs/jSignature.min.js"></script>    
 
     <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
@@ -32,12 +26,11 @@
         #signatureparent {
             border: 0px transparent #007ACC;
             border-radius: 5px;
-            /* color:  #007ACC; */
-            color: indigo;
+            color:  #007ACC;
             background-color:transparent;
             /*max-width:600px;*/
             padding:5px;        
-            width:950px;
+            width:650px;
             position: relative;
             margin-left:auto; 
             margin-right:auto;
@@ -45,21 +38,16 @@
             font-family: sans-serif;
         }
 
-        #signature:focus {
-            border: 5px solid gold;
-        }
-
         /*This is the div within which the signature canvas is fitted*/
         #signature {
             border: 1px solid #ccc;
             border-radius: 5px;
             background-color:white;
-            /* color:#007ACC; */
-            color: indigo;
+            color:#007ACC;
             decor-color:#000;
             margin-left:auto; 
             margin-right:auto;
-            width:95%;
+            width:100%;
             font-family: sans-serif;
             font-size:18px;
             padding:10px;
@@ -70,7 +58,6 @@
             align-self: center;
             left:49%;
             width:50%;
-            max-height: 300px;
             /*background-color:#FFE6F0;*/
             background-color: rgba(255,230,240,1.0);
             color:#CC0000;
@@ -83,7 +70,6 @@
             top:85px;
             margin: 0 0 0 -25%;
             display: '';
-            overflow: auto;
             z-index: 100;
         }
         
@@ -110,7 +96,6 @@
             align-self: center;
             left:49%;
             width:50%;
-            max-height: 300px;
             /*background-color:#FFE6F0;*/
             background-color: rgba(0,122,204,1.0);
             color:#FFFFFF;
@@ -123,11 +108,10 @@
             top:85px;
             margin: 0 0 0 -25%;
             display: '';
-            overflow: auto;
             z-index: 100;
         }
-        
-        .signincontainer {
+
+        .registercontainer {
             background-color:transparent; 
             border: 0px transparent; 
             border-color:#4C6680; 
@@ -140,20 +124,17 @@
             text-align: center;
         }
 
-        #services-inner-container {
-            max-height: 300px;
-            width: 640px;
-            overflow: auto;
+        .datefieldshow { 
+            border: solid 1px #AAAAAA;
         }
 
-        .hiddensignincontainer {
-            display: none;
+        .copyright {
+            padding: 20px 0px 20px 0px;
+            width: 100%;
+            font-size: 10px;
+            text-align: center;
         }
-
-        .pleasewaithidden {
-            display: none;
-        }
-
+        
         /* Drawing the 'gripper' for touch-enabled devices */ 
         html.touch #content {
             float:left;
@@ -199,39 +180,23 @@
         }
         
         function resetForm() {
-            $("#signature").jSignature("reset");
-            document.forms["loginform"].reset();
-            $("#datefieldmsg").removeClass("datefieldmsgshow");
-            $("#datefieldmsg").addClass("datefieldhide");
-            $('#dob').removeClass('datefieldshow');
-            $('#dob').addClass('datefieldhide');
-            $('#services-container').html('');
-            $('#services-outer-container').hide();
-            $('#signature').show();
-            $('#buttonscontainer').show();
+            document.forms["registerform"].reset();
         }
-        
-        $('#signature').keypress(function(e) {
-            console.log(e.which);
-        });
         
                 
     </script>
     <script lang="text/template" id='signin-template'>
     </script>
     <script type='text/template' id='services-template'>
-            <%=provider_name%>: <%= service_name %> (<%if (remaining_appts >= 0) { %><%=remaining_appts%> appointments remaining<% } else { %><%=-remaining_appts%> appointments had<% } %>)
+            <div class="radiodiv"><label><%= provider_name %>: <%= service_name %> (<%= remaining_appts %> appointments remaining)</label></div>
     </script>
     <script type='text/template' id='buttonscontainer-template'>
-            <div id='signinbtn' class='buttonsls' align=center>
-                <label style="text-decoration:bold; color:indigo;font-family:verdana; font-size: 24px; font-weight: 500;" data-url="signin">Sign In</label>
-            </div>
-            <!--div id='signoutbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:indigo;font-family:verdana; font-size: 24px; font-weight: 500;" href="#">Sign Out</label>
-            </div-->
-            <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
-                <label href="#" value="Reset" style="text-decoration:none; color:indigo; font-size: 24px; font-family:verdana; font-weight: 500;">Clear</label>
-            </div>
+        <div id='registerbtn' class='buttonsls' align=center>
+            <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+        </div>
+        <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
+            <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+        </div>    
     </script>
     <div id='errordiv'></div>
 </head>
@@ -239,76 +204,49 @@
     <header><h1><!--?=$sitename?--></h1></header>
     <div style="margin-top:100px;"></div>
     <!--div><p align=center id="errors"></p></div-->
-    
-    <h3>Haven't got an account yet?  <a href="register_ls.html" style="text-decoration:underline; color:indigo;font-family:'helvetica neue'">REGISTER</a> first</h3>
-    <form name='loginform' id='loginform'>
-        <div class='signincontainer'>
+    <h3>Already Registered? <a href="index_ls.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
+    <form name='registerform' id='loginform' action="index.php" method="POST">
+        <div class='registercontainer'>
             <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
             <input id='lastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
-
-            <div id="dob" class="datefieldhide">
-                <input id="year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/<input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/<input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
-            </div>
-            <label id='datefieldmsg' class="datefieldhide">please enter your date of birth</label>
-        </div>
-        <div class="signincontainer" id="services-outer-container" style="width:680px">
-            <div class="signincontainer" id="services-inner-container" style="width:600px"></div>
-            <div id='finished' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:indigo;font-family:verdana;" data-url="signin">Finished</label>
-            </div>
-            <div id='servicesselected' class='buttonsls' onclick='resetForm();' align=center>
-                <label style="text-decoration:none; color:indigo;font-family:verdana;" data-url="signin">Cancel</label>
+            <label id='datefieldmsg'>date of birth</label>
+            <div id="dob" class="datefieldshow">
+                <input id="year" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/
+                <input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/
+                <input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
             </div>
         </div>
-        <div id="signatureparent" style='text-align:center; color:whitesmoke'>        
-          <div id="signature" style='text-align:center; color:indigo' tabindex="3">Sign Here</div>
-        </div>
-
-        <div class="signincontainer" id="buttonscontainer" align=center>
-            <div id='signinbtn' class='buttonsls' align=center>
-                <label style="text-decoration:bold; color:indigo;font-family:verdana; font-size: 24px; font-weight: 500;" data-url="signin">Sign In</label>
+        <div id="registerbuttonscontainer" class="registercontainer" align=center>
+            <div id='registerbtn' class='buttonsls' align=center>
+                <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
             </div>
-            <!--div id='signoutbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:indigo;font-family:verdana; font-size: 24px; font-weight: 500;" href="#">Sign Out</label>
-            </div-->
             <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
-                <label href="#" value="Reset" style="text-decoration:none; color:indigo; font-size: 24px; font-family:verdana; font-weight: 500;">Clear</label>
+                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
             </div>
-        </div>
-        <div id="pleasewait" align="center" class="pleasewaithidden">
-            <label style="font-size: 24px; font-weight: 100;">Signing in/out, please wait...</label>
         </div>
         <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
     </form>
-    <!--script src="src/jSignature.js"></script-->
-    <!--script src="src/plugins/jSignature.CompressorBase30.js"></script-->
-    <!--script src="src/plugins/jSignature.CompressorSVG.js"></script-->
     <script src="libs/errors.js"></script>
-    <script src="js/signin-models.js"></script>
-    <script src="js/signin-collections.js"></script>
-    <script src="js/signin.js"></script>
+    <script src="js/register.js"></script>
+
     <script type="text/javascript">
-
-        $(document).ready(function() {
-            var $sigdiv = $("#signature").jSignature({lineWidth:1});
-            $('#services-outer-container').hide();
-            $(document).bind('touchmove', false);
-        });
-
 /*
         for (let i=0; i<50; i++) {
            (function(ind) {
                setTimeout(function(){
                     console.log('running ' + i);
 
-                    $('#firstname').val('stuart');
-                    $('#lastname').val('little');
-                    $('#signinbtn').click();                        
-            }, 500 + (3000 * ind));
+                    $('#firstname').val('stuart' + i);
+                    $('#lastname').val('little' + i);
+                    $('#year').val('1999');
+                    $('#month').val('11');
+                    $('#day').val('11');
+                    $('#registerbtn').click();                        
+            }, 500 + (1000 * ind));
            })(i);
         }
 */
-    </script>
+    </script>    
 
 </body>
 </html>

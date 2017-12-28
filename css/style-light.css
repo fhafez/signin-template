@@ -1,10 +1,10 @@
-html,body {
-    background-color: #039BE5; 
-    /* background: linear-gradiant(darkblue, navy); */
-    /* background: -webkit-linear-gradient(whitesmoke, white); /* For Safari 5.1 to 6.0 */
-    /* background: -o-linear-gradient(whitesmoke, white); /* For Opera 11.1 to 12.0 */
-    /* background: -moz-linear-gradient(whitesmoke, white); /* For Firefox 3.6 to 15 */
-    /* background: linear-gradient(darkblue, navy); /* Standard syntax */
+body {
+    /*background-color:whitesmoke; */
+    background: linear-gradiant(whitesmoke, white);
+    background: -webkit-linear-gradient(whitesmoke, white); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(whitesmoke, white); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(whitesmoke, white); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(whitesmoke, white); /* Standard syntax */
     color:#007ACC;
     text-align:left;
     padding:0;
@@ -44,8 +44,7 @@ h2 {
     padding: 0px;
 }
 h3 {
-    /* color:#007ACC; */
-    color: gold;
+    color:#007ACC;
     font-family: Roboto, arial, sans-serif;
     letter-spacing: 0.34000;
     text-align: center;
@@ -202,15 +201,12 @@ nav {
     word-wrap:break-word;
 }
 header {
-    
-    /*background-color: -webkit-linear-gradient(whitesmoke, white); /* For Safari 5.1 to 6.0 */
-    /*background-color: -o-linear-gradient(whitesmoke, white); /* For Opera 11.1 to 12.0 */
-    /*background-color: -moz-linear-gradient(whitesmoke, white); /* For Firefox 3.6 to 15 */
-    /*background-color: linear-gradient(ivory, whitesmoke); /* Standard syntax */    
+    background: #47476B;
     position: fixed;
-    background-image: url('../images/Logo.png'), linear-gradient(ivory, whitesmoke);
+    /* background-image: url('../images/yourlogo.png'), linear-gradient(ivory, whitesmoke); */
+    background: linear-gradient(ivory, whitesmoke);
     background-repeat: no-repeat;
-    background-size: contain; 
+    background-size: contain;     
     top: 0;
     left: 0;
     right: 0;
@@ -284,11 +280,9 @@ header {
 .buttonsls {
     font-family: vedrana, sans-serif;
     font-size: 18px;
-    /* background: #007ACC; */
-    background: gold;
-    padding:10px;
-    /* border: 1px solid #AAAAAA; */
-    border: 1px solid indigo; 
+    background: #007ACC;
+    padding:15px;
+    border: 1px solid #AAAAAA;
     text-align: center;
     border-radius: 5px;
     cursor: pointer;
@@ -325,8 +319,7 @@ input {
     width: 95%;
 }
 .inputls {
-    /* color:#4C6680; */
-    color: indigo;
+    color:#4C6680;
     font-family: vedrana, sans-serif;
     font-size: 18px;
     background: white;
@@ -504,18 +497,17 @@ input[type=checkbox]:checked + label {
 
 .datefieldmsgshow {
     display: inline-block;
-    font-size: 20px;
-    color: gold;
+    font-size: 12px;
+    color: red;
 }
 
 .datefieldshow { 
     display: inline-block; 
     padding: 2px;
-    border: solid 1px gold; 
+    border: solid 1px #FF0000; 
     background: #FFF; 
     border-radius: 5px;
     color: #666;
-    text-overflow: wrap;
     width: 280px;
     margin: 0px;
 }
@@ -530,15 +522,13 @@ input[type=checkbox]:checked + label {
     border: none; 
     font-size: 18px; 
     background: none;
-    color: indigo;
-    /* color:#4C6680; */
+    color:#4C6680;
 }
 
 .datefieldshow input#year { width:70px; }
 .datefieldshow input#month { width:50px; }
 .datefieldshow input#day { width:50px; }
 .datefieldshow input:focus { outline:none; background-color: gold; }
-
 
 
 .expiry_datefield { 
@@ -636,12 +626,3 @@ td.filterAppts {
     border-radius: 0px;
     width: 95%;
 }
-
-.copyright {
-    padding: 20px 0px 20px 0px;
-    width: 100%;
-    font-size: 10px;
-    text-align: center;
-    color: whitesmoke;
-}
-

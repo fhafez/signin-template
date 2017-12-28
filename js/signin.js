@@ -85,6 +85,7 @@ var signinappview = (function(matchingPatients) {
             //'blur #lastname': 'signin',
             //'blur #day': 'signin',
             'keypress #lastname': 'updateOnEnter',
+            'keypress #firstname': 'updateOnEnter',
             'click #signinbtn': 'signin',
             'click #signoutbtn': 'signout',
             'click #finished': 'commitSignin'
@@ -164,11 +165,26 @@ var signinappview = (function(matchingPatients) {
             });        
         },
         updateOnEnter: function(e) {
-            //console.log(e.which);
+            //console.log(e);
+            
             if (e.which === 13) {
-                this.signin(e);
-                e.currentTarget.blur();
+
+                switch (e.target.id) {
+
+                    case 'firstname':
+                        $('#lastname').focus();
+                        break;
+
+                    case 'lastname':
+                        //$('#signature').attr("tabindex",-1).focus();
+                        $('#signature')[0].focus();
+                        window.scroll(0,0);
+                        break;
+
+                }
+
             }
+            
         },
         updateFilterOnEnter: function(e) {
             if ((e.which === 13 && e.currentTarget.id === 'firstname_filter') || (e.which === 13 && e.currentTarget.id === 'lastname_filter')) {
