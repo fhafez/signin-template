@@ -91,7 +91,7 @@ $app->delete('/hello/:id', function ($id) use ($app) {
         }
 
         $result = query($conn,"START TRANSACTION");
-        $result = query($conn,"INSERT INTO Del_Clients select * from Clients where id=" . $id);
+        $result = query($conn,"INSERT INTO Del_Clients (firstname, lastname, address, city, postalcode, username, password, dob) select firstname, lastname, address, city, postalcode, username, password, dob from Clients where id=" . $id);
         $result = query($conn,"DELETE FROM Clients where id=" . $id);
         $affected_rows = $conn->affected_rows;
         $result = query($conn,"COMMIT");
