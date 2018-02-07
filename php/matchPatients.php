@@ -235,7 +235,9 @@ $app->get('/', function () use ($app) {
         exit();
     }
 
-    if ($dob == '') {
+    if (strlen($firstname) == 0 && strlen($lastname) == 0) {
+        $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients");
+    } elseif ($dob == '') {
         $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients WHERE lower(firstname)='" . $firstname . "' AND lower(lastname)='" . $lastname . "'");
     } else {
         $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients WHERE lower(firstname)='" . $firstname . "' AND lower(lastname)='" . $lastname . "' and dob='" . $dob . "'");

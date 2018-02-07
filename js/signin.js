@@ -328,7 +328,7 @@ var SigninAppView = Backbone.View.extend({
         $('#pleasewait').removeClass('pleasewaithidden');
         //$('#buttonscontainer').removeClass('signincontainer');
 
-                
+
         this.signin_model = new SigninModel({
             firstname: firstname,
             lastname: lastname,

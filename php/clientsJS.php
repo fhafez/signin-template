@@ -37,6 +37,17 @@ class Client {
             "message" => "SUCCESS"
         );
     }
+
+    public function toJSONMin() {
+        return array(
+            "id" => $this->id,
+            "firstname" => $this->firstname,
+            "lastname" => $this->lastname,
+            "dob" => $this->dob,
+            "message" => "SUCCESS"
+        );
+    }
+
 }
 
 
@@ -225,6 +236,7 @@ $app->get('/', function () use ($app) {
 
     $page = $app->request()->params('page');
     $page_size = $app->request()->params('per_page');
+    $minimal = $app->request()->params('minimal');
     
     if ($page_size == "")
         $page_size = 50;
@@ -252,15 +264,24 @@ $app->get('/', function () use ($app) {
         }
         
         $result = query($conn, "SELECT ID, firstname, lastname, dob, address, city, postalcode from Clients LIMIT " . $limit_from . "," . $page_size);
-    } else {        
+    } else {
         $result = query($conn, "SELECT ID, firstname, lastname, dob, address, city, postalcode from Clients");
     }
 
+
     
     $clients = [];
-    while ($row = $result->fetch_assoc()) {
-        $c = new Client($row['ID'], $row['firstname'], $row['lastname'], $row['dob'], $row['address'], $row['city'], $row['postalcode']);
-        array_push($clients, $c->toJSON());
+
+    if ($minimal) {
+        while ($row = $result->fetch_assoc()) {
+            $c = new Client($row['ID'], $row['firstname'], $row['lastname'], $row['dob'], $row['address'], $row['city'], $row['postalcode']);
+            array_push($clients, $c->toJSONMin());
+        }
+    } else {
+        while ($row = $result->fetch_assoc()) {
+            $c = new Client($row['ID'], $row['firstname'], $row['lastname'], $row['dob'], $row['address'], $row['city'], $row['postalcode']);
+            array_push($clients, $c->toJSON());
+        }
     }
     
     $app->response['Content-Type'] = 'application/json';
