@@ -236,10 +236,13 @@ $app->get('/', function () use ($app) {
     }
 
     if (strlen($firstname) == 0 && strlen($lastname) == 0) {
+        // no firstname or lastname was passed in
         $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients");
     } elseif ($dob == '') {
+        // firstname and lastname was passed in
         $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients WHERE lower(firstname)='" . $firstname . "' AND lower(lastname)='" . $lastname . "'");
     } else {
+        // firstname, lastname and dob were passed in
         $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients WHERE lower(firstname)='" . $firstname . "' AND lower(lastname)='" . $lastname . "' and dob='" . $dob . "'");
     }
     
@@ -267,6 +270,61 @@ $app->get('/', function () use ($app) {
     $conn->close();
 
 });
+
+$app->post('/', function () use ($app) {
+
+    date_default_timezone_set('America/Toronto');
+    
+    include "db.php";
+    
+    try {
+
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_errno) {
+            printf("DB Connection Failure %s\n", $conn->connect_error);
+            exit();
+        }
+
+        $request = $app->request();
+        $body = $request->getBody();
+        $input = json_decode($body);
+
+        $firstname = $conn->real_escape_string((string)$input->firstname);
+        $lastname = $conn->real_escape_string((string)$input->lastname);
+        $dob = $conn->real_escape_string((string)$input->dob);
+
+        $new_result = query($conn, "INSERT INTO Clients (firstname, lastname, dob, username, password) 
+                                    values 
+                                    ('" . $firstname. "', '" . $lastname . "','" . $dob . "', '" . $firstname . $lastname . "', '" . $firstname . $lastname . "')");
+        if ($conn->errno > 0) {
+            echo "Error: " + $conn->errno;
+            $app->response()->status(402);
+            $conn->close();
+            return;
+        }
+        
+        $cid = $conn->insert_id;
+
+        $app->response()->status(200);
+        $app->response['Content-Type'] = 'application/json';
+
+        
+        $c = new Client($cid, $firstname, $lastname, $dob, false, 0);
+        echo json_encode($c->toJSON());
+
+    } catch (ResourceNotFoundException $e) {
+        $app->response()->status(404);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+    } catch (Exception $e) {
+        $app->response()->status(400);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+    }    
+
+    $conn->close();
+    
+    
+});
+
 
 
 $app->run();

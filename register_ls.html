@@ -4,6 +4,7 @@
     <script src="libs/jquery-min.js"></script>
     <script src="libs/underscore-min.js"></script>
     <script src="libs/backbone-min.js"></script>
+    <script src="libs/backbone.dualstorage.js"></script>     
     <script src="libs/moment-min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <style type="text/css">
@@ -194,9 +195,9 @@
     <header><h1><!--?=$sitename?--></h1></header>
     <div style="margin-top:100px;"></div>
     <!--div><p align=center id="errors"></p></div-->
-    <h3>Already Registered? <a href="index_ls.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
     <form name='registerform' id='loginform' action="index.php" method="POST">
-        <div class='registercontainer'>
+        <div id='registercontainer' class='registercontainer'>
+            <h3>Already Registered? <a href="index_ls.html" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
             <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
             <input id='lastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
             <label id='datefieldmsg'>date of birth</label>
@@ -205,13 +206,13 @@
                 <input id="month" name='dob_month' type="tel" maxlength="2" placeholder="MM" value=""/>/
                 <input id="day" name='dob_day' type="tel" maxlength="2" placeholder="DD" value=""/>
             </div>
-        </div>
-        <div class="registercontainer" align=center>
-            <div id='registerbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
-            </div>
-            <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
-                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+            <div class="registercontainer" align=center>
+                <div id='registerbtn' class='buttonsls' align=center>
+                    <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+                </div>
+                <div id='clearbtn' class='buttonsls' onclick='resetForm();'>
+                    <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+                </div>
             </div>
         </div>
         <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>

@@ -1,98 +1,5 @@
 "use strict";
 
-var SigninModel = Backbone.Model.extend({
-    urlRoot: 'php/signinJS.php/',
-    defaults: {
-        firstname: '',
-        lastname: '',
-        birthdate: '',
-        sig: '',
-        signed_in: false,
-        services: []
-    },
-    /*
-    url: function() {
-        return 'clientsJS.php/hello/' + this.id;
-    },
-    */
-    initialize: function (options) {
-        //this.id = options.id;
-        //console.log('model created');
-    },
-    validate: function(attrs, options) {
-        //console.log('in validate');
-        //console.log(attrs);
-        
-        // both first and last name are required
-        if (!attrs.lastname || !attrs.firstname) {
-            return "Firstname and Lastname are both required fields";
-        }
-        
-        // if the date has been entered then confirm its a valid date
-        if (attrs.dob && !moment(attrs.dob, 'YYYY-MM-DD', true).isValid()) {
-            //console.log('not a valid date ' + attrs.dob);
-            return "Birthdate is not a date";
-        }
-        
-    },
-    
-});
-
-var SigninDetailedModel = Backbone.Model.extend({
-    urlRoot: 'php/signinJS.php/details/',
-    
-    defaults: {
-        selected: false
-    },
-    
-    validate: function(attrs, options) {
-        
-        if (!attrs.id || !attrs.service_name || !attrs.provider_name) {
-            return "A DB issue occurred retrieving services, please contact Administrator";
-        }
-    },
-    
-    parse: function(response, xhr) {
-       //console.log("parse called!");
-       //console.log(xhr);
-        return response;
-    }
-    
-});
-
-var SigninDetailedCollection = Backbone.Collection.extend({
-    url: 'php/signinJS.php/details/',
-    model: SigninDetailedModel,
-    defaults: {
-    },
-    
-    validate: function() {
-        
-        if (!attrs.id || !attrs.service_name || !attrs.provider_name) {
-            return "A DB issue occurred retrieving services, please contact Administrator";
-        }
-    }
-    
-});
-
-var AppointmentModel = Backbone.Model.extend({
-    urlRoot: "php/apptsJS.php/signin/",
-    defaults: {
-        client: {},
-        staff: {},
-        start_datetime: '',
-        end_datetime: '',
-        signature_filename: '',
-        mva: false
-    },
-    validate: function(attrs, options) {
-        if (!moment(attrs.end_datetime, ['DD-MMMM-YYYY hh:mmA', 'YYYY-MM-DD HH:mm:ss']).isValid()) {
-            //console.log('not a valid date ' + attrs.end_datetime);
-            return "Sign out date is not a date";
-        }
-    },
-});
-
 var SigninServicesView = Backbone.View.extend({
     model: SigninDetailedModel,
     tagName: 'div',
@@ -140,30 +47,10 @@ var SigninServicesView = Backbone.View.extend({
     }
 });
 
-var SigninView = Backbone.View.extend({
-    model: SigninModel
-});
-
-var MatchingPatients = Backbone.Collection.extend({
-    model: SigninModel,
-    wait: true,
-    url: 'php/matchPatients.php/',
-    initialize: function(models, options) {
-        //console.log(options);
-        
-        if (options) {
-            this.firstname = options.firstname;
-            this.lastname = options.lastname;
-            this.dob = options.dob;
-        }
-    }
-});
-
 /*
 
 TODO:
 - fix the number of services returned with counts of appointments left
-- fix the 'User not found' dialog returned when I use Rola Tahboub
 - fix when 'cancel' is clicked and #signature becomes unusable (no height)
 
 */
@@ -174,82 +61,60 @@ var SigninAppView = Backbone.View.extend({
         //console.log('init signinapp');
         //console.log($('#signinbtn'));
         
-        matchingPatients.on('reset', this.checkDuplicity, this);
+        //allPatients.on('reset', this.checkDuplicity, this);
+        this.signin_details = new SigninDetailedCollection();
+
+        // load in all the patients to start
+        allPatients.fetch({
+            
+            reset: true,
+            wait: true,
+            success: function(c, r, o) {
+                console.log("data retrieved successfully");
+            },
+            error: function(c, r, o) {
+                console.log("failed to retreive data");
+            }
+        });
         //appointmentsCollection.on('reset', this.addAppointment, this);
+
+        // load in all the available services for all patients
+        this.signin_details.fetch({
+            reset: true,
+            wait: true,
+            success: function(c, r, o) {
+                console.log("data retrieved successfully");
+            },
+            error: function(c, r, o) {
+                console.log("failed to retreive data");
+            }
+        });
+
+        // retrieve all of today's appointments - in case we go offline, we can just update this collection
+        this.todays_appointments = new TodaysAppointmentsCollection({});
+        this.todays_appointments.fetch({
+            reset: true,
+            wait: true,
+        });
         
+        var self = this;
+
+        var int = window.setInterval(
+            function() {
+                if (allPatients.dirtyModels().length == 0) {
+                    self.todays_appointments.syncDirtyAndDestroyed();
+                    console.log('synced todays_appointments');
+                }
+        }, 60000);
+
+        console.log("signin interval job id: " + int);
+
     },
     events: {
-        //'blur #lastname': 'signin',
-        //'blur #day': 'signin',
         'keypress #lastname': 'updateOnEnter',
         'click #signinbtn': 'signin',
         'click #signoutbtn': 'signout',
         'click #finished': 'commitSignin'
-    },
-    addAppointment: function(signinModel) {
-        //console.log('in addAppointment() .. appointmentModel says ' + JSON.stringify(appointmentModel.toJSON()));
-        var s_view = new SigninView({model: signinModel});
-        $('#signin-section').append(view_appt.render().el);
-    },
-    checkDuplicity: function() {
-        //console.log('checking duplicity');
-    },
-    addAll: function(){
-        //console.log('in addall()');
-        
-        this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
-        //console.log("appointmentsCollection has " + appointmentsCollection.length);
-        
-        // If any of the filter fields are filled then apply the filter
-        if ($('#firstname_filter').val() || $('#lastname_filter').val() || $('#date_to').val() || $('#date_from').val()) {
-            
-            //console.log('filter found! ' + $('#firstname_filter').val() + ' ' + $('#lastname_filter').val());
-            
-            var firstname_filter = $('#firstname_filter').val().toLowerCase();
-            var lastname_filter = $('#lastname_filter').val().toLowerCase();
-            var date_from_filter = $('#date_from').val();
-            var date_to_filter = $('#date_to').val();
-            
-            var date_from = moment(date_from_filter, "YYYY-MM-DD").subtract(1,'d');
-            var date_to = moment(date_to_filter, "YYYY-MM-DD");
-            
-            if ((firstname_filter || lastname_filter || date_from_filter || date_to_filter) && date_to.isValid() && date_from.isValid()) {
-                var ac = appointmentsCollection.filter(function(appmodel) {
-                    //console.log(appmodel);
-
-                    var appt_timedate = moment(appmodel.get('start_datetime').split(' ')[0], "DD-MMMM-YYYY");                    
-                    
-                    if ((appmodel.get('firstname').toLowerCase() === firstname_filter || !firstname_filter) && (appmodel.get('lastname').toLowerCase() === lastname_filter || !lastname_filter) && appt_timedate.isBetween(date_from, date_to, 'day')) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
-                
-                if (ac.length) {
-                    _.each(ac, this.addAppointment);
-                } else {
-                    this.$('#appointments-table').html('<tr><td bgcolor="white" border="0" align="center">0 appointments matching the above filter</tr></td>'); // clean the appointments table
-                }
-                //this.addAppointment(ac);
-                //appointmentsCollection.append(ac);
-            }
-            
-        }
-
-    },
-    reloadAppointments: function() {
-        
-        //console.log('reloading');
-        appointmentsCollection.fetch({
-            reset: true,
-            data: { 
-                from: appointmentsCollection.date_from,
-                to: appointmentsCollection.date_to,
-                page: appointmentsCollection.page,
-                page_size: appointmentsCollection.page_size
-            }
-        });        
     },
     updateOnEnter: function(e) {
         //console.log(e.which);
@@ -258,30 +123,24 @@ var SigninAppView = Backbone.View.extend({
             e.currentTarget.blur();
         }
     },
-    updateFilterOnEnter: function(e) {
-        if ((e.which === 13 && e.currentTarget.id === 'firstname_filter') || (e.which === 13 && e.currentTarget.id === 'lastname_filter')) {
-            this.addAll();
-            e.currentTarget.blur();
-        }
-    },
     showService: function(signin_detail_model) {
-        //console.log('what is this? ');
-        //console.log(this);
-        //console.log(signin_detail_model);
         var signin_service_view = new SigninServicesView({model: signin_detail_model, parent: this});
         $('#services-inner-container').append(signin_service_view.render().el);
         $('#services-outer-container').show();
     },
     signin_model: {},
     signin_details: {},
+    todays_appointments: {},
     commitSignin: function() {
         var self = this;
         
         // signin_model.services only contains the services selected by the patient
         // signin_details is a SigninDetailedCollection
-        
-        this.signin_model.save({},{
-            success: function(model, response) {
+
+        var this_appointment = this.todays_appointments.add(this.signin_model);
+
+        this_appointment.save({},{
+            success: function(model, response, options) {
                 
                 // initialize the remaining services statement
                 var services_remaining_statement = "";
@@ -302,15 +161,25 @@ var SigninAppView = Backbone.View.extend({
                 
                 self.reportSuccess("Thank you for signing in.  Please see reception now" + services_remaining_statement);
                 
+                if (options.dirty) {
+                    console.log('saved locally');
+                } else {
+                    console.log('saved remotely');
+                }
+
                 self.signin_model.unbind();
                 self.clearForm();
 
             },
-            error: function() {
+            error: function(m, r, o) {
                 //console.log(this.errorThrown);
                 errorsdialog.show('issue connecting to database', true);
-            }
+            },
+            wait: false,
+            timeout: 1000,
+//            remote: false,
         });
+
     },
     signin: function(e) {
         //console.log('signin clicked');
@@ -324,140 +193,118 @@ var SigninAppView = Backbone.View.extend({
             dob = '';
         }
 
-        $('#buttonscontainer').addClass('hiddensignincontainer');
-        $('#pleasewait').removeClass('pleasewaithidden');
+//        $('#buttonscontainer').addClass('hiddensignincontainer');
+//        $('#pleasewait').removeClass('pleasewaithidden');
         //$('#buttonscontainer').removeClass('signincontainer');
 
+        var self = this;
+        var matches;
 
-        this.signin_model = new SigninModel({
-            firstname: firstname,
-            lastname: lastname,
-            dob: dob,
-            sig: '',
-            services: []
-        });
-        
-        //console.log('valid? ' + signinModel.isValid());
-        this.signin_details = new SigninDetailedCollection({});
-    
-        if (this.signin_model.isValid()) {
-            var signinView = new SigninView({model: this.signin_model });
-            var self = this;
-            
-            matchingPatients = new MatchingPatients([], {firstname: firstname, lastname: lastname, dob: dob});
-            
-            matchingPatients.fetch({
-                reset: true,
-                data: { 
-                    firstname: matchingPatients.firstname,
-                    lastname: matchingPatients.lastname,
-                    dob: matchingPatients.dob
-                },
-                success: function() {
-                    
-                    //console.log('success ' + JSON.stringify(matchingPatients.toJSON()));
-                    if (matchingPatients.length === 0) {
-
-                        errorsdialog.show('user not found');
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');
-                        return;
-        
-                    }  else if (matchingPatients.length > 1) {
-                        
-                        $('#buttonscontainer').addClass('hiddensignincontainer');
-                        // multiple clients found matching the first and last name, ask for date of birth
-                        
-                        //console.log('multiple entries found ' + matchingPatients.length);
-                        $('#dob').addClass('datefieldshow');
-                        $('#dob').removeClass('datefieldhide');
-                        $('#datefieldmsg').addClass('datefieldmsgshow');
-                        $('#datefieldmsg').removeClass('datefieldhide');
-                        //errorsdialog.show("Please enter your date of birth", false);
-                        //setTimeout(function() { $("#year").focus(); }, 4000);
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');                        
-                        
-                    } else if (e.type === 'click' || e.which === 13) {
-                        
-                        
-                        var sigval = $('#signature')
-                        var data = sigval.jSignature('getData','svg');
-                        var data_str = data[1];
-                                    
-                        // if the client forgot to sign in then stop and let them know
-                        if (data_str.indexOf('width="0" height="0"') !== -1) {
-
-                            errorsdialog.show('oops... looks like you forgot to sign');
-                            $('#buttonscontainer').removeClass('hiddensignincontainer');
-                            $('#pleasewait').addClass('pleasewaithidden');
-                            return;
-
-                        } else {
-
-                            // client has signed in
-                            // a single client found
-
-                            // record the appointment
-                            var data_str = sigval.jSignature('getData','svgbase64');
-                            
-                           //console.log(this);
-                            
-                            //console.log(data_str[1]);
-                            self.signin_model.attributes['sig'] = data_str[1];
-                            self.signin_model.attributes['client_id'] = matchingPatients.at(0).id;
-
-                            // client has no services, just proceed to record the appointment
-                            
-                            // get all services for the client signing in
-                            self.signin_details.fetch({
-                                data: {cid: matchingPatients.at(0).id},
-                                success: function() {
-                                   //console.log(self.signin_details);
-                                
-                                    // if client has services then list them and allow him/her to select today's services
-                                    if (self.signin_details.length > 0) {
-                                    
-                                        $('#services-inner-container').html('');
-                                        $('#services-inner-container').append('<p style="color:red">select all the services for today');
-                                        $('#signature').hide();
-                                        $('#buttonscontainer').hide();
-
-                                        self.signin_details.each(self.showService, self);
-                                    
-                                    } else {
-                                        
-                                        // client has no services, just save the appointment
-                                        var committing = self.commitSignin.bind(self);
-                                        committing();
-                                       //console.log(self.signin_model);
-                                        
-                                    }
-                                    $('#buttonscontainer').removeClass('hiddensignincontainer');
-                                    $('#pleasewait').addClass('pleasewaithidden');
-
-                                } // end signin_details.fetch success
-                            }); // end signin_details
-                        }
-                    }
-                },
-                error: function() {
-                    errorsdialog.show('issue connecting to database', true);
-                    $('#buttonscontainer').removeClass('hiddensignincontainer');
-                    $('#pleasewait').addClass('pleasewaithidden');
-                    return;
-                }
-            });
-
+        if (dob == '') {
+            matches = allPatients.where({
+                firstname: firstname,
+                lastname: lastname
+            }, 
+            false,
+            {caseInsensitive: true});
         } else {
-            errorsdialog.show(this.signin_model.validationError, '#FF0000');
+            matches = allPatients.where({
+                firstname: firstname,
+                lastname: lastname,
+                dob: dob
+            },
+            false,
+            {caseInsensitive: true});
+        }
+
+        if (matches.length == 0) {
+            errorsdialog.show('user not found');
             $('#buttonscontainer').removeClass('hiddensignincontainer');
             $('#pleasewait').addClass('pleasewaithidden');
             return;
-        }
-    
-        //console.log(e.type);
-        //console.log(matchingPatients.length);        
+        } else if (matches.length > 1) {
+            $('#buttonscontainer').addClass('hiddensignincontainer');
+            // multiple clients found matching the first and last name, ask for date of birth
+            
+            //console.log('multiple entries found ' + matchingPatients.length);
+            $('#dob').addClass('datefieldshow');
+            $('#dob').removeClass('datefieldhide');
+            $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
+            $('#datefieldrequiredmsg').removeClass('datefieldhide');
+            //errorsdialog.show("Please enter your date of birth", false);
+            //setTimeout(function() { $("#year").focus(); }, 4000);
+            $('#buttonscontainer').removeClass('hiddensignincontainer');
+            $('#pleasewait').addClass('pleasewaithidden');                        
+
+        } else if (e.type === 'click' || e.which === 13) {
+
+            console.log(matches[0]);
+
+            var sigval = $('#signature')
+            var data = sigval.jSignature('getData','svg');
+            var data_str = data[1];
+                        
+            // if the client forgot to sign in then stop and let them know
+            if (data_str.indexOf('width="0" height="0"') !== -1) {
+
+                errorsdialog.show('oops... looks like you forgot to sign');
+                $('#buttonscontainer').removeClass('hiddensignincontainer');
+                $('#pleasewait').addClass('pleasewaithidden');
+                return;
+
+            } else {
+
+                // client has signed in
+                // a single client found
+
+                // record the appointment
+                var data_str = sigval.jSignature('getData','svgbase64');
+                
+               //console.log(this);
+
+                this.signin_model = new SigninModel({
+                    firstname: firstname,
+                    lastname: lastname,
+                    dob: dob,
+                    sig: data_str[1],
+                    services: [],
+                    client_id: matches[0].id,
+                    signed_in: true
+                });        
+                
+                // get all services for the client signing in
+                console.log(matches);
+                var client_services = this.signin_details.where({client_id: matches[0].id})
+                    
+                // if client has services then list them and allow him/her to select today's services
+                if (client_services.length > 0) {
+                
+                    $('#services-inner-container').html('');
+                    $('#services-inner-container').append('<p style="color:red">select all the services for today');
+                    $('#signature').hide();
+                    $('#buttonscontainer').hide();
+
+                    //client_services.each(self.showService, self);
+                    _.each(client_services, self.showService, self);
+                
+                } else {
+                    
+                    // client has no services, just save the appointment
+                    var committing = self.commitSignin.bind(self);
+                    committing();
+
+                   //console.log(self.signin_model);
+                    
+                }
+
+                // mark the patient as signed in
+                matches[0].set('signed_in', true);
+
+                $('#buttonscontainer').removeClass('hiddensignincontainer');
+                $('#pleasewait').addClass('pleasewaithidden');
+            }
+
+        }     
 
     },
     reportSuccess: function(message) {
@@ -466,8 +313,8 @@ var SigninAppView = Backbone.View.extend({
         errorsdialog.show(message, false);
         $("#signature").jSignature("reset");
         document.forms["loginform"].reset();
-        $("#datefieldmsg").removeClass("datefieldmsgshow");
-        $("#datefieldmsg").addClass("datefieldhide");
+        $("#datefieldrequiredmsg").removeClass("datefieldmsgshow");
+        $("#datefieldrequiredmsg").addClass("datefieldhide");
         $('#dob').removeClass('datefieldshow');
         $('#dob').addClass('datefieldhide');
         $('#services-container').html('');
@@ -487,13 +334,10 @@ var SigninAppView = Backbone.View.extend({
         var lastname = $('#lastname').val();
         var dob = $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val();
         
-        if (dob === '--') {
-            dob = '';
-        }
-        
-        $('#buttonscontainer').addClass('hiddensignincontainer');
-        $('#pleasewait').removeClass('pleasewaithidden');
 
+//        $('#buttonscontainer').addClass('hiddensignincontainer');
+//        $('#pleasewait').removeClass('pleasewaithidden');
+/*
         // retreive the signinModel for signing out
         var signinModel = new SigninModel({
             firstname: firstname,
@@ -501,109 +345,146 @@ var SigninAppView = Backbone.View.extend({
             dob: dob,
             sig: ''
         });
-
-        // check that the signinModel is valid
-        //console.log('valid? ' + signinModel.isValid());
-        if (signinModel.isValid()) {
             
-            var signinView = new SigninView({model: signinModel });
-            var self = this;
+        var signinView = new SigninView({model: signinModel });
+
+*/        
+        var self = this;
+        var matches;
             
-            // retreive all patients that match firstname, lastname and dob provided
-            matchingPatients = new MatchingPatients([], {firstname: firstname, lastname: lastname, dob: dob});
-            //console.log(this);
-            matchingPatients.fetch({
-                
-                reset: true,
-                
-                data: { 
-                    firstname: matchingPatients.firstname,
-                    lastname: matchingPatients.lastname,
-                    dob: matchingPatients.dob
-                },
-                
-                success: function() {
+        if (dob === '--') {
+            dob = '';
+        }
 
-                    //console.log('success ' + JSON.stringify(matchingPatients.toJSON()));
-                    //console.log("signed in?" + matchingPatients.models[0].get('signed_in'));
-                    
-                    // no patient matches firstname, lastname and dob provided
-                    if (matchingPatients.length === 0) {
-
-                        errorsdialog.show('client not found');
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');
-                        return;
+        if (dob == '') {
+            matches = allPatients.where({
+                firstname: firstname,
+                lastname: lastname
+            }, 
+            false,
+            {caseInsensitive: true});
+        } else {
+            matches = allPatients.where({
+                firstname: firstname,
+                lastname: lastname,
+                dob: dob
+            },
+            false,
+            {caseInsensitive: true});
+        }
+        
                 
-                    // more than one patient matches firstname, lastname and dob provided
-                    } else if (matchingPatients.length > 1) {
+        // no patient matches firstname, lastname and dob provided
+        if (matches.length === 0) {
+
+            errorsdialog.show('client not found');
+//            $('#buttonscontainer').removeClass('hiddensignincontainer');
+//            $('#pleasewait').addClass('pleasewaithidden');
+            return;
+    
+        // more than one patient matches firstname, lastname and dob provided
+        } else if (matches.length > 1) {
+            
+            // multiple clients found matching the first and last name, ask for date of birth
+            
+            //console.log('multiple entries found ' + matchingPatients.length);
+            $('#dob').addClass('datefieldshow');
+            $('#dob').removeClass('datefieldhide');
+            $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
+            $('#datefieldrequiredmsg').removeClass('datefieldhide');
+            errorsdialog.show("Please enter your date of birth", false);
+            $('#year').focus();
+//            $('#buttonscontainer').removeClass('hiddensignincontainer');
+//            $('#pleasewait').addClass('pleasewaithidden');
+        
+        // one patient found but patient is not signed in at the moment
+        } else if (matches[0].get('signed_in') == false) {
+    
+            errorsdialog.show('You are not signed in at the moment', '#FF0000');
+//            $('#buttonscontainer').removeClass('hiddensignincontainer');
+//            $('#pleasewait').addClass('pleasewaithidden');
+            return;
+        
+        // one patient found and patient is signed in at the moment    
+        } else if (e.type === 'click') {
                         
-                        // multiple clients found matching the first and last name, ask for date of birth
-                        
-                        //console.log('multiple entries found ' + matchingPatients.length);
-                        $('#dob').addClass('datefieldshow');
-                        $('#dob').removeClass('datefieldhide');
-                        $('#datefieldmsg').addClass('datefieldmsgshow');
-                        $('#datefieldmsg').removeClass('datefieldhide');
-                        errorsdialog.show("Please enter your date of birth", false);
-                        $('#year').focus();
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');
-                    
-                    // one patient found but patient is not signed in at the moment
-                    } else if (matchingPatients.models[0].get('signed_in') == false) {
-                
-                        errorsdialog.show('You are not signed in at the moment', '#FF0000');
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');
-                        return;
-                    
-                    // one patient found and patient is signed in at the moment    
-                    } else if (e.type === 'click') {
-                        
-                        //console.log('looking for appointment with ID = ' + matchingPatients.models[0].get('last_appointment_id'));
-                        //this.appointmentModel = new AppointmentModel({id: matchingPatients.models[0].get('last_appointment_id')});
-                        var appointmentModel = new AppointmentModel({});
-                        appointmentModel.fetch({
-                            
-                            data: {
-                                id: matchingPatients.models[0].get('last_appointment_id') 
-                            },
-                            
-                            success: function() {
-                                //console.log('found the appointment!!');
-                                //console.log(this.appointmentModel);
-                                
-                                appointmentModel.save({
-                                    end_datetime: function(m) {
-                                        return moment().format('YYYY-MM-DD HH:mm:ss');
-                                    }(appointmentModel)
-                                },
-                                {   success: function() {
-                                        //errorsdialog.show('signed out successfully', '#0000FF');
-                                        self.reportSuccess("Thank you for signing out");
-                                        $('#signature').show();
-                                    },
-                                    error: function() {
-                                        errorsdialog.show('issue connecting to database', true);
-                                    }
-                                });
+            //console.log('looking for appointment with ID = ' + matchingPatients.models[0].get('last_appointment_id'));
+            //this.appointmentModel = new AppointmentModel({id: matchingPatients.models[0].get('last_appointment_id')});
 
-                                $('#buttonscontainer').removeClass('hiddensignincontainer');
-                                $('#pleasewait').addClass('pleasewaithidden');
+//            var appointmentModel = new AppointmentModel({});
 
-                            }
-                        });
-                    }
-                },
-                error: function() {
-                    errorsdialog.show('issue connecting to database', true);
-                    $('#buttonscontainer').removeClass('hiddensignincontainer');
-                    $('#pleasewait').addClass('pleasewaithidden');                    
-                    return;
-                }
-
+            var todays_appointments_for_patient = this.todays_appointments.where({
+                client_id: matches[0].get('id'),
             });
+
+            // patient had multiple appointments today
+            if (todays_appointments_for_patient.length > 0) {
+
+                // select only the last appointment today
+                var last_appointment = todays_appointments_for_patient[todays_appointments_for_patient.length - 1];
+
+                // mark the patient as signed out
+                matches[0].set('signed_in', false);
+
+                // mark the appointment as signed out and datetime stamp it
+                last_appointment.save({
+                        'signout_date': moment().format('YYYY-MM-DD HH:mm:ss'),
+                        'signed_in': false
+                    },{
+                    success: function(model, response, options) {
+
+                        // initialize the remaining services statement
+                        var services_remaining_statement = "";
+                        var patient_services = self.signin_details.where({
+                            "client_id": matches[0].get('id'),
+                        });
+
+                        //console.log(response);
+
+                        if (patient_services.length > 0) {
+                            services_remaining_statement = "<br>Services Summary<br>";
+                            _.each(patient_services, function(service) {
+
+                                if (service.get('remaining_appts') >= 0) {
+                                    services_remaining_statement += "<br>" + service.get('provider_name') + ': ' + service.get('service_name') + ' ' + service.get('remaining_appts') + ' remaining';
+                                } else {
+                                    services_remaining_statement += "<br>" + service.get('provider_name') + ': ' + service.get('service_name') + ' ' + -service.get('remaining_appts') + ' over';
+                                }
+                            }, self);
+                        }
+
+                        /*
+                        if (response.length > 0) {
+                            services_remaining_statement = "<br>Services Summary<br>";
+                            for (var i=0; i<response.length; i++) {
+                                                        
+                                if (response[i].remaining_appts >= 0) {
+                                    services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + response[i].remaining_appts + ' remaining';
+                                } else {
+                                    services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + -response[i].remaining_appts + ' had';
+                                }
+                            }
+                        }
+                        */
+
+                        self.reportSuccess("Thank you for signing out" + services_remaining_statement);
+                        self.clearForm();
+
+                    },
+                    error: function(m, r, o) {
+                        //console.log(this.errorThrown);
+                        errorsdialog.show('issue connecting to database', true);
+                    },
+                    wait: false,
+                    timeout: 1000,
+//                    remote: false,
+                });
+
+            } else {
+                errorsdialog.show('You are not signed in at the moment', '#FF0000');
+                return;                
+            }
+
         } else {
             errorsdialog.show(signinModel.validationError, true);
             $('#buttonscontainer').removeClass('hiddensignincontainer');
@@ -633,5 +514,5 @@ appointmentsCollection.fetch({
 //console.log($('#date_from').val() + " " + $('#date_to').val());
 //console.log("appointmentsCollection.length: " + appointmentsCollection.length);
 
-var matchingPatients = new MatchingPatients({});
+var allPatients = new MatchingPatients({});
 var signinappview = new SigninAppView();

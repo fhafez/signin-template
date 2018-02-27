@@ -35,6 +35,43 @@ class Appointment {
     }
 }
 
+class Appointment_MSG {
+    
+    public $id = 0;
+    public $client_id = 0;
+    public $dob = "";
+    public $firstname = "";
+    public $lastname = "";
+    public $services = [];
+    public $signature = "";
+    public $signed_in = false;
+    
+    public function __construct($id, $client_id, $dob, $firstname, $lastname, $services, $signed_in, $signature) {
+        $this->id = $id;
+        $this->client_id = $client_id;
+        $this->dob = $dob;
+        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+        $this->services = $services;
+        $this->signed_in = $signed_in;        
+        $this->signature = $signature;
+    }
+    
+    public function toJSON() {
+        return array(
+            "id" => $this->id,
+            "client_id" => $this->client_id,
+            "dob" => $this->dob,
+            "firstname" => $this->firstname,
+            "lastname" => $this->lastname,
+            "services" => $this->services,
+            "signed_in" => $this->signed_in,
+            "signature" => $this->signature,
+            "message" => "SUCCESS"
+        );
+    }
+}
+
 class Available_Appointments {
     
     public $id = 0;
@@ -78,6 +115,75 @@ class Available_Appointments {
     }
 }
 
+
+
+class Available_Appointments_Per_Client {
+    
+    public $id = 0;
+    public $service_id = 0;
+    public $service_name = 0;
+    public $provider_id = 0;
+    public $provider_name = 0;
+    public $remaining_appts = "";
+    public $expires_on = "";
+    public $active_on = "";
+    public $active_now = "";
+    public $mva = "";
+    
+    public function __construct($id, $client_id, $service_id, $service_name, $provider_id, $provider_name, $remaining_appts, $expires_on, $active_on, $active_now, $mva) {
+        $this->id = $id;
+        $this->client_id = $client_id;
+        $this->service_id = $service_id;
+        $this->service_name = $service_name;
+        $this->provider_id = $provider_id;
+        $this->provider_name = $provider_name;
+        $this->remaining_appts = $remaining_appts;
+        $this->expires_on = $expires_on;
+        $this->active_on = $active_on;
+        $this->active_now = $active_now;
+        $this->mva = $mva;        
+    }
+    
+    public function toJSON() {
+        return array(
+            "id" => $this->id,
+            "client_id" => $this->client_id,
+            "service_id" => $this->service_id,
+            "service_name" => $this->service_name,
+            "provider_id" => $this->provider_id,
+            "provider_name" => $this->provider_name,
+            "remaining_appts" => $this->remaining_appts,
+            "expires_on" => $this->expires_on,
+            "active_on" => $this->active_on,
+            "active_now" => $this->active_now,
+            "mva" => $this->mva,
+            "message" => "SUCCESS"
+        );
+    }
+}
+
+class SignoutAppointment {
+    
+    public $id = 0;
+    public $client_id = 0;
+    public $end_datetime = "";
+    
+    public function __construct($id, $client_id, $end_datetime) {
+        $this->id = $id;
+        $this->client_id = $client_id;
+        $this->end_datetime = $end_datetime;
+    }
+    
+    public function toJSON() {
+        return array(
+            "id" => $this->id,
+            "client_id" => $this->client_id,
+            "end_datetime" => $this->end_datetime,
+            "message" => "SUCCESS"
+        );
+    }
+    
+}
 
 function query($conn, $sql_query) {
 
@@ -140,6 +246,7 @@ $app->post('/', function () use ($app) {
         $firstname = $conn->real_escape_string((string)$input->firstname);
         $lastname = $conn->real_escape_string((string)$input->lastname);
         $client_id = $conn->real_escape_string((string)$input->client_id);
+        $current_datetime = (string)$input->current_datetime;
         $sig = $conn->real_escape_string((string)$input->sig);
         
         $services = $input->services;
@@ -156,7 +263,7 @@ $app->post('/', function () use ($app) {
         $tz_result = query($conn, "SET time_zone='America/Toronto'");
         $new_result = query($conn, "INSERT INTO Appointments (client_id, appt_date, sig_filename) 
                                     values 
-                                    ('" . $client_id. "',now(),'" . $sig_filename_w_slashes . "')");
+                                    ('" . $client_id. "','" . $current_datetime . "','" . $sig_filename_w_slashes . "')");
         if ($conn->errno > 0) {
             echo "Error: " + $conn->errno;
             $app->response()->status(402);
@@ -228,8 +335,8 @@ $app->post('/', function () use ($app) {
 
         
         $c = new Appointment($aid, $client_id, "", "", "", "");
-        //echo json_encode($c->toJSON());
-        echo json_encode($available_appointments);
+        echo json_encode($c->toJSON());
+        //echo json_encode($available_appointments);
 
 
     } catch (ResourceNotFoundException $e) {
@@ -243,6 +350,41 @@ $app->post('/', function () use ($app) {
     $conn->close();
     
     
+});
+
+/*
+  return todays' appointments
+  used for offline work
+*/
+$app->get('/appointments/', function () use ($app) {
+    
+    include "db.php";
+ 
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+   if ($conn->connect_errno) {
+        printf("DB Connection Failure %s\n", $conn->connect_error);
+        exit();
+    }
+
+    $tz = new DateTimeZone("America/New_York");
+    $today = new DateTime();
+    $today->setTimezone($tz);
+
+    $tod = $today->format("Y-m-d");
+    $result = query($conn, "SELECT aa.ID, aa.client_id, c.firstname, c.lastname, c.dob from Appointments aa, Clients c WHERE aa.client_id = c.id and aa.appt_date > '" . $tod . "'");
+    
+    $appointments = [];
+    while ($row = $result->fetch_assoc()) {
+        $c = new Appointment_MSG($row['ID'], $row['client_id'], $row['dob'], $row['firstname'], $row['lastname'], [], true, "");
+        array_push($appointments, $c->toJSON());
+    }
+    
+    $app->response['Content-Type'] = 'application/json';
+    echo json_encode($appointments);
+    
+    $conn->close();
+
 });
 
 $app->get('/', function () use ($app) {
@@ -287,32 +429,68 @@ $app->get('/details/', function () use ($app) {
         exit();
     }
 
-    $result = query($conn, "
-        select aa.ID, s.id as service_id, name, p.id as provider_id, provider, remaining_appts, expires_on, active_on, active_now, mva 
-        from Available_Appts aa, Services s, Plans p where
-        aa.client_id = " . $client_id . " and
-        aa.service_id = s.id and 
-        aa.plan_id = p.ID;
-    ");
-
     $available_appointments = [];
-    
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $aa = new Available_Appointments(
-                $row["ID"],
-                $row["service_id"],
-                $row["name"],
-                $row["provider_id"],
-                $row["provider"],
-                $row["remaining_appts"],
-                $row["expires_on"],
-                $row["active_on"],
-                $row["active_now"],
-                $row["mva"]
-                );
-            array_push($available_appointments, $aa->toJSON());
+
+    // return an array of all clients and each client's available appointment
+    if ($client_id == "") {
+
+        $result = query($conn, "
+            select aa.client_id, aa.ID, s.id as service_id, name, p.id as provider_id, provider, remaining_appts, expires_on, active_on, active_now, mva 
+            from Available_Appts aa, Services s, Plans p where
+            aa.service_id = s.id and 
+            aa.plan_id = p.ID
+            order by aa.client_id;
+        ");
+        
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $aa = new Available_Appointments_Per_Client(
+                    $row["ID"],
+                    $row["client_id"],
+                    $row["service_id"],
+                    $row["name"],
+                    $row["provider_id"],
+                    $row["provider"],
+                    $row["remaining_appts"],
+                    $row["expires_on"],
+                    $row["active_on"],
+                    $row["active_now"],
+                    $row["mva"]
+                    );
+                array_push($available_appointments, $aa->toJSON());
+            }
         }
+
+    } else {
+    // return a single client's available appointments
+        $result = query($conn, "
+            select aa.ID, s.id as service_id, name, p.id as provider_id, provider, remaining_appts, expires_on, active_on, active_now, mva 
+            from Available_Appts aa, Services s, Plans p where
+            aa.client_id = " . $client_id . " and
+            aa.service_id = s.id and 
+            aa.plan_id = p.ID;
+        ");
+
+        $available_appointments = [];
+        
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $aa = new Available_Appointments(
+                    $row["ID"],
+                    $row["service_id"],
+                    $row["name"],
+                    $row["provider_id"],
+                    $row["provider"],
+                    $row["remaining_appts"],
+                    $row["expires_on"],
+                    $row["active_on"],
+                    $row["active_now"],
+                    $row["mva"]
+                    );
+                array_push($available_appointments, $aa->toJSON());
+            }
+        }
+
     }
     
     $app->response['Content-Type'] = 'application/json';
@@ -329,26 +507,44 @@ $app->put('/details/:id', function () use ($app) {
     
 });
 
-$app->put('/', function () use ($app) {
+// signout
+//  ($id, $client_id, $start_datetime, $end_datetime, $signature_filename) {
+
+$app->put('/:aid', function ($aid) use ($app) {
+ 
+    $request = $app->request();
+    $body = $request->getBody();
+    $input = json_decode($body);
     
-    $id = $app->request()->params('appointment_id');
-    $signout_date = $app->request()->params('signout_date');
+    include "db.php";
  
     $conn = new mysqli($servername, $username, $password, $dbname);
+ 
+    $end_datetime = $conn->real_escape_string((string)$input->signout_date);
+    $client_id = $conn->real_escape_string((string)$input->client_id);
 
    if ($conn->connect_errno) {
         printf("DB Connection Failure %s\n", $conn->connect_error);
         exit();
     }
 
-    $result = query($conn, "UPDATE Appointments SET signout_date='" . $signout_date . "' WHERE ID=" . $id);
+    try {
 
-    $app->response['Content-Type'] = 'application/json';
-    echo json_encode($clients);
+        $result = query($conn, "UPDATE Appointments SET signout_date='" . $end_datetime . "' where ID=" . $aid);
     
+    } catch (Exception $e) {
+        $app->response()->status(500);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+    }
+
+    $a = new SignoutAppointment($aid, $client_id, $end_datetime);
+
+    $app->response()->status(200);
+    $app->response['Content-Type'] = 'application/json';
+    echo json_encode($a->toJSON());
+
     $conn->close();
 
-    
 });
 
 $app->run();

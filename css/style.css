@@ -521,7 +521,9 @@ input[type=checkbox]:checked + label {
 .datefieldshow input#day { width:50px; }
 .datefieldshow input:focus { outline:none; }
 
-
+input#regyear { width:70px; }
+input#regmonth { width:50px; }
+input#regday { width:50px; }
 
 .expiry_datefield { 
     display: inline; 
