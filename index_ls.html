@@ -15,8 +15,8 @@
     <style type="text/css">
 
         div {
-            margin-top:1em;
-            margin-bottom:1em;
+            margin-top:0.3em;
+            margin-bottom:0.3em;
         }
         input {
             padding: .5em;
@@ -62,7 +62,7 @@
             align-self: center;
             left:49%;
             width:50%;
-            max-height: 300px;
+            max-height: 400px;
             /*background-color:#FFE6F0;*/
             background-color: rgba(255,230,240,1.0);
             color:#CC0000;
@@ -102,7 +102,7 @@
             align-self: center;
             left:49%;
             width:50%;
-            max-height: 300px;
+            max-height: 400px;
             /*background-color:#FFE6F0;*/
             background-color: rgba(0,122,204,1.0);
             color:#FFFFFF;
@@ -133,9 +133,37 @@
         }
 
         #services-inner-container {
-            max-height: 300px;
+            max-height: 400px;
             width: 640px;
             overflow: auto;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        #offline {
+            width: 50px;
+            align-self: center;
+            animation: blink 2s;
+            animation-iteration-count: infinite;
+        }
+
+        .offlinedivshow {
+            width: 100%;
+            text-align: center;
+        }
+
+        .offlinedivhide {
+            display: none;
         }
 
         .hiddensignincontainer {
@@ -224,6 +252,7 @@
             $('#services-container').html('');
             $('#services-outer-container').hide();
             $('#signature').show();
+            $('#nameFields').show();
             $('#buttonscontainer').show();
         }
         
@@ -308,7 +337,7 @@
     <div id='signincontainer'>
     <h3>Haven't got an account yet?  <a href='#' onclick="displayRegister();" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">REGISTER</a> first</h3>
     <form name='loginform' id='loginform'>
-        <div class='signincontainer'>
+        <div class='signincontainer' id='nameFields'>
             <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
             <input id='lastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
 
@@ -346,6 +375,7 @@
         </div>
     </form>
     </div>
+    <div id='offlinediv' class='offlinedivhide'><img id='offline' src="images/offline.png" /></div>
     <div class='copyright'>Copyright &copy; 2015 by Fadi Hafez. All rights reserved.</div>
 
     <script src="libs/modernizr.js"></script>

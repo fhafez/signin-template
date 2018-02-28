@@ -101,6 +101,7 @@ var SigninAppView = Backbone.View.extend({
 
         var int = window.setInterval(
             function() {
+                // make sure to synchronize new registrations before any appointments
                 if (allPatients.dirtyModels().length == 0) {
                     self.todays_appointments.syncDirtyAndDestroyed();
                     console.log('synced todays_appointments');
@@ -126,7 +127,6 @@ var SigninAppView = Backbone.View.extend({
     showService: function(signin_detail_model) {
         var signin_service_view = new SigninServicesView({model: signin_detail_model, parent: this});
         $('#services-inner-container').append(signin_service_view.render().el);
-        $('#services-outer-container').show();
     },
     signin_model: {},
     signin_details: {},
@@ -141,30 +141,36 @@ var SigninAppView = Backbone.View.extend({
 
         this_appointment.save({},{
             success: function(model, response, options) {
-                
+               
+
                 // initialize the remaining services statement
                 var services_remaining_statement = "";
-                var these_services = self.signin_details.models;
-                
-                if (response.length > 0) {
+                var patient_services = self.signin_details.where({
+                    "client_id": self.signin_model.get('client_id'),
+                });
+
+                if (patient_services.length > 0) {
                     services_remaining_statement = "<br>Services Summary<br>";
-                    for (var i=0; i<response.length; i++) {
-                                                
-                        if (response[i].remaining_appts >= 0) {
-                            services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + response[i].remaining_appts + ' remaining';
+                    _.each(patient_services, function(service) {
+
+                        if (service.get('remaining_appts') >= 0) {
+                            services_remaining_statement += "<br>" + service.get('provider_name') + ': ' + service.get('service_name') + ' ' + service.get('remaining_appts') + ' remaining';
                         } else {
-                            services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + -response[i].remaining_appts + ' had';
+                            services_remaining_statement += "<br>" + service.get('provider_name') + ': ' + service.get('service_name') + ' ' + -service.get('remaining_appts') + ' over';
                         }
-                                                
-                    }
+                    }, self);
                 }
                 
                 self.reportSuccess("Thank you for signing in.  Please see reception now" + services_remaining_statement);
                 
                 if (options.dirty) {
                     console.log('saved locally');
+                    $('#offlinediv').removeClass('offlinedivhide');
+                    $('#offlinediv').addClass('offlinedivshow');
                 } else {
                     console.log('saved remotely');
+                    $('#offlinediv').removeClass('offlinedivshow');
+                    $('#offlinediv').addClass('offlinedivhide');
                 }
 
                 self.signin_model.unbind();
@@ -238,8 +244,6 @@ var SigninAppView = Backbone.View.extend({
 
         } else if (e.type === 'click' || e.which === 13) {
 
-            console.log(matches[0]);
-
             var sigval = $('#signature')
             var data = sigval.jSignature('getData','svg');
             var data_str = data[1];
@@ -273,7 +277,6 @@ var SigninAppView = Backbone.View.extend({
                 });        
                 
                 // get all services for the client signing in
-                console.log(matches);
                 var client_services = this.signin_details.where({client_id: matches[0].id})
                     
                 // if client has services then list them and allow him/her to select today's services
@@ -286,6 +289,8 @@ var SigninAppView = Backbone.View.extend({
 
                     //client_services.each(self.showService, self);
                     _.each(client_services, self.showService, self);
+                    $('#nameFields').hide();
+                    $('#services-outer-container').show();
                 
                 } else {
                     
@@ -324,6 +329,7 @@ var SigninAppView = Backbone.View.extend({
         $('#services-inner-container').html('');
         $('#services-outer-container').hide();
         $('#buttonscontainer').show();
+        $('#nameFields').show();
         $('#signature').show();
     },
     signout: function(e) {
@@ -439,8 +445,6 @@ var SigninAppView = Backbone.View.extend({
                             "client_id": matches[0].get('id'),
                         });
 
-                        //console.log(response);
-
                         if (patient_services.length > 0) {
                             services_remaining_statement = "<br>Services Summary<br>";
                             _.each(patient_services, function(service) {
@@ -452,6 +456,17 @@ var SigninAppView = Backbone.View.extend({
                                 }
                             }, self);
                         }
+
+                        if (options.dirty) {
+                            console.log('saved locally');
+                            $('#offlinediv').removeClass('offlinedivhide');
+                            $('#offlinediv').addClass('offlinedivshow');
+                        } else {
+                            console.log('saved remotely');
+                            $('#offlinediv').removeClass('offlinedivshow');
+                            $('#offlinediv').addClass('offlinedivhide');
+                        }
+
 
                         /*
                         if (response.length > 0) {

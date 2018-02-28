@@ -73,10 +73,21 @@ var RegisterAppView = Backbone.View.extend({
                 
                 var thisClient = allPatients.add(registerModel);
                 thisClient.save({},{
-                    success: function() {
+                    success: function(model, response, options) {
+
+                        if (options.dirty) {
+                            console.log('saved locally');
+                            $('#offlinediv').removeClass('offlinedivhide');
+                            $('#offlinediv').addClass('offlinedivshow');
+                        } else {
+                            console.log('saved remotely');
+                            $('#offlinediv').removeClass('offlinedivshow');
+                            $('#offlinediv').addClass('offlinedivhide');
+                        }
+
                         self.reportSuccess("Registration complete.  Please sign in now");
                     },
-                    error: function() {
+                    error: function(model, response, options) {
                         //console.log(this.errorThrown);
                         errorsdialog.show('issue connecting to database', true);
                     },
