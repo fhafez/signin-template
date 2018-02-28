@@ -58,8 +58,6 @@ TODO:
 var SigninAppView = Backbone.View.extend({
     el: '.signincontainer',
     initialize: function() {
-        //console.log('init signinapp');
-        //console.log($('#signinbtn'));
         
         //allPatients.on('reset', this.checkDuplicity, this);
         this.signin_details = new SigninDetailedCollection();
@@ -76,7 +74,6 @@ var SigninAppView = Backbone.View.extend({
                 console.log("failed to retreive data");
             }
         });
-        //appointmentsCollection.on('reset', this.addAppointment, this);
 
         // load in all the available services for all patients
         this.signin_details.fetch({
@@ -199,10 +196,6 @@ var SigninAppView = Backbone.View.extend({
             dob = '';
         }
 
-//        $('#buttonscontainer').addClass('hiddensignincontainer');
-//        $('#pleasewait').removeClass('pleasewaithidden');
-        //$('#buttonscontainer').removeClass('signincontainer');
-
         var self = this;
         var matches;
 
@@ -232,13 +225,10 @@ var SigninAppView = Backbone.View.extend({
             $('#buttonscontainer').addClass('hiddensignincontainer');
             // multiple clients found matching the first and last name, ask for date of birth
             
-            //console.log('multiple entries found ' + matchingPatients.length);
             $('#dob').addClass('datefieldshow');
             $('#dob').removeClass('datefieldhide');
             $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
             $('#datefieldrequiredmsg').removeClass('datefieldhide');
-            //errorsdialog.show("Please enter your date of birth", false);
-            //setTimeout(function() { $("#year").focus(); }, 4000);
             $('#buttonscontainer').removeClass('hiddensignincontainer');
             $('#pleasewait').addClass('pleasewaithidden');                        
 
@@ -247,7 +237,24 @@ var SigninAppView = Backbone.View.extend({
             var sigval = $('#signature')
             var data = sigval.jSignature('getData','svg');
             var data_str = data[1];
-                        
+            var stopSignIn = false;
+            
+            // if the client has only registered offline and has not been synced to DB then we cannot proceed
+            allPatients.dirtyModels().forEach(function(dm) {
+                if (dm.get('id') == matches[0].get('id')) {
+                    errorsdialog.show('You cannot sign in while system is offline.  Please let the staff at the front desk know.', true);
+                    stopSignIn = true;
+                    return;
+                }
+            });
+
+            if (stopSignIn) {
+                $("#signature").jSignature("reset");
+                document.forms["loginform"].reset();                
+                self.clearForm();
+                return;
+            }
+
             // if the client forgot to sign in then stop and let them know
             if (data_str.indexOf('width="0" height="0"') !== -1) {
 
@@ -264,8 +271,6 @@ var SigninAppView = Backbone.View.extend({
                 // record the appointment
                 var data_str = sigval.jSignature('getData','svgbase64');
                 
-               //console.log(this);
-
                 this.signin_model = new SigninModel({
                     firstname: firstname,
                     lastname: lastname,
@@ -313,8 +318,6 @@ var SigninAppView = Backbone.View.extend({
 
     },
     reportSuccess: function(message) {
-        //document.resetForm();
-        //errorsdialog.show(message, '#00AAFF');
         errorsdialog.show(message, false);
         $("#signature").jSignature("reset");
         document.forms["loginform"].reset();
@@ -333,28 +336,11 @@ var SigninAppView = Backbone.View.extend({
         $('#signature').show();
     },
     signout: function(e) {
-        //console.log('signout clicked');
-        //console.log('firstname is ' + $('#firstname').val());
         
         var firstname = $('#firstname').val();
         var lastname = $('#lastname').val();
         var dob = $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val();
         
-
-//        $('#buttonscontainer').addClass('hiddensignincontainer');
-//        $('#pleasewait').removeClass('pleasewaithidden');
-/*
-        // retreive the signinModel for signing out
-        var signinModel = new SigninModel({
-            firstname: firstname,
-            lastname: lastname,
-            dob: dob,
-            sig: ''
-        });
-            
-        var signinView = new SigninView({model: signinModel });
-
-*/        
         var self = this;
         var matches;
             
@@ -384,8 +370,6 @@ var SigninAppView = Backbone.View.extend({
         if (matches.length === 0) {
 
             errorsdialog.show('client not found');
-//            $('#buttonscontainer').removeClass('hiddensignincontainer');
-//            $('#pleasewait').addClass('pleasewaithidden');
             return;
     
         // more than one patient matches firstname, lastname and dob provided
@@ -393,31 +377,21 @@ var SigninAppView = Backbone.View.extend({
             
             // multiple clients found matching the first and last name, ask for date of birth
             
-            //console.log('multiple entries found ' + matchingPatients.length);
             $('#dob').addClass('datefieldshow');
             $('#dob').removeClass('datefieldhide');
             $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
             $('#datefieldrequiredmsg').removeClass('datefieldhide');
             errorsdialog.show("Please enter your date of birth", false);
             $('#year').focus();
-//            $('#buttonscontainer').removeClass('hiddensignincontainer');
-//            $('#pleasewait').addClass('pleasewaithidden');
         
         // one patient found but patient is not signed in at the moment
         } else if (matches[0].get('signed_in') == false) {
     
             errorsdialog.show('You are not signed in at the moment', '#FF0000');
-//            $('#buttonscontainer').removeClass('hiddensignincontainer');
-//            $('#pleasewait').addClass('pleasewaithidden');
             return;
         
         // one patient found and patient is signed in at the moment    
         } else if (e.type === 'click') {
-                        
-            //console.log('looking for appointment with ID = ' + matchingPatients.models[0].get('last_appointment_id'));
-            //this.appointmentModel = new AppointmentModel({id: matchingPatients.models[0].get('last_appointment_id')});
-
-//            var appointmentModel = new AppointmentModel({});
 
             var todays_appointments_for_patient = this.todays_appointments.where({
                 client_id: matches[0].get('id'),
@@ -467,21 +441,6 @@ var SigninAppView = Backbone.View.extend({
                             $('#offlinediv').addClass('offlinedivhide');
                         }
 
-
-                        /*
-                        if (response.length > 0) {
-                            services_remaining_statement = "<br>Services Summary<br>";
-                            for (var i=0; i<response.length; i++) {
-                                                        
-                                if (response[i].remaining_appts >= 0) {
-                                    services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + response[i].remaining_appts + ' remaining';
-                                } else {
-                                    services_remaining_statement += "<br>" + response[i].provider_name + ': ' + response[i].service_name + ' ' + -response[i].remaining_appts + ' had';
-                                }
-                            }
-                        }
-                        */
-
                         self.reportSuccess("Thank you for signing out" + services_remaining_statement);
                         self.clearForm();
 
@@ -510,24 +469,6 @@ var SigninAppView = Backbone.View.extend({
         
     },
 });
-
-
-//var appointmentsCollection = new AppointmentsCollection([], {date_from: moment().subtract(1,"M").format("YYYY-MM-DD"), date_to: moment().format("YYYY-MM-DD")});
-/*
-var appointmentsCollection = new AppointmentsCollection([], {date_from: $('#date_from'), date_to: $('#date_to')});
-
-appointmentsCollection.fetch({
-    reset: true,
-    data: { 
-        from: appointmentsCollection.date_from,
-        to: appointmentsCollection.date_to,
-        page: appointmentsCollection.page,
-        page_size: appointmentsCollection.page_size
-    }
-});
-*/
-//console.log($('#date_from').val() + " " + $('#date_to').val());
-//console.log("appointmentsCollection.length: " + appointmentsCollection.length);
 
 var allPatients = new MatchingPatients({});
 var signinappview = new SigninAppView();
