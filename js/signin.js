@@ -101,11 +101,36 @@ var SigninAppView = Backbone.View.extend({
                 // make sure to synchronize new registrations before any appointments
                 if (allPatients.dirtyModels().length == 0) {
                     self.todays_appointments.syncDirtyAndDestroyed();
-                    console.log('synced todays_appointments');
+                    //console.log('synced todays_appointments');
                 }
         }, 60000);
 
         console.log("signin interval job id: " + int);
+
+        var testacct = new PatientModel();
+
+        var int = window.setInterval(
+            function() {
+                testacct.fetch({
+                    url: 'php/matchPatients.php/testconn/',
+                    data: {
+                        'firstname':'fadi',
+                        'lastname':'hafez',
+                    },
+                    success: function(m, r, o) {
+                        if (o.dirty) {
+                            //console.log('offline!');
+                            $('#offlinediv').removeClass('offlinedivhide');
+                            $('#offlinediv').addClass('offlinedivshow');
+                        } else {
+                            //console.log('online!');
+                            $('#offlinediv').removeClass('offlinedivshow');
+                            $('#offlinediv').addClass('offlinedivhide');
+                        }
+                    }
+                });
+        }, 10000);
+
 
     },
     events: {
@@ -124,9 +149,11 @@ var SigninAppView = Backbone.View.extend({
     showService: function(signin_detail_model) {
         var signin_service_view = new SigninServicesView({model: signin_detail_model, parent: this});
         $('#services-inner-container').append(signin_service_view.render().el);
+        this.displayed_services.push(signin_service_view);
     },
     signin_model: {},
     signin_details: {},
+    displayed_services: [],
     todays_appointments: {},
     commitSignin: function() {
         var self = this;
@@ -172,6 +199,9 @@ var SigninAppView = Backbone.View.extend({
 
                 self.signin_model.unbind();
                 self.clearForm();
+                self.displayed_services.forEach(function (ds) {
+                    ds.remove();
+                });
 
             },
             error: function(m, r, o) {
@@ -402,6 +432,24 @@ var SigninAppView = Backbone.View.extend({
 
                 // select only the last appointment today
                 var last_appointment = todays_appointments_for_patient[todays_appointments_for_patient.length - 1];
+
+                var stopSignOut = false;
+
+                // patient can only sign out if the appointment was synced with DB already (system was online sometime after appointment was created)
+                this.todays_appointments.dirtyModels().forEach(function(dm) {
+                    if (dm.get('id') == last_appointment.get('id')) {
+                        errorsdialog.show('You cannot sign out while system is offline.  Please let the staff at the front desk know.', true);
+                        stopSignOut = true;
+                        return;
+                    }
+                });
+
+                if (stopSignOut) {
+                    $("#signature").jSignature("reset");
+                    document.forms["loginform"].reset();                
+                    self.clearForm();
+                    return;
+                }
 
                 // mark the patient as signed out
                 matches[0].set('signed_in', false);

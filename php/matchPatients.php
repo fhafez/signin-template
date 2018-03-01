@@ -271,6 +271,37 @@ $app->get('/', function () use ($app) {
 
 });
 
+$app->get('/testconn/', function () use ($app) {
+
+    $firstname = utf8_decode($app->request()->params('firstname'));
+    $lastname = utf8_decode($app->request()->params('lastname'));
+    $dob = $app->request()->params('dob');
+
+    include "db.php";
+    
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    
+    $firstname = strtolower($conn->real_escape_string((string)$firstname));
+    $lastname = strtolower($conn->real_escape_string((string)$lastname));
+
+   if ($conn->connect_errno) {
+        printf("DB Connection Failure %s\n", $conn->connect_error);
+        exit();
+    }
+
+    $result = query($conn, "SELECT ID, firstname, lastname, dob from Clients WHERE lower(firstname)='" . $firstname . "' AND lower(lastname)='" . $lastname . "'");
+    
+    $row = $result->fetch_assoc();
+        
+    $c = new Client($row['ID'], $row['firstname'], $row['lastname'], $row['dob'], false, 0);
+    
+    $app->response['Content-Type'] = 'application/json';
+    echo json_encode($c);
+    
+    $conn->close();
+
+});
+
 $app->post('/', function () use ($app) {
 
     date_default_timezone_set('America/Toronto');

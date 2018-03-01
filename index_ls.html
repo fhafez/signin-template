@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
     <meta name="apple-mobile-web-app-capable" content="true" />
-    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,width=device-width" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
     <script src="libs/jquery-min.js"></script>
     <script src="libs/underscore-min.js"></script>
     <script src="libs/backbone-min.js"></script>
@@ -25,6 +25,14 @@
         select {
             padding: .5em;
             margin: .5em;
+        }
+
+        #top_spacer {
+            margin-top: 100px;
+        }
+
+        #site-header {
+            display: none;
         }
 
         #signatureparent {
@@ -215,6 +223,39 @@
             border-radius: 1em;
         }
 
+        @media screen and (max-width: 60.5em) {
+            #signatureparent {
+                width: 90%;
+            }
+
+            .signincontainer {
+                width: 90%;
+                float: all;
+            }
+
+            .buttonsls {
+                width: 6em;
+                float: all;
+            }
+
+            #top_spacer {
+                margin-top: 0.2em;
+            }
+
+            #site_header {
+                width: 100%;
+                display: block;
+                font-size: 16px;
+            }
+
+            header {
+                height: 0.1em;
+                position: relative;
+                background-color: #47476B;
+                background: none;
+            }
+        }
+
     </style>
     <script id='local_main'>
 
@@ -308,8 +349,8 @@
     <div id='errordiv'></div>
 </head>
 <body>
-    <header><h1><!--?=$sitename?--></h1></header>
-    <div style="margin-top:100px;"></div>
+    <header><h1 id='site_header'>signin template</h1></header>
+    <div id='top_spacer'></div>
     <!--div><p align=center id="errors"></p></div-->
 
     <form name='registerform' id='registerform' action="index.php" method="POST">
