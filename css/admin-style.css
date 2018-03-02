@@ -1,7 +1,8 @@
-    @font-face {
-        font-family: "Lato-Heavy";
-        src: url('../fonts/Lato2OFL/Lato-Bold.ttf');
-    }
+
+  @font-face {
+      font-family: "Lato-Heavy";
+      src: url('../fonts/Lato2OFL/Lato-Bold.ttf');
+  }
 
   html {
       margin: 0px;
@@ -905,3 +906,38 @@
           background-color: darkgreen;
       }
   }
+
+  @media screen and (max-width: 1024px) {
+    .client-data {
+      width: 20%;
+      font-size: 1.2em;
+      font-weight: 400;
+    }
+    .clients-header {
+      width: 20%;
+    }
+    .inner-clients-content {
+      width: 100%;
+    }
+    .text_input_percent_width {
+      width: 80%;
+    }
+      #clients-list .view {
+          display: inline-block;
+          font-size: 1.0em;
+          font-weight: 400;
+          font-family: 'helvetica neue';
+      }
+
+      #clients-list .editing .view {
+          display: none;
+      }
+
+      .section-title {
+        display: none;
+      }
+
+      #bufferspace {
+        height: 2px;
+      }
+    }

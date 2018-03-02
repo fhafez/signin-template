@@ -324,7 +324,7 @@ input {
     border: 1px solid #AAAAAA;
     text-align: center;
     border-radius: 5px;
-    width: 220px;
+    width: 22%;
 }
 
 ::-webkit-input-placeholder {
@@ -488,19 +488,19 @@ input[type=checkbox]:checked + label {
 }
 
 .datefieldmsgshow {
-    display: inline-block;
+    display: block;
     font-size: 12px;
     color: red;
 }
 
-.datefieldshow { 
-    display: inline-block; 
+.datefieldshow {
+    display: inline-block;
     padding: 2px;
-    border: solid 1px #FF0000; 
-    background: #FFF; 
+    border: solid 1px #FF0000;
+    background: #FFF;
     border-radius: 5px;
     color: #666;
-    width: 280px;
+    width: 270px;
     margin: 0px;
 }
 
