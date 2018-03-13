@@ -8,12 +8,12 @@ body {
     color:#007ACC;
     text-align:left;
     padding:5px;
-    font-family: "anivers", Helvetica, Arial, sans-serif;
+    font-family: "Avenir Next", Helvetica, Arial, sans-serif;
     height: 100%;
 }
 p {
     color:blue;
-    font-family: verdana;
+    font-family: "Avenir Next", "verdana", sans-serif;
     border: 0px transparent;
     padding: 0px;
     display: block;
@@ -605,6 +605,11 @@ input {
     padding: 10px;
 
 }
+
+.select-services-p {
+    color: orangered; 
+}
+
 /*
 table {
     font-family: "Helvetica Neue";
@@ -756,6 +761,7 @@ input[type=checkbox]:checked + label {
     font-size: 16px;
     font-weight: 600;
     color: orangered;
+    font-family: 'avenir next', 'verdana', sans-serif;
 }
 
 .datefieldshow {

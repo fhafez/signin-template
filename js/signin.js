@@ -129,7 +129,7 @@ var SigninAppView = Backbone.View.extend({
                         }
                     }
                 });
-        }, 10000);
+        }, 60000);
 
 
     },
@@ -247,7 +247,7 @@ var SigninAppView = Backbone.View.extend({
         }
 
         if (matches.length == 0) {
-            errorsdialog.show('user not found');
+            errorsdialog.show('user not found', true);
             $('#buttonscontainer').removeClass('hiddensignincontainer');
             $('#pleasewait').addClass('pleasewaithidden');
             return;
@@ -318,7 +318,7 @@ var SigninAppView = Backbone.View.extend({
                 if (client_services.length > 0) {
                 
                     $('#services-inner-container').html('');
-                    $('#services-inner-container').append('<p style="color:red">select all the services for today');
+                    $('#services-inner-container').append('<p class="select-services-p">select all the services for today');
                     $('#signature').hide();
                     $('#buttonscontainer').hide();
 

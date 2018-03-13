@@ -11,252 +11,7 @@
     <script src="libs/backbone-min.js"></script>
     <script src="libs/backbone.dualstorage.js"></script> 
     <script src="libs/moment-min.js"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <style type="text/css">
-
-        div {
-            margin-top:0.3em;
-            margin-bottom:0.3em;
-        }
-        input {
-            padding: .5em;
-            margin: .5em;
-        }
-        select {
-            padding: .5em;
-            margin: .5em;
-        }
-
-        #top_spacer {
-            margin-top: 100px;
-        }
-
-        #site-header {
-            display: none;
-        }
-
-        #signatureparent {
-            border: 0px transparent #007ACC;
-            border-radius: 5px;
-            color:  #007ACC;
-            background-color:transparent;
-            /*max-width:600px;*/
-            padding:5px;        
-            width:950px;
-            position: relative;
-            margin-left:auto; 
-            margin-right:auto;
-            margin-top: 0px; 
-            font-family: sans-serif;
-        }
-
-        /*This is the div within which the signature canvas is fitted*/
-        #signature {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color:white;
-            color:#007ACC;
-            decor-color:#000;
-            margin-left:auto; 
-            margin-right:auto;
-            width:95%;
-            font-family: sans-serif;
-            font-size:18px;
-            padding:10px;
-        }
-        
-        .errordivshow {
-            position: fixed;
-            align-self: center;
-            left:49%;
-            width:50%;
-            max-height: 400px;
-            /*background-color:#FFE6F0;*/
-            background-color: rgba(255,230,240,1.0);
-            color:#CC0000;
-            border: 1px solid #CC0000;
-            border-radius: 5px;
-            padding: 25px;
-            font-family: verdana;
-            font-size: 16px;
-            text-align: center;
-            top:85px;
-            margin: 0 0 0 -25%;
-            display: '';
-            overflow: auto;
-            z-index: 100;
-        }
-        
-        .errordivhide {
-            position: fixed;
-            align-self: center;
-            left:50%; 
-            width:50%; 
-            background-color:#FFE6F0;
-            color:#CC0000;
-            border: 1px solid #CC0000;
-            border-radius: 5px;
-            padding: 25px;
-            font-family: verdana;
-            font-size: 16px;
-            text-align: center;
-            top:90px;
-            margin: 0 0 0 -25%;
-            display: none;
-        }
-
-        .successdivshow {
-            position: fixed;
-            align-self: center;
-            left:49%;
-            width:50%;
-            max-height: 400px;
-            /*background-color:#FFE6F0;*/
-            background-color: rgba(0,122,204,1.0);
-            color:#FFFFFF;
-            border: 2px solid white;
-            border-radius: 5px;
-            padding: 25px;
-            font-family: verdana;
-            font-size: 16px;
-            text-align: center;
-            top:85px;
-            margin: 0 0 0 -25%;
-            display: '';
-            overflow: auto;
-            z-index: 100;
-        }
-        
-        .signincontainer {
-            background-color:transparent; 
-            border: 0px transparent; 
-            border-color:#4C6680; 
-            padding:0px;
-            width:100%;
-            position: relative;
-            margin-left:auto; 
-            margin-right:auto;
-            margin-top: 0px;
-            text-align: center;
-        }
-
-        #services-inner-container {
-            max-height: 400px;
-            width: 640px;
-            overflow: auto;
-        }
-
-        @keyframes blink {
-            0% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        #offline {
-            width: 50px;
-            align-self: center;
-            animation: blink 2s;
-            animation-iteration-count: infinite;
-        }
-
-        .offlinedivshow {
-            width: 100%;
-            text-align: center;
-        }
-
-        .offlinedivhide {
-            display: none;
-        }
-
-        .hiddensignincontainer {
-            display: none;
-        }
-
-        .pleasewaithidden {
-            display: none;
-        }
-
-        .registercontainer {
-            background-color:transparent; 
-            border: 0px transparent; 
-            border-color:#4C6680; 
-            padding:0px;
-            width:100%;
-            position: relative;
-            margin-left:auto; 
-            margin-right:auto;
-            margin-top: 0px;
-            text-align: center;
-        }
-
-        .datefieldshow { 
-            border: solid 1px #AAAAAA;
-        }
-
-        .copyright {
-            padding: 20px 0px 20px 0px;
-            width: 100%;
-            font-size: 10px;
-            text-align: center;
-        }
-
-        /* Drawing the 'gripper' for touch-enabled devices */ 
-        html.touch #content {
-            float:left;
-            width:92%;
-        }
-        html.touch #scrollgrabber {
-            float:right;
-            width:4%;
-            margin-right:2%;
-            /*
-            background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAFCAAAAACh79lDAAAAAXNSR0IArs4c6QAAABJJREFUCB1jmMmQxjCT4T/DfwAPLgOXlrt3IwAAAABJRU5ErkJggg==)
-            */
-        }
-        html.borderradius #scrollgrabber {
-            border-radius: 1em;
-        }
-
-        @media screen and (max-width: 60.5em) {
-            #signatureparent {
-                width: 90%;
-            }
-
-            .signincontainer {
-                width: 90%;
-                float: all;
-            }
-
-            .buttonsls {
-                width: 6em;
-                float: all;
-            }
-
-            #top_spacer {
-                margin-top: 0.2em;
-            }
-
-            #site_header {
-                width: 100%;
-                display: block;
-                font-size: 16px;
-            }
-
-            header {
-                height: 0.1em;
-                position: relative;
-                background-color: #47476B;
-                background: none;
-            }
-        }
-
-    </style>
+    <link rel="stylesheet" href="css/style-light.css">
     <script id='local_main'>
 
       function submitSigninForm(action) {
@@ -349,15 +104,15 @@
     <div id='errordiv'></div>
 </head>
 <body>
-    <header><h1 id='site_header'>signin template</h1></header>
+    <header><h1 id='site_header'>Physiotherapy and Rehabilitation Centres of Ontario</h1></header>
     <div id='top_spacer'></div>
     <!--div><p align=center id="errors"></p></div-->
 
     <form name='registerform' id='registerform' action="index.php" method="POST">
         <div id='registercontainer' class='registercontainer'>
-            <h3>Already Registered? <a href='#' onclick="displaySignin();" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">GO TO SIGN IN</a></h3>
-            <input id='regfirstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
-            <input id='reglastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="Last Name" value="">
+            <h3>Already Registered? <a href='#' onclick="displaySignin();" class='attention-link'>GO TO SIGN IN</a></h3>
+            <input id='regfirstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="FIRST NAME" value="">
+            <input id='reglastname' class='inputls' maxlength='20' name="lastname" type="text" placeholder="LAST NAME" value="">
             <label id='datefieldmsg'>date of birth</label>
             <div id="regdob" class="datefieldshow">
                 <input id="regyear" name='dob_year' type="tel" maxlength="4" placeholder="YYYY" value=""/>/
@@ -366,17 +121,17 @@
             </div>
             <div class="registercontainer" align=center>
                 <div id='registerbtn' class='buttonsls' align=center>
-                    <label style="text-decoration:none; color:white;font-family:verdana;" register="signin">Register</label>
+                    <label class='button-label' register="signin">Register</label>
                 </div>
                 <div id='clearbtn' class='buttonsls' onclick='resetRegistrationForm();'>
-                    <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+                    <label href="#" value="Reset" class='button-label'>Clear</label>
                 </div>
             </div>
         </div>
     </form>
     
     <div id='signincontainer'>
-    <h3>Haven't got an account yet?  <a href='#' onclick="displayRegister();" style="text-decoration:underline; color:#CC0000;font-family:'helvetica neue'">REGISTER</a> first</h3>
+    <h3>Haven't got an account yet?  <a href='#' onclick="displayRegister();" class='attention-link'>REGISTER</a> first</h3>
     <form name='loginform' id='loginform'>
         <div class='signincontainer' id='nameFields'>
             <input id='firstname' class='inputls' maxlength='20' name="firstname" type="text" placeholder="First Name" value="">
@@ -390,10 +145,10 @@
         <div class="signincontainer" id="services-outer-container" style="width:680px">
             <div class="signincontainer" id="services-inner-container" style="width:600px"></div>
             <div id='finished' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Finished</label>
+                <label class='button-label' data-url="signin">Finished</label>
             </div>
             <div id='servicesselected' class='buttonsls' onclick='resetSigninForm();' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Cancel</label>
+                <label class='button-label' data-url="signin">Cancel</label>
             </div>
         </div>
         <div id="signatureparent" style='text-align:center; color:#FFFFFF'>        
@@ -402,13 +157,13 @@
 
         <div class="signincontainer" id="buttonscontainer" align=center>
             <div id='signinbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" data-url="signin">Sign In</label>
+                <label class='button-label' data-url="signin">Sign In</label>
             </div>
             <div id='signoutbtn' class='buttonsls' align=center>
-                <label style="text-decoration:none; color:white;font-family:verdana;" href="#">Sign Out</label>
+                <label class='button-label' href="#">Sign Out</label>
             </div>
             <div id='clearbtn' class='buttonsls' onclick='resetSigninForm();'>
-                <label href="#" value="Reset" style="text-decoration:none; color:white;font-family:verdana">Clear</label>
+                <label href="#" value="Reset" class='button-label'>Clear</label>
             </div>
         </div>
         <div id="pleasewait" align="center" class="pleasewaithidden">

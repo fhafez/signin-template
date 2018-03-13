@@ -1,31 +1,31 @@
 body {
     /*background-color:whitesmoke; */
-    background: linear-gradiant(whitesmoke, white);
-    background: -webkit-linear-gradient(whitesmoke, white); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(whitesmoke, white); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(whitesmoke, white); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(whitesmoke, white); /* Standard syntax */
+    background: linear-gradiant(whitesmoke, darkslategray);
+    background: -webkit-linear-gradient(whitesmoke, darkslategray); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(whitesmoke, darkslategray); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(whitesmoke, darkslategray); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(navy, midnightblue); /* Standard syntax */
+
     color:#007ACC;
     text-align:left;
     padding:5px;
-    font-family: "anivers", Helvetica, Arial, sans-serif;
+    font-family: "Avenir", Helvetica, Arial, sans-serif;
     height: 100%;
 }
 p {
     color:blue;
-    font-family: verdana;
+    font-family: avenir next;
     border: 0px transparent;
     padding: 0px;
     display: block;
-
 }
 h1 {
     color:#e5e5ec;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Avenir Next', Arial, sans-serif;
     text-align: center;
     font-style: normal;
     font-weight: normal;
-    font-size: 25px;
+    font-size: 26px;
     letter-spacing: 0.34000;
 }
 h2 {
@@ -43,11 +43,13 @@ h2 {
     padding: 0px;
 }
 h3 {
-    color:#007ACC;
+    color: silver;
     font-family: Roboto, arial, sans-serif;
+    letter-spacing: 0.34000;
     text-align: center;
     font-size: 16px;
     margin-top: 35px;
+    /* background-color: #007ACC; */
     background-color: transparent;
     border-bottom: 0px transparent;
     border-color: #AAAAAA;
@@ -76,11 +78,9 @@ h3 {
     padding: 0px;    
 }
 
-/* all below was directly in index_ls.html */
-
 .attention-link {
     text-decoration:underline;
-    color: orangered;
+    color: gold;
     font-family:'avenir next','helvetica neue';
     font-weight: 600;
 }
@@ -219,9 +219,9 @@ select {
 
 .button-label {
     text-decoration: none;
-    color: ghostwhite;
+    color: darkblue;
     font-family: avenir, verdana;
-    font-weight: 300;
+    font-weight: 500;
     font-size: 24px;
 }
 
@@ -336,8 +336,6 @@ html.borderradius #scrollgrabber {
     }
 }
 
-/* all above was directly in index_ls.html */
-
 /*
 .signincontainer {
     background-color:transparent; 
@@ -351,7 +349,6 @@ html.borderradius #scrollgrabber {
     margin-top: 0px;
     text-align: center;
 }
-
 
 .registercontainer {
     background-color:transparent; 
@@ -466,7 +463,7 @@ nav {
 header {
     background: #47476B;
     position: fixed;
-    /* background-image: url('../images/oc-chiro.jpg'); */
+    /* background-image: url('../images/parcontario-logo.png'); */
     background-repeat: no-repeat;
     top: 0;
     left: 0;
@@ -539,16 +536,16 @@ header {
 }
 
 .buttonsls {
-    font-family: vedrana, sans-serif;
-    font-size: 18px;
-    background: #007ACC;
-    padding:15px;
-    border: 1px solid #AAAAAA;
+    font-family: avenir, sans-serif;
+    font-size: 28px;
+    background: gold;
+    padding: 15px;
+    border: 2px solid aliceblue;
     text-align: center;
     border-radius: 5px;
     cursor: pointer;
     width: 220px;
-    text-decoration:none;
+    text-decoration: none;
     margin-left:auto;
     margin-right:auto;
     display: inline-block;
@@ -585,7 +582,7 @@ input {
     font-size: 18px;
     background: white;
     padding:15px;
-    border: 1px solid #AAAAAA;
+    border: 1px solid gray;
     text-align: center;
     border-radius: 5px;
     width: 22%;
@@ -593,8 +590,8 @@ input {
 
 ::-webkit-input-placeholder {
     color: #AAAAAA;
-    font-size: 18px;
-    font-family: 'avenir next', 'sans-serif';
+    font-size: 20px;
+    font-family: 'avenir next', sans-serif;
 }
 .listappts {
     color:white;
@@ -604,6 +601,10 @@ input {
     border-radius: 5px;
     padding: 10px;
 
+}
+
+.select-services-p {
+    color: gold;
 }
 /*
 table {
@@ -714,9 +715,9 @@ label {
 	padding-left: 5px;
 	margin-right: 15px;
 	font-size: 18px;
-    font-family: sans-serif;
-    color: #007ACC;
-    border-radius: 5px;
+	font-family: sans-serif;
+	color: silver;
+	border-radius: 5px;
 }
 
 input[type=radio] + label {
@@ -754,14 +755,13 @@ input[type=checkbox]:checked + label {
 .datefieldmsgshow {
     display: block;
     font-size: 16px;
-    font-weight: 600;
-    color: orangered;
+    color: gold;
 }
 
 .datefieldshow {
     display: inline-block;
     padding: 2px;
-    border: solid 1px orangered;
+    border: solid 2px gold;
     background: #FFF;
     border-radius: 5px;
     color: #666;
