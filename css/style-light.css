@@ -107,7 +107,7 @@ select {
 }
 
 #signatureparent {
-    border: 0px transparent #007ACC;
+    border: 1px transparent darkblue;
     border-radius: 5px;
     color:  #007ACC;
     background-color:transparent;
@@ -126,13 +126,14 @@ select {
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color:white;
-    color:#007ACC;
-    decor-color:#000;
-    margin-left:auto; 
+    
+    /* decor-color:red; */
+    margin-left:auto;
     margin-right:auto;
     width:95%;
-    font-family: sans-serif;
+    font-family: 'Avenir Next', sans-serif;
     font-size:18px;
+    font-weight: 500;
     padding:10px;
 }
 
