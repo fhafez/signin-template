@@ -854,6 +854,14 @@
     
 }
 
+.blue-signature {
+  stroke: mediumblue;
+  fill: none;
+  stroke-width="2";
+  stroke-linecap="round";
+  stroke-linejoin="round"
+}
+
   @media print {
       h1 {
           color: #000;

@@ -768,12 +768,16 @@ input[type=checkbox]:checked + label {
 .datefieldshow {
     display: inline-block;
     padding: 2px;
-    border: solid 1px orangered;
+    border: solid 1px #AAAAAA;
     background: #FFF;
     border-radius: 5px;
     color: #666;
     width: 280px;
     margin: 0px;
+}
+
+.datefieldhighlight {
+    border: solid 1px orangered;    
 }
 
 .datefieldshow * { 

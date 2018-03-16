@@ -14,6 +14,7 @@ function AppointmentsApp(el) {
             start_datetime: '',
             end_datetime: '',
             signature_filename: '',
+            signature_contents: [],
             mva: false
         },
         validate: function(attrs, options) {

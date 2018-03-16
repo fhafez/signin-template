@@ -68,10 +68,10 @@ var SigninAppView = Backbone.View.extend({
             reset: true,
             wait: true,
             success: function(c, r, o) {
-                console.log("data retrieved successfully");
+                //console.log("data retrieved successfully");
             },
             error: function(c, r, o) {
-                console.log("failed to retreive data");
+                //console.log("failed to retreive data");
             }
         });
 
@@ -80,10 +80,10 @@ var SigninAppView = Backbone.View.extend({
             reset: true,
             wait: true,
             success: function(c, r, o) {
-                console.log("data retrieved successfully");
+                //console.log("data retrieved successfully");
             },
             error: function(c, r, o) {
-                console.log("failed to retreive data");
+                //console.log("failed to retreive data");
             }
         });
 
@@ -188,11 +188,11 @@ var SigninAppView = Backbone.View.extend({
                 self.reportSuccess("Thank you for signing in.  Please see reception now" + services_remaining_statement);
                 
                 if (options.dirty) {
-                    console.log('saved locally');
+                    //console.log('saved locally');
                     $('#offlinediv').removeClass('offlinedivhide');
                     $('#offlinediv').addClass('offlinedivshow');
                 } else {
-                    console.log('saved remotely');
+                    //console.log('saved remotely');
                     $('#offlinediv').removeClass('offlinedivshow');
                     $('#offlinediv').addClass('offlinedivhide');
                 }
@@ -218,8 +218,8 @@ var SigninAppView = Backbone.View.extend({
         //console.log('signin clicked');
         //console.log(e);
         
-        var firstname = $('#firstname').val();
-        var lastname = $('#lastname').val();
+        var firstname = $('#firstname').val().trim();
+        var lastname = $('#lastname').val().trim();
         var dob = $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val();
         
         if (dob === '--') {
@@ -256,6 +256,7 @@ var SigninAppView = Backbone.View.extend({
             // multiple clients found matching the first and last name, ask for date of birth
             
             $('#dob').addClass('datefieldshow');
+            $('#dob').addClass('datefieldhighlight');
             $('#dob').removeClass('datefieldhide');
             $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
             $('#datefieldrequiredmsg').removeClass('datefieldhide');
@@ -354,6 +355,7 @@ var SigninAppView = Backbone.View.extend({
         $("#datefieldrequiredmsg").removeClass("datefieldmsgshow");
         $("#datefieldrequiredmsg").addClass("datefieldhide");
         $('#dob').removeClass('datefieldshow');
+        $('#dob').removeClass('datefieldhighlight');
         $('#dob').addClass('datefieldhide');
         $('#services-container').html('');
 
@@ -367,8 +369,8 @@ var SigninAppView = Backbone.View.extend({
     },
     signout: function(e) {
         
-        var firstname = $('#firstname').val();
-        var lastname = $('#lastname').val();
+        var firstname = $('#firstname').val().trim();
+        var lastname = $('#lastname').val().trim();
         var dob = $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val();
         
         var self = this;
@@ -408,6 +410,7 @@ var SigninAppView = Backbone.View.extend({
             // multiple clients found matching the first and last name, ask for date of birth
             
             $('#dob').addClass('datefieldshow');
+            $('#dob').addClass('datefieldhighlight');
             $('#dob').removeClass('datefieldhide');
             $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
             $('#datefieldrequiredmsg').removeClass('datefieldhide');
@@ -480,11 +483,11 @@ var SigninAppView = Backbone.View.extend({
                         }
 
                         if (options.dirty) {
-                            console.log('saved locally');
+                            //console.log('saved locally');
                             $('#offlinediv').removeClass('offlinedivhide');
                             $('#offlinediv').addClass('offlinedivshow');
                         } else {
-                            console.log('saved remotely');
+                            //console.log('saved remotely');
                             $('#offlinediv').removeClass('offlinedivshow');
                             $('#offlinediv').addClass('offlinedivhide');
                         }

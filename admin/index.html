@@ -32,7 +32,14 @@
         <!--td><div><label><%= dob %></label></div></td-->
         <td><div align='center'><label><%= start_datetime %></label></div></td>
         <td align='center' class='signout'><div class="view"><label><%= end_datetime %></label></div><label class="signout">Signout now? <a class="yes">Yes</a> <a class="no" href="#">No</a></label></td>
-        <td align='center'><img style="max-width:150px; max-height:60px;" src="../signatures/<%= signature_filename %>"/></td>
+        <!--td align='center'><img style="max-width:150px; max-height:60px; stroke: red" src="../signatures/<%= signature_filename %>" /></td-->
+        <td align='center'>
+            <svg xml:space="preserve" viewbox="0 0 500 200" width="90%" preserveAspectRatio="xMidYMid meet">
+                <% _.each(signature_contents, function(sig_d) { %>
+                <path class="blue-signature" d="<%= sig_d[0] %>" />
+                <% }); %>"
+            </svg>
+        </td>
         <td align='center' <%if (staff.staff_firstname === "nobody") { %>class='patient_waiting'<% } else { %> class='patient_treated' <% }%>>
             <div>
                 <% //console.log("staff firstname is " + staff_firstname); %>

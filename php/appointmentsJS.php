@@ -15,9 +15,10 @@ class Appointment {
     public $start_datetime = "";
     public $end_datetime = "";
     public $signature_filename = "";
+    public $signature_contents = [];
     public $mva = false;
     
-    public function __construct($id, $client_id, $firstname, $lastname, $dob, $start_datetime, $end_datetime, $signature_filename, $staff_id, $staff_fname, $staff_lname, $mva) {
+    public function __construct($id, $client_id, $firstname, $lastname, $dob, $start_datetime, $end_datetime, $signature_filename, $signature_contents, $staff_id, $staff_fname, $staff_lname, $mva) {
 
         $this->id = $id;
         $this->client_id = $client_id;
@@ -27,6 +28,7 @@ class Appointment {
         $this->start_datetime = $start_datetime;
         $this->end_datetime = $end_datetime;
         $this->signature_filename = $signature_filename;
+        $this->signature_contents = $signature_contents;
         $this->staff_id = $staff_id;
         $this->staff_firstname = $staff_fname;
         $this->staff_lastname = $staff_lname;
@@ -43,6 +45,7 @@ class Appointment {
             "start_datetime" => $this->start_datetime,
             "end_datetime" => $this->end_datetime,
             "signature_filename" => $this->signature_filename,
+            "signature_contents" => $this->signature_contents,
             "staff" => array("staff_id" => $this->staff_id, "staff_firstname" => $this->staff_firstname, "staff_lastname" => $this->staff_lastname),
             "mva" => $this->mva,
             "message" => "SUCCESS"
@@ -145,11 +148,33 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
     $result = query($conn, $query_str);
 
     $appointments = [];
+    $xml_sig_contents = "";
     
-    while ($row = $result->fetch_assoc()) {
-        $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
-        array_push($appointments, $a->toJSON());
-    }    
+    try {
+        while ($row = $result->fetch_assoc()) {
+
+            try {
+                $sig_contents = file_get_contents("../signatures/" . $row['sig']);
+                $xml_sig_contents = new SimpleXMLElement($sig_contents);
+
+                $children = $xml_sig_contents->children()->count();
+                $xml_path_d_content = [];
+
+                for ($i=0; $i < $children; $i++) { 
+                    array_push($xml_path_d_content, $xml_sig_contents->children()[$i]['d']);
+                }
+
+            } catch (Exception $e) {
+                $xml_sig_contents = "";
+            }
+
+            $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $xml_path_d_content, $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
+            array_push($appointments, $a->toJSON());
+        }
+    } catch (Exception $e) {
+        $app->response()->status(400);
+        $app->response()->header('X-Status-Reason', $e->getMessage());
+    }
     
     $app->response['Content-Type'] = 'application/json';
     echo json_encode($appointments);

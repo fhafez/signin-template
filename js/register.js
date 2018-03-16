@@ -35,8 +35,8 @@ var RegisterAppView = Backbone.View.extend({
         //console.log('signin clicked');
         //console.log(e);
         
-        var firstname = $('#regfirstname').val();
-        var lastname = $('#reglastname').val();
+        var firstname = $('#regfirstname').val().trim();
+        var lastname = $('#reglastname').val().trim();
         var dob = $('#regyear').val() + '-' + $('#regmonth').val() + '-' + $('#regday').val();
         
         if (dob === '--') {
