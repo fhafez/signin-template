@@ -42,6 +42,7 @@ var PatientModel = Backbone.Model.extend({
     urlRoot: 'php/matchPatients.php',
     storeName: 'allPatients_',    
     defaults: {
+        //id: '',
         firstname: '',
         lastname: '',
         dob: '',

@@ -166,7 +166,6 @@ var SigninAppView = Backbone.View.extend({
         this_appointment.save({},{
             success: function(model, response, options) {
                
-
                 // initialize the remaining services statement
                 var services_remaining_statement = "";
                 var patient_services = self.signin_details.where({
@@ -214,6 +213,121 @@ var SigninAppView = Backbone.View.extend({
         });
 
     },
+    finalChecksAndGetAllServices: function(matchingPatient) {
+
+        var sigval = $('#signature')
+        var data = sigval.jSignature('getData','svg');
+        var data_str = data[1];
+        var stopSignIn = false;
+        
+        if (!matchingPatient[0].isValid()) {
+            errorsdialog.show(matchingPatient[0].validationError, true);
+        }
+
+        // if the client has only registered offline and has not been synced to DB then we cannot proceed
+        allPatients.dirtyModels().forEach(function(dm) {
+            if (dm.get('id') == matchingPatient[0].get('id')) {
+                errorsdialog.show('You cannot sign in while system is offline.  Please let the staff at the front desk know.', true);
+                stopSignIn = true;
+                return;
+            }
+        });
+
+        if (stopSignIn) {
+            $("#signature").jSignature("reset");
+            document.forms["loginform"].reset();                
+            self.clearForm();
+            return;
+        }
+
+        // if the client forgot to sign in then stop and let them know
+        if (data_str.indexOf('width="0" height="0"') !== -1) {
+
+            errorsdialog.show('oops... looks like you forgot to sign');
+            $('#buttonscontainer').removeClass('hiddensignincontainer');
+            $('#pleasewait').addClass('pleasewaithidden');
+            return;
+
+        } else {
+
+            // client has signed in
+            // a single client found
+
+            // record the appointment
+            var data_str = sigval.jSignature('getData','svgbase64');
+            
+            this.signin_model = new SigninModel({
+                firstname: matchingPatient[0].get('firstname'),
+                lastname: matchingPatient[0].get('lastname'),
+                dob: matchingPatient[0].get('dob'),
+                sig: data_str[1],
+                services: matchingPatient[0].get('services'),
+                client_id: matchingPatient[0].get('id'),
+                signed_in: true
+            });        
+            
+            // get all services for the client signing in
+            var client_services = this.signin_details.where({client_id: matchingPatient[0].id})
+                
+            // if client has services then list them and allow him/her to select today's services
+            if (client_services.length > 0) {
+            
+                $('#services-inner-container').html('');
+                $('#services-inner-container').append('<p class="select-services-p">select all the services for today');
+                $('#signature').hide();
+                $('#buttonscontainer').hide();
+
+                //client_services.each(self.showService, self);
+                _.each(client_services, this.showService, this);
+                $('#nameFields').hide();
+                $('#services-outer-container').show();
+            
+            } else {
+                
+                // client has no services, just save the appointment
+                var committing = this.commitSignin.bind(this);
+                committing();
+                
+            }
+
+            // mark the patient as signed in
+            matchingPatient[0].set('signed_in', true);
+
+            $('#buttonscontainer').removeClass('hiddensignincontainer');
+            $('#pleasewait').addClass('pleasewaithidden');
+        }
+
+    },    
+    checkRemoteDBForPatient: function(data) {
+
+        var newPatient = [];
+        var self = this;
+
+        // lets try to fetch this user directly from the backend DB, if we're online
+        if (!allPatients.dirtyModels().length) {
+            newPatient = new MatchingPatients();
+            newPatient.fetch({
+                data: data,
+                success: function(collection, response, options) {
+                    if (collection.length == 0) {
+                        errorsdialog.show('user not found', true);
+                        $('#buttonscontainer').removeClass('hiddensignincontainer');
+                        $('#pleasewait').addClass('pleasewaithidden');
+                        return;
+                    } else {
+                        self.finalChecksAndGetAllServices.call(self, collection.models);
+                    }
+                },
+                error: function(collection, response, options) {
+                    errorsdialog.show('user not found', true);
+                    $('#buttonscontainer').removeClass('hiddensignincontainer');
+                    $('#pleasewait').addClass('pleasewaithidden');
+                    return;
+                }
+            });
+        }
+
+    },    
     signin: function(e) {
         //console.log('signin clicked');
         //console.log(e);
@@ -228,6 +342,11 @@ var SigninAppView = Backbone.View.extend({
 
         var self = this;
         var matches;
+
+        if (firstname.length == 0 || lastname.length == 0) {
+            errorsdialog.show('Must include firstname and lastname', true);
+            return;
+        }
 
         if (dob == '') {
             matches = allPatients.where({
@@ -246,12 +365,11 @@ var SigninAppView = Backbone.View.extend({
             {caseInsensitive: true});
         }
 
+        // no matches for this patient found locally
         if (matches.length == 0) {
-            errorsdialog.show('user not found', true);
-            $('#buttonscontainer').removeClass('hiddensignincontainer');
-            $('#pleasewait').addClass('pleasewaithidden');
-            return;
+            this.checkRemoteDBForPatient.call(this, {firstname: firstname, lastname: lastname, dob: dob});
         } else if (matches.length > 1) {
+
             $('#buttonscontainer').addClass('hiddensignincontainer');
             // multiple clients found matching the first and last name, ask for date of birth
             
@@ -264,90 +382,10 @@ var SigninAppView = Backbone.View.extend({
             $('#pleasewait').addClass('pleasewaithidden');                        
 
         } else if (e.type === 'click' || e.which === 13) {
+            this.finalChecksAndGetAllServices.call(this, matches);
+        }
 
-            var sigval = $('#signature')
-            var data = sigval.jSignature('getData','svg');
-            var data_str = data[1];
-            var stopSignIn = false;
-            
-            // if the client has only registered offline and has not been synced to DB then we cannot proceed
-            allPatients.dirtyModels().forEach(function(dm) {
-                if (dm.get('id') == matches[0].get('id')) {
-                    errorsdialog.show('You cannot sign in while system is offline.  Please let the staff at the front desk know.', true);
-                    stopSignIn = true;
-                    return;
-                }
-            });
-
-            if (stopSignIn) {
-                $("#signature").jSignature("reset");
-                document.forms["loginform"].reset();                
-                self.clearForm();
-                return;
-            }
-
-            // if the client forgot to sign in then stop and let them know
-            if (data_str.indexOf('width="0" height="0"') !== -1) {
-
-                errorsdialog.show('oops... looks like you forgot to sign');
-                $('#buttonscontainer').removeClass('hiddensignincontainer');
-                $('#pleasewait').addClass('pleasewaithidden');
-                return;
-
-            } else {
-
-                // client has signed in
-                // a single client found
-
-                // record the appointment
-                var data_str = sigval.jSignature('getData','svgbase64');
-                
-                this.signin_model = new SigninModel({
-                    firstname: firstname,
-                    lastname: lastname,
-                    dob: dob,
-                    sig: data_str[1],
-                    services: [],
-                    client_id: matches[0].id,
-                    signed_in: true
-                });        
-                
-                // get all services for the client signing in
-                var client_services = this.signin_details.where({client_id: matches[0].id})
-                    
-                // if client has services then list them and allow him/her to select today's services
-                if (client_services.length > 0) {
-                
-                    $('#services-inner-container').html('');
-                    $('#services-inner-container').append('<p class="select-services-p">select all the services for today');
-                    $('#signature').hide();
-                    $('#buttonscontainer').hide();
-
-                    //client_services.each(self.showService, self);
-                    _.each(client_services, self.showService, self);
-                    $('#nameFields').hide();
-                    $('#services-outer-container').show();
-                
-                } else {
-                    
-                    // client has no services, just save the appointment
-                    var committing = self.commitSignin.bind(self);
-                    committing();
-
-                   //console.log(self.signin_model);
-                    
-                }
-
-                // mark the patient as signed in
-                matches[0].set('signed_in', true);
-
-                $('#buttonscontainer').removeClass('hiddensignincontainer');
-                $('#pleasewait').addClass('pleasewaithidden');
-            }
-
-        }     
-
-    },
+    }, 
     reportSuccess: function(message) {
         errorsdialog.show(message, false);
         $("#signature").jSignature("reset");
