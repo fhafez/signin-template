@@ -36,8 +36,8 @@ var SigninServicesView = Backbone.View.extend({
             signinappview.signin_model.attributes.services.push(this.model);
 
             // update the local instance of the service
-            var current_signin_details = signinappview.signin_details.where({'id': this.model.id});
-            current_signin_details[0].attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
+            var current_signin_details = signinappview.signin_details.get(this.model.id);
+            current_signin_details.attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
 
             this.$el.addClass('checkboxdivselected');
             this.$el.removeClass('checkboxdivunselected');
@@ -54,8 +54,8 @@ var SigninServicesView = Backbone.View.extend({
             }
 
             // update the local instance of the service
-            var current_signin_details = signinappview.signin_details.where({'id': this.model.id});
-            current_signin_details[0].attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
+            var current_signin_details = signinappview.signin_details.get(this.model.id);
+            current_signin_details.attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
             
             this.$el.addClass('checkboxdivunselected');            
             this.$el.removeClass('checkboxdivselected');
@@ -67,7 +67,6 @@ var SigninServicesView = Backbone.View.extend({
 
 TODO:
 - fix the number of services returned with counts of appointments left
-- fix when 'cancel' is clicked and #signature becomes unusable (no height)
 
 */
 
@@ -191,6 +190,7 @@ var SigninAppView = Backbone.View.extend({
     signin_model: {},
     signin_details: [],
     displayed_services: [],
+    todays_services: [],
     todays_appointments: {},
     commitSignin: function() {
         var self = this;
@@ -221,12 +221,14 @@ var SigninAppView = Backbone.View.extend({
                     }, self);
 
                     patient_services.forEach(function(ps) {
-                        ps.save();
+                        ps.selected=false;
+                        ps.save({},{remote: false});
                     });
                 }
                 
                 self.reportSuccess("Thank you for signing in.  Please see reception now" + services_remaining_statement);
-                
+
+/*                
                 if (options.dirty) {
                     console.log('saved locally');
                     console.log(options);
@@ -238,6 +240,7 @@ var SigninAppView = Backbone.View.extend({
                     $('#offlinediv').removeClass('offlinedivshow');
                     $('#offlinediv').addClass('offlinedivhide');
                 }
+*/
 
                 self.signin_model.unbind();
                 self.clearForm();
@@ -252,7 +255,7 @@ var SigninAppView = Backbone.View.extend({
             },
             wait: false,
             timeout: 3000,
-            local: true,
+            remote: false,
         });
 
     },
@@ -284,8 +287,8 @@ var SigninAppView = Backbone.View.extend({
         }
 
         // record the appointment
-        var data_str = sigval.jSignature('getData','svgbase64');
-        
+        var data_str = sigval.jSignature('getData','svgbase64');        
+
         this.signin_model = new SigninModel({
             firstname: matchingPatient[0].get('firstname'),
             lastname: matchingPatient[0].get('lastname'),
@@ -403,7 +406,7 @@ var SigninAppView = Backbone.View.extend({
             {caseInsensitive: true});
         }
 
-        // no matches for this patient found locally
+        // no matches for this patient found locally, check remote DB
         if (matches.length == 0) {
             this.checkRemoteDBForPatient.call(this, {firstname: firstname, lastname: lastname, dob: dob});
         } else if (matches.length > 1) {
@@ -558,6 +561,7 @@ var SigninAppView = Backbone.View.extend({
                             }, self);
                         }
 
+/*
                         if (options.dirty) {
                             //console.log('saved locally');
                             $('#offlinediv').removeClass('offlinedivhide');
@@ -567,7 +571,7 @@ var SigninAppView = Backbone.View.extend({
                             $('#offlinediv').removeClass('offlinedivshow');
                             $('#offlinediv').addClass('offlinedivhide');
                         }
-
+*/
                         self.reportSuccess("Thank you for signing out" + services_remaining_statement);
                         self.clearForm();
 
@@ -578,7 +582,7 @@ var SigninAppView = Backbone.View.extend({
                     },
                     wait: false,
                     timeout: 15000,
-//                    remote: false,
+                    remote: false,
                 });
 
             } else {

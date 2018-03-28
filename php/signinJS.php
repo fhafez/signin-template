@@ -225,7 +225,6 @@ $app->get('/:id', function ($id) {
 $app->post('/', function () use ($app) {
 
     date_default_timezone_set('America/Toronto');
-    $date = date_create();
     
     $service_unspecified_id = '7';
     $plan_unspecified_id = '5';    
@@ -248,6 +247,8 @@ $app->post('/', function () use ($app) {
         $client_id = $conn->real_escape_string((string)$input->client_id);
         $current_datetime = (string)$input->current_datetime;
         $sig = $conn->real_escape_string((string)$input->sig);
+
+        $date = date_create($current_datetime);
         
         $services = $input->services;
         //var_dump($services);
