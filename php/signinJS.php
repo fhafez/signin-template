@@ -278,7 +278,7 @@ $app->post('/', function () use ($app) {
             
             // decrement all the services that are not unlimited
             foreach ($services as $service) {
-                $service_id = $service->id;
+                $service_id = $service->service_id;
 
                 // GET the Provider ID
                 $provider_name = $service->provider_name;

@@ -17,7 +17,7 @@ class Appointment {
     public $signature_filename = "";
     public $signature_contents = [];
     public $mva = false;
-    
+
     public function __construct($id, $client_id, $firstname, $lastname, $dob, $start_datetime, $end_datetime, $signature_filename, $signature_contents, $staff_id, $staff_fname, $staff_lname, $mva) {
 
         $this->id = $id;
@@ -373,6 +373,7 @@ $app->put('/:id', function ($id) use ($app) {
     $appt_date = $conn->real_escape_string((string)$input->start_datetime);
     $signout_date = $conn->real_escape_string((string)$input->end_datetime);
     $sig_filename = $conn->real_escape_string((string)$input->signature_filename);
+    $sig_contents = $input->signature_contents;
     $staff_id = $input->staff->staff_id;
     $mva = ($input->mva == 1) ? "true" : "false";
 
@@ -416,7 +417,7 @@ $app->put('/:id', function ($id) use ($app) {
 
         $result = query($conn, $query_str);
         $row = $result->fetch_assoc();
-        $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
+        $a = new Appointment($row['aid'], $row['cid'], $row['firstname'], $row['lastname'], $row['dob'], $row['dt'], $row['dtto'], $row['sig'], $sig_contents[0], $row['sid'], $row['s_fname'], $row['s_lname'], $row['mva']);
 
         $app->response['Content-Type'] = 'application/json';
         echo json_encode($a->toJSON());

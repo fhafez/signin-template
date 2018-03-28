@@ -59,6 +59,10 @@ var PatientModel = Backbone.Model.extend({
             return "Firstname and Lastname are both required fields";
         }
         
+        if (options.registration && attrs.dob === "") {
+            return "Date of Birth is required";
+        }
+
         // if the date has been entered then confirm its a valid date
         if (attrs.dob && !moment(attrs.dob, 'YYYY-MM-DD', true).isValid() && !moment(attrs.dob, 'YYYY-M-DD', true).isValid() && !moment(attrs.dob, 'YYYY-M-D', true).isValid() && !moment(attrs.dob, 'YYYY-MM-D', true).isValid()) {
             //console.log('not a valid date ' + attrs.dob);

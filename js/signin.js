@@ -29,18 +29,34 @@ var SigninServicesView = Backbone.View.extend({
             this.model.selected = true;
            //console.log('adding a service ' + JSON.stringify(this.model.toJSON));
             
+            this.model.attributes['remaining_appts']--;
+            this.render();
+
             // add the selected model to the services array
             signinappview.signin_model.attributes.services.push(this.model);
+
+            // update the local instance of the service
+            var current_signin_details = signinappview.signin_details.where({'id': this.model.id});
+            current_signin_details[0].attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
+
             this.$el.addClass('checkboxdivselected');
             this.$el.removeClass('checkboxdivunselected');
         } else {
             this.model.selected = false;
             var obj_index = signinappview.signin_model.attributes.services.indexOf(this.model);
             
+            this.model.attributes['remaining_appts']++;
+            this.render();
+
             // remove the service from the services array
             if (obj_index != -1) {
                 signinappview.signin_model.attributes.services.splice(obj_index, 1);
             }
+
+            // update the local instance of the service
+            var current_signin_details = signinappview.signin_details.where({'id': this.model.id});
+            current_signin_details[0].attributes['remaining_appts'] = this.model.attributes['remaining_appts'];
+            
             this.$el.addClass('checkboxdivunselected');            
             this.$el.removeClass('checkboxdivselected');
         }
@@ -64,7 +80,6 @@ var SigninAppView = Backbone.View.extend({
 
         // load in all the patients to start
         allPatients.fetch({
-            
             reset: true,
             wait: true,
             success: function(c, r, o) {
@@ -101,9 +116,9 @@ var SigninAppView = Backbone.View.extend({
                 // make sure to synchronize new registrations before any appointments
                 if (allPatients.dirtyModels().length == 0) {
                     self.todays_appointments.syncDirtyAndDestroyed();
-                    //console.log('synced todays_appointments');
+                    console.log('synced todays_appointments');
                 }
-        }, 60000);
+        }, 30000);
 
         console.log("signin interval job id: " + int);
 
@@ -129,7 +144,7 @@ var SigninAppView = Backbone.View.extend({
                         }
                     }
                 });
-        }, 60000);
+        }, 300000);
 
 
     },
@@ -137,6 +152,7 @@ var SigninAppView = Backbone.View.extend({
         'keypress #lastname': 'updateOnEnter',
         'click #signinbtn': 'signin',
         'click #signoutbtn': 'signout',
+        'click #cancelbtn': 'cancelSignin',
         'click #finished': 'commitSignin'
     },
     updateOnEnter: function(e) {
@@ -151,8 +167,29 @@ var SigninAppView = Backbone.View.extend({
         $('#services-inner-container').append(signin_service_view.render().el);
         this.displayed_services.push(signin_service_view);
     },
+    hideSignInContainer: function() {
+        $('#buttonscontainer').removeClass('signincontainer');
+        $('#buttonscontainer').addClass('hiddensignincontainer');
+        $('#pleasewait').removeClass('pleasewaithidden');
+    },
+    displaySignInContainer: function() {
+        $('#buttonscontainer').addClass('signincontainer');
+        $('#buttonscontainer').removeClass('hiddensignincontainer');
+        $('#pleasewait').addClass('pleasewaithidden');
+    },
+    cancelSignin: function() {
+
+        var self = this;
+
+        // loop through the services of the signin model and increment the remaining_appts counter for each
+        this.signin_model.attributes.services.forEach(function(service) {
+            self.signin_details.where({'id': service.attributes.id })[0].fetch();
+        });
+
+        this.displaySignInContainer();
+    },
     signin_model: {},
-    signin_details: {},
+    signin_details: [],
     displayed_services: [],
     todays_appointments: {},
     commitSignin: function() {
@@ -182,16 +219,22 @@ var SigninAppView = Backbone.View.extend({
                             services_remaining_statement += "<br>" + service.get('provider_name') + ': ' + service.get('service_name') + ' ' + -service.get('remaining_appts') + ' over';
                         }
                     }, self);
+
+                    patient_services.forEach(function(ps) {
+                        ps.save();
+                    });
                 }
                 
                 self.reportSuccess("Thank you for signing in.  Please see reception now" + services_remaining_statement);
                 
                 if (options.dirty) {
-                    //console.log('saved locally');
+                    console.log('saved locally');
+                    console.log(options);
                     $('#offlinediv').removeClass('offlinedivhide');
                     $('#offlinediv').addClass('offlinedivshow');
                 } else {
-                    //console.log('saved remotely');
+                    console.log('saved remotely');
+                    console.log(options);
                     $('#offlinediv').removeClass('offlinedivshow');
                     $('#offlinediv').addClass('offlinedivhide');
                 }
@@ -204,20 +247,19 @@ var SigninAppView = Backbone.View.extend({
 
             },
             error: function(m, r, o) {
-                //console.log(this.errorThrown);
                 errorsdialog.show('issue connecting to database', true);
+                self.displaySignInContainer();
             },
             wait: false,
-            timeout: 1000,
-//            remote: false,
+            timeout: 3000,
+            local: true,
         });
 
     },
     finalChecksAndGetAllServices: function(matchingPatient) {
 
-        var sigval = $('#signature')
-        var data = sigval.jSignature('getData','svg');
-        var data_str = data[1];
+        var sigval = $('#signature');
+        var data_str = sigval.jSignature('getData','svg')[1];
         var stopSignIn = false;
         
         if (!matchingPatient[0].isValid()) {
@@ -235,67 +277,55 @@ var SigninAppView = Backbone.View.extend({
 
         if (stopSignIn) {
             $("#signature").jSignature("reset");
-            document.forms["loginform"].reset();                
-            self.clearForm();
+            document.forms["loginform"].reset();
+            this.clearForm();
+            this.displaySignInContainer();
             return;
         }
 
-        // if the client forgot to sign in then stop and let them know
-        if (data_str.indexOf('width="0" height="0"') !== -1) {
-
-            errorsdialog.show('oops... looks like you forgot to sign');
-            $('#buttonscontainer').removeClass('hiddensignincontainer');
+        // record the appointment
+        var data_str = sigval.jSignature('getData','svgbase64');
+        
+        this.signin_model = new SigninModel({
+            firstname: matchingPatient[0].get('firstname'),
+            lastname: matchingPatient[0].get('lastname'),
+            dob: matchingPatient[0].get('dob'),
+            sig: data_str[1],
+            services: [],
+            client_id: matchingPatient[0].get('id'),
+            signed_in: true
+        });        
+        
+        // get all services for the client signing in
+        var client_services = this.signin_details.where({client_id: matchingPatient[0].id})
+            
+        // if client has services then list them and allow him/her to select today's services
+        if (client_services.length > 0) {
+        
+            $('#services-inner-container').html('');
+            $('#services-inner-container').append('<p class="select-services-p">select all the services for today');
+            $('#signature').hide();
+            //$('#buttonscontainer').hide();
+            this.hideSignInContainer();
             $('#pleasewait').addClass('pleasewaithidden');
-            return;
 
+            //client_services.each(self.showService, self);
+            _.each(client_services, this.showService, this);
+            $('#nameFields').hide();
+            $('#services-outer-container').show();
+        
         } else {
-
-            // client has signed in
-            // a single client found
-
-            // record the appointment
-            var data_str = sigval.jSignature('getData','svgbase64');
             
-            this.signin_model = new SigninModel({
-                firstname: matchingPatient[0].get('firstname'),
-                lastname: matchingPatient[0].get('lastname'),
-                dob: matchingPatient[0].get('dob'),
-                sig: data_str[1],
-                services: matchingPatient[0].get('services'),
-                client_id: matchingPatient[0].get('id'),
-                signed_in: true
-            });        
-            
-            // get all services for the client signing in
-            var client_services = this.signin_details.where({client_id: matchingPatient[0].id})
-                
-            // if client has services then list them and allow him/her to select today's services
-            if (client_services.length > 0) {
-            
-                $('#services-inner-container').html('');
-                $('#services-inner-container').append('<p class="select-services-p">select all the services for today');
-                $('#signature').hide();
-                $('#buttonscontainer').hide();
-
-                //client_services.each(self.showService, self);
-                _.each(client_services, this.showService, this);
-                $('#nameFields').hide();
-                $('#services-outer-container').show();
-            
-            } else {
-                
-                // client has no services, just save the appointment
-                var committing = this.commitSignin.bind(this);
-                committing();
-                
-            }
-
-            // mark the patient as signed in
-            matchingPatient[0].set('signed_in', true);
-
-            $('#buttonscontainer').removeClass('hiddensignincontainer');
+            // client has no services, just save the appointment
             $('#pleasewait').addClass('pleasewaithidden');
+            var committing = this.commitSignin.bind(this);
+            committing();
+            
         }
+
+        // mark the patient as signed in
+        matchingPatient[0].set('signed_in', true);
+
 
     },    
     checkRemoteDBForPatient: function(data) {
@@ -311,8 +341,7 @@ var SigninAppView = Backbone.View.extend({
                 success: function(collection, response, options) {
                     if (collection.length == 0) {
                         errorsdialog.show('user not found', true);
-                        $('#buttonscontainer').removeClass('hiddensignincontainer');
-                        $('#pleasewait').addClass('pleasewaithidden');
+                        self.displaySignInContainer();
                         return;
                     } else {
                         self.finalChecksAndGetAllServices.call(self, collection.models);
@@ -320,8 +349,7 @@ var SigninAppView = Backbone.View.extend({
                 },
                 error: function(collection, response, options) {
                     errorsdialog.show('user not found', true);
-                    $('#buttonscontainer').removeClass('hiddensignincontainer');
-                    $('#pleasewait').addClass('pleasewaithidden');
+                    self.displaySignInContainer();
                     return;
                 }
             });
@@ -329,12 +357,12 @@ var SigninAppView = Backbone.View.extend({
 
     },    
     signin: function(e) {
-        //console.log('signin clicked');
-        //console.log(e);
         
         var firstname = $('#firstname').val().trim();
         var lastname = $('#lastname').val().trim();
         var dob = $('#year').val() + '-' + $('#month').val() + '-' + $('#day').val();
+        var sigval = $('#signature')
+        var data_str = sigval.jSignature('getData','svg')[1];
         
         if (dob === '--') {
             dob = '';
@@ -343,8 +371,18 @@ var SigninAppView = Backbone.View.extend({
         var self = this;
         var matches;
 
+        this.hideSignInContainer();
+
         if (firstname.length == 0 || lastname.length == 0) {
             errorsdialog.show('Must include firstname and lastname', true);
+            this.displaySignInContainer();
+            return;
+        }
+
+        // Did patient forget to sign?
+        if (data_str.indexOf('width="0" height="0"') !== -1) {
+            errorsdialog.show('oops... looks like you forgot to sign');
+            this.displaySignInContainer();
             return;
         }
 
@@ -378,8 +416,7 @@ var SigninAppView = Backbone.View.extend({
             $('#dob').removeClass('datefieldhide');
             $('#datefieldrequiredmsg').addClass('datefieldmsgshow');
             $('#datefieldrequiredmsg').removeClass('datefieldhide');
-            $('#buttonscontainer').removeClass('hiddensignincontainer');
-            $('#pleasewait').addClass('pleasewaithidden');                        
+            this.displaySignInContainer();
 
         } else if (e.type === 'click' || e.which === 13) {
             this.finalChecksAndGetAllServices.call(this, matches);
@@ -401,7 +438,8 @@ var SigninAppView = Backbone.View.extend({
     clearForm: function() {
         $('#services-inner-container').html('');
         $('#services-outer-container').hide();
-        $('#buttonscontainer').show();
+        //$('#buttonscontainer').show();
+        this.displaySignInContainer();
         $('#nameFields').show();
         $('#signature').show();
     },
@@ -539,7 +577,7 @@ var SigninAppView = Backbone.View.extend({
                         errorsdialog.show('issue connecting to database', true);
                     },
                     wait: false,
-                    timeout: 1000,
+                    timeout: 15000,
 //                    remote: false,
                 });
 

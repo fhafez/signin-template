@@ -275,6 +275,10 @@ select {
     text-align: center;
 }
 
+.hiddenregistercontainer {
+    display: none;
+}
+
 .datefieldshow { 
     border: solid 1px #AAAAAA;
 }

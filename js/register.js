@@ -15,7 +15,7 @@ var RegisterAppView = Backbone.View.extend({
         var int = window.setInterval(
             function() {
                 allPatients.syncDirtyAndDestroyed();
-                console.log('synced allPatients');
+                //console.log('synced allPatients');
             }, 60000);
 
         console.log("registration interval job id: " + int);
@@ -31,6 +31,16 @@ var RegisterAppView = Backbone.View.extend({
             e.currentTarget.blur();
         }
     },
+    hideButtonsContainer: function() {
+        $('#registerbuttonscontainer').removeClass('registercontainer');
+        $('#registerbuttonscontainer').addClass('hiddenregistercontainer');
+        $('#registerpleasewait').removeClass('pleasewaithidden');
+    },
+    displayButtonsContainer: function() {
+        $('#registerbuttonscontainer').addClass('registercontainer');
+        $('#registerbuttonscontainer').removeClass('hiddenregistercontainer');
+        $('#registerpleasewait').addClass('pleasewaithidden');
+    },    
     register: function(e) {
         //console.log('signin clicked');
         //console.log(e);
@@ -43,6 +53,8 @@ var RegisterAppView = Backbone.View.extend({
             dob = '';
         }
         
+        this.hideButtonsContainer();
+
         var registerModel = new PatientModel({
             firstname: firstname,
             lastname: lastname,
@@ -51,7 +63,7 @@ var RegisterAppView = Backbone.View.extend({
 
         //console.log('valid? ' + signinModel.isValid());
         
-        if (registerModel.isValid()) {
+        if (registerModel.isValid({registration: true})) {
             //var registerView = new RegisterView({model: registerModel });
             var self = this;
             
@@ -67,6 +79,7 @@ var RegisterAppView = Backbone.View.extend({
             if (matches.length > 0) {
                 
                 errorsdialog.show('A patient by that name and date of birth already exists', true);
+                this.displayButtonsContainer();
                 return;
                 
             } else if (e.type === 'click') {                        
@@ -85,18 +98,21 @@ var RegisterAppView = Backbone.View.extend({
                             $('#offlinediv').addClass('offlinedivhide');
                         }
 
+                        self.displayButtonsContainer();
                         self.reportSuccess("Registration complete.  Please sign in now");
                     },
                     error: function(model, response, options) {
                         //console.log(this.errorThrown);
+                        self.displayButtonsContainer();
                         errorsdialog.show('issue connecting to database', true);
                     },
                     wait: false,
-                    timeout: 1000
+                    timeout: 5000
                 });
             }      
 
         } else {
+            this.displayButtonsContainer();
             errorsdialog.show(registerModel.validationError, '#FF0000');
             return;
         }
