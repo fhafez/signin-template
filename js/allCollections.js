@@ -3,7 +3,7 @@
 var SigninDetailedCollection = Backbone.Collection.extend({
     url: 'php/signinJS.php/details/',
     model: SigninDetailedModel,
-    storeName: 'signinDetails_',
+    storeName: 'signinDetails',
     defaults: {
     },
     
@@ -18,7 +18,7 @@ var SigninDetailedCollection = Backbone.Collection.extend({
 
 var TodaysAppointmentsCollection = Backbone.Collection.extend({
     model: SigninModel,
-    storeName: 'todaysAppts_',
+    storeName: 'todaysAppts',
     url: 'php/signinJS.php/appointments/',
 });
 
@@ -26,7 +26,7 @@ var MatchingPatients = Backbone.Collection.extend({
     model: PatientModel,
     wait: true,
     url: 'php/matchPatients.php/',
-    storeName: 'allPatients_',
+    storeName: 'allPatients',
     initialize: function(models, options) {
         //console.log(options);
         

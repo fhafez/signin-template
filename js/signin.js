@@ -114,10 +114,10 @@ var SigninAppView = Backbone.View.extend({
             function() {
                 // make sure to synchronize new registrations before any appointments
                 if (allPatients.dirtyModels().length == 0) {
-                    self.todays_appointments.syncDirtyAndDestroyed();
+                    self.todays_appointments.syncDirtyAndDestroyed({timeout: 15000});
                     console.log('synced todays_appointments');
                 }
-        }, 30000);
+        }, 300000);
 
         console.log("signin interval job id: " + int);
 
@@ -149,6 +149,7 @@ var SigninAppView = Backbone.View.extend({
     },
     events: {
         'keypress #lastname': 'updateOnEnter',
+        'keyup #lastname': 'isItComplete',
         'click #signinbtn': 'signin',
         'click #signoutbtn': 'signout',
         'click #cancelbtn': 'cancelSignin',
@@ -160,6 +161,21 @@ var SigninAppView = Backbone.View.extend({
             this.signin(e);
             e.currentTarget.blur();
         }
+    },
+    isItComplete: function(e) {
+
+            var matchingPatients = allPatients.filter(function(a) {
+                if (a.get('firstname').toLowerCase().startsWith($('#firstname').val().toLowerCase()) && 
+                   a.get('lastname').toLowerCase().startsWith($('#lastname').val().toLowerCase()))
+                   return true;
+            });
+
+            if (matchingPatients.length == 1) {
+                $('#lastname').val(matchingPatients[0].get('lastname'));
+                $('#signature')[0].focus();
+                console.log('found ' + matchingPatients[0].get('firstname'));
+            }
+
     },
     showService: function(signin_detail_model) {
         var signin_service_view = new SigninServicesView({model: signin_detail_model, parent: this});
@@ -191,7 +207,7 @@ var SigninAppView = Backbone.View.extend({
     signin_details: [],
     displayed_services: [],
     todays_services: [],
-    todays_appointments: {},
+    todays_appointments: [],
     commitSignin: function() {
         var self = this;
         
@@ -249,13 +265,16 @@ var SigninAppView = Backbone.View.extend({
                 });
 
             },
-            error: function(m, r, o) {
+            error: function(model, response, options) {
                 errorsdialog.show('issue connecting to database', true);
                 self.displaySignInContainer();
+
+                window.generateError("signinappview.commitSignin", "error", response.responseText, "501", moment().format('YYYY-MM-DD HH:mm:ss'));
+
             },
             wait: false,
-            timeout: 3000,
-            remote: false,
+            timeout: 8000,
+//            remote: true,
         });
 
     },
@@ -274,6 +293,16 @@ var SigninAppView = Backbone.View.extend({
             if (dm.get('id') == matchingPatient[0].get('id')) {
                 errorsdialog.show('You cannot sign in while system is offline.  Please let the staff at the front desk know.', true);
                 stopSignIn = true;
+
+                var logEntry = new LogEntry({
+                    system: 'signinappview.finalChecksAndGetAllServices',
+                    severity: 'error',
+                    message: 'failed signin ' + newPatient.firstname + ' ' + newPatient.lastname,
+                    code: '501',
+                    datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
+                });
+                logEntry.save();
+
                 return;
             }
         });
@@ -353,6 +382,16 @@ var SigninAppView = Backbone.View.extend({
                 error: function(collection, response, options) {
                     errorsdialog.show('user not found', true);
                     self.displaySignInContainer();
+
+                    var logEntry = new LogEntry({
+                        system: 'signinappview.checkRemoteDBForPatient',
+                        severity: 'error',
+                        message: 'user not found ' + newPatient.firstname + ' ' + newPatient.lastname,
+                        code: '400',
+                        datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
+                    });
+                    logEntry.save();
+
                     return;
                 }
             });
@@ -579,10 +618,18 @@ var SigninAppView = Backbone.View.extend({
                     error: function(m, r, o) {
                         //console.log(this.errorThrown);
                         errorsdialog.show('issue connecting to database', true);
+                        var logEntry = new LogEntry({
+                            system: 'signinappview.signout',
+                            severity: 'error',
+                            message: 'failed to signout',
+                            code: '500',
+                            datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
+                        });
+                        logEntry.save();
                     },
                     wait: false,
-                    timeout: 15000,
-                    remote: false,
+                    timeout: 8000,
+                    remote: true,
                 });
 
             } else {

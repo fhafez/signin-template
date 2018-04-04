@@ -33,6 +33,18 @@ var ErrorsView = Backbone.View.extend({
     }
 });
 
+function generateError(system, severity, message, errorcode, datetime) {
+    var logEntry = new LogEntryModel();
+    logEntry.set({
+        'system': system,
+        'severity': severity,
+        'errorcode': errorcode,
+        'message': message, 
+        'datetime': datetime
+        });
+    logEntry.save({},{remote:true});
+}
+
 var errorsdialog = new ErrorsView({el: '#errordiv'});
 errorsdialog.render();
 

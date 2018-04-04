@@ -5,7 +5,7 @@ require "Slim/Slim.php";
 
 class Appointment {
     
-    public $id = 0;
+    public $id = "";
     public $client_id = 0;
     public $staff_id = 0;
     public $signin_date = "";
@@ -225,7 +225,7 @@ $app->get('/:id', function ($id) {
 $app->post('/', function () use ($app) {
 
     date_default_timezone_set('America/Toronto');
-    
+        
     $service_unspecified_id = '7';
     $plan_unspecified_id = '5';    
     include "db.php";
@@ -260,6 +260,14 @@ $app->post('/', function () use ($app) {
         $sig_filename_w_slashes = $firstname . "_" . $lastname . "_" . strval(date_timestamp_get($date)) . ".svg";
         //file_put_contents("../clinic_signin/signatures/$sig_filename",$signature);
         file_put_contents("../signatures/$sig_filename_wo_slashes",$signature);
+
+        // don't add any duplicate appointments (happens during retransmits)
+        $check_dups = query($conn, "SELECT * from Appointments WHERE client_id = " . $client_id . " AND appt_date = '" . $current_datetime . "'");
+        if ($check_dups->num_rows > 0) {
+            $app->response()->status(200);
+            $conn->close();
+            return;            
+        }
 
         $tz_result = query($conn, "SET time_zone='America/Toronto'");
         $new_result = query($conn, "INSERT INTO Appointments (client_id, appt_date, sig_filename) 
@@ -335,7 +343,7 @@ $app->post('/', function () use ($app) {
         $app->response['Content-Type'] = 'application/json';
 
         
-        $c = new Appointment($aid, $client_id, "", "", "", "");
+        $c = new Appointment("$aid", $client_id, "", "", "", "");
         echo json_encode($c->toJSON());
         //echo json_encode($available_appointments);
 

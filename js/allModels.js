@@ -3,13 +3,14 @@
 
 var SigninModel = Backbone.Model.extend({
     urlRoot: 'php/signinJS.php',
-    storeName: 'signin_',
+    storeName: 'signin',
     defaults: {
         firstname: '',
         lastname: '',
         birthdate: '',
         sig: '',
         signed_in: false,
+        signout_date: '',
         current_datetime: '',
         services: []
     },
@@ -40,7 +41,7 @@ var SigninModel = Backbone.Model.extend({
 
 var PatientModel = Backbone.Model.extend({
     urlRoot: 'php/matchPatients.php',
-    storeName: 'allPatients_',    
+    storeName: 'allPatients',    
     defaults: {
         //id: '',
         firstname: '',
@@ -76,7 +77,7 @@ var PatientModel = Backbone.Model.extend({
 
 var SigninDetailedModel = Backbone.Model.extend({
     urlRoot: 'php/signinJS.php/details/',
-    storeName: 'signinDetails_',
+    storeName: 'signinDetails',
     defaults: {
         selected: false
     },
@@ -125,3 +126,14 @@ var RegisterModel = Backbone.Model.extend({
     
 });
 */
+
+var LogEntryModel = Backbone.Model.extend({
+   url: 'php/logJS.php/',
+   defaults: {
+       system: '',
+       severity: '',
+       message: '',
+       errorcode: '',
+       datetime: '',
+   } 
+});
