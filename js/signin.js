@@ -374,6 +374,16 @@ var SigninAppView = Backbone.View.extend({
                     if (collection.length == 0) {
                         errorsdialog.show('user not found', true);
                         self.displaySignInContainer();
+
+                        var logEntry = new LogEntryModel({
+                            system: 'signinappview.checkRemoteDBForPatient',
+                            severity: 'error',
+                            message: 'user not found ' + JSON.stringify(data),
+                            code: '400',
+                            datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
+                        });
+                        logEntry.save();
+
                         return;
                     } else {
                         self.finalChecksAndGetAllServices.call(self, collection.models);
@@ -383,10 +393,10 @@ var SigninAppView = Backbone.View.extend({
                     errorsdialog.show('user not found', true);
                     self.displaySignInContainer();
 
-                    var logEntry = new LogEntry({
+                    var logEntry = new LogEntryModel({
                         system: 'signinappview.checkRemoteDBForPatient',
                         severity: 'error',
-                        message: 'user not found ' + newPatient.firstname + ' ' + newPatient.lastname,
+                        message: 'user not found ' + JSON.stringify(data),
                         code: '400',
                         datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
                     });
