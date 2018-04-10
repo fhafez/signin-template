@@ -71,6 +71,15 @@ $app->post('/', function () use ($app) {
         $lastname = $conn->real_escape_string((string)$input->lastname);
         $dob = $conn->real_escape_string((string)$input->dob);
 
+        $result =  query($conn, "select id from Clients where firstname='" . $firstname . "' and lastname='" . $lastname . "' and dob = '" . $dob . "'");
+    
+        if ($result->num_rows > 0) {
+            echo "Error: A patient with that Name and Date of Birth already exists.";
+            $app->response()->status(403);
+            $conn->close();
+            return;
+        }
+
         $new_result = query($conn, "INSERT INTO Clients (firstname, lastname, dob, username, password) 
                                     values 
                                     ('" . $firstname. "', '" . $lastname . "','" . $dob . "', '" . $firstname . $lastname . "', '" . $firstname . $lastname . "')");
