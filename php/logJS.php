@@ -8,14 +8,14 @@ class LogEntry {
     public $system = "";
     public $severity = "";
     public $message = "";
-    public $code = "";
+    public $errorcode = "";
     public $datetime = "";
     
-    public function __construct($system, $severity, $message, $code, $datetime) {
+    public function __construct($system, $severity, $message, $errorcode, $datetime) {
         $this->system = $system;
         $this->severity = $severity;
         $this->message = $message;
-        $this->code = $code;
+        $this->errorcode = $errorcode;
         $this->datetime = $datetime;
     }
     
@@ -24,7 +24,7 @@ class LogEntry {
             "id" => $this->id,
             "system" => $this->system,
             "message" => $this->message,
-            "code" => $this->code,            
+            "errorcode" => $this->errorcode,
             "datetime" => $this->datetime,
             "message" => "SUCCESS"
         );

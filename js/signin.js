@@ -298,7 +298,7 @@ var SigninAppView = Backbone.View.extend({
                     system: 'signinappview.finalChecksAndGetAllServices',
                     severity: 'error',
                     message: 'failed signin ' + newPatient.firstname + ' ' + newPatient.lastname,
-                    code: '501',
+                    errorcode: '501',
                     datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
                 });
                 logEntry.save();
@@ -379,13 +379,19 @@ var SigninAppView = Backbone.View.extend({
                             system: 'signinappview.checkRemoteDBForPatient',
                             severity: 'error',
                             message: 'user not found ' + JSON.stringify(data),
-                            code: '400',
+                            errorcode: '404',
                             datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
                         });
                         logEntry.save();
+                        //self.newPatient.unbind();
+                        self.newPatient = null;
 
                         return;
                     } else {
+
+                        // WHAT IF MORE THAN 1 PATIENT IS RETURNED HERE??!?!
+                        // NEEDS A FIX
+
                         self.finalChecksAndGetAllServices.call(self, collection.models);
                     }
                 },
@@ -397,10 +403,12 @@ var SigninAppView = Backbone.View.extend({
                         system: 'signinappview.checkRemoteDBForPatient',
                         severity: 'error',
                         message: 'user not found ' + JSON.stringify(data),
-                        code: '400',
+                        errorcode: '500',
                         datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
                     });
                     logEntry.save();
+                    self.newPatient.unbind();
+                    self.newPatient = undefined;
 
                     return;
                 }
@@ -457,7 +465,8 @@ var SigninAppView = Backbone.View.extend({
 
         // no matches for this patient found locally, check remote DB
         if (matches.length == 0) {
-            this.checkRemoteDBForPatient.call(this, {firstname: firstname, lastname: lastname, dob: dob});
+            this.checkRemoteDBForPatient({firstname: firstname, lastname: lastname, dob: dob});
+            //this.checkRemoteDBForPatient.call(this, {firstname: firstname, lastname: lastname, dob: dob});
         } else if (matches.length > 1) {
 
             $('#buttonscontainer').addClass('hiddensignincontainer');
@@ -632,7 +641,7 @@ var SigninAppView = Backbone.View.extend({
                             system: 'signinappview.signout',
                             severity: 'error',
                             message: 'failed to signout',
-                            code: '500',
+                            errorcode: '500',
                             datetime:  moment().format('YYYY-MM-DD HH:mm:ss')
                         });
                         logEntry.save();
