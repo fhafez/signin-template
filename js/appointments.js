@@ -14,7 +14,6 @@ function AppointmentsApp(el) {
             start_datetime: '',
             end_datetime: '',
             signature_filename: '',
-            signature_contents: [],
             mva: false
         },
         validate: function(attrs, options) {
@@ -275,12 +274,18 @@ function AppointmentsApp(el) {
 
             this.displayedAppts = this.displayedAppts || [];
 
-            this.$el.html(this.template());
             
             this.appointmentsCollection = new AppointmentsCollection([], {date_from: $('#date_from'), date_to: $('#date_to')});
+
             this.staffCollection = new StaffCollection();
 
-            this.staffCollection.fetch();
+            var self = this;
+
+            this.staffCollection.fetch({
+                success: function() {
+                    self.$el.html(self.template());
+                }
+            });
 
             //appointmentsCollection.on('add', this.addAppointment, this);
 
@@ -314,6 +319,8 @@ function AppointmentsApp(el) {
             'keypress #lastname_filter': 'updateFilterOnEnter',
             'blur #firstname_filter': 'addAll',
             'blur #lastname_filter': 'addAll',
+            'blur #dob_filter': 'addAll',
+            'change #staff': 'addAll',
             'click #day': 'dayClicked',
             'click #week': 'weekClicked',
             'click #month': 'monthClicked',
@@ -350,9 +357,22 @@ function AppointmentsApp(el) {
             this.removeAppts();
             this.$('#appointments-table').html($('#appointments-header').html()); // clean the appointments table
            //console.log("appointmentsCollection has " + appointmentsCollection.length);
+
+            var dob_filter = '';
+            var staff_id_filter = '';
+ 
+            // a DoB was populated
+            if ($('#dob_year').val() || $('#dob_month').val() || $('#dob_day').val()) {
+                dob_filter = $('#dob_year').val() + '-' + $('#dob_month').val() + '-' + $('#dob_day').val();
+            }
+
+            // a staff member was selected
+            if ($('#staff').val()) {
+                staff_id_filter = $('#staff').val(); 
+            }
             
             // If any of the filter fields are filled then apply the filter
-            if ($('#firstname_filter').val() || $('#lastname_filter').val() || $('#date_to').val() || $('#date_from').val()) {
+            if ($('#firstname_filter').val() || $('#lastname_filter').val() || dob_filter || staff_id_filter || $('#date_to').val() || $('#date_from').val()) {
                 
                //console.log('filter found! ' + $('#firstname_filter').val() + ' ' + $('#lastname_filter').val());
                 
@@ -366,7 +386,7 @@ function AppointmentsApp(el) {
                 var date_from = moment(date_from_filter, "YYYY-MM-DD").subtract(1,'d');
                 var date_to = moment(date_to_filter, "YYYY-MM-DD");
                 
-                if ((firstname_filter || lastname_filter || date_from_filter || date_to_filter) && date_to.isValid() && date_from.isValid()) {
+                if ((staff_id_filter || firstname_filter || lastname_filter || date_from_filter || date_to_filter) && date_to.isValid() && date_from.isValid()) {
 
                     this.appointmentsCollection = null;
                     this.appointmentsCollection = new AppointmentsCollection([], {
@@ -374,6 +394,8 @@ function AppointmentsApp(el) {
                         date_to: date_to_filter,
                         firstname: firstname_filter,
                         lastname: lastname_filter,
+                        dob: dob_filter,
+                        staff_id: staff_id_filter
                     });
 
                     this.appointmentsCollection.fetch({
@@ -384,7 +406,9 @@ function AppointmentsApp(el) {
                             page: this.appointmentsCollection.page,
                             page_size: this.appointmentsCollection.page_size,
                             firstname: firstname_filter,
-                            lastname: lastname_filter                     
+                            lastname: lastname_filter,
+                            dob: dob_filter,
+                            staff_id: staff_id_filter
                         },
                         success: this.renderAppointments
                         
@@ -438,6 +462,18 @@ function AppointmentsApp(el) {
            //console.log('sorted by ' + this.sortedBy);
             this.removeAppts();
 
+            var dob_filter = '';
+            if ($('#dob_year').val() || $('#dob_month').val() || $('#dob_day').val()) {
+                dob_filter = $('#dob_year').val() + '-' + $('#dob_month').val() + '-' + $('#dob_day').val();
+            }
+
+            var staff_id_filter = '';
+            // a staff member was selected
+            if ($('#staff').val()) {
+                staff_id_filter = $('#staff').val(); 
+            }
+
+
             //appointmentsCollection = new AppointmentsCollection([], {date_from: $('#date_from').val(), date_to: $('#date_to').val()});
             this.appointmentsCollection.setRange({date_from: $('#date_from').val(), date_to: $('#date_to').val()});
             this.appointmentsCollection.fetch({
@@ -448,7 +484,9 @@ function AppointmentsApp(el) {
                     page: this.appointmentsCollection.page,
                     page_size: this.appointmentsCollection.page_size,
                     firstname: $('#firstname_filter').val(),
-                    lastname: $('#lastname_filter').val()
+                    lastname: $('#lastname_filter').val(),
+                    dob: dob_filter,
+                    staff_id: staff_id_filter
                 },
                 success: this.renderAppointments
             });

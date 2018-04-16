@@ -107,50 +107,61 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
     $page_size = $app->request()->params('page_size');
     $client_fname = $app->request()->params('firstname');
     $client_lname = $app->request()->params('lastname');
-    
+    $client_dob = $app->request()->params('dob');
+    $staff_id = $app->request()->params('staff_id');    
+
     $rfr = ($page - 1) * $page_size;
     
     include "db.php";
- 
-    $conn = new mysqli($servername, $username, $password, $dbname);
 
-   if ($conn->connect_errno) {
-        printf("DB Connection Failure %s\n", $conn->connect_error);
-        exit();
-    }
-
-    $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva,
-                                c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
-                                DATE_FORMAT(a.signout_date, '%e-%M-%Y  %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
-                                FROM 
-                                    Clients c, Appointments a
-                                LEFT JOIN Staff s ON a.staff_id = s.id 
-                                WHERE 
-                                    a.client_id = c.id
-                                    AND a.appt_date >= date('" . $dtfrom . "') 
-                                    AND a.appt_date <= date('" . $dtto . "')";
-
-
-    if (strlen($client_fname) > 0) {
-        $query_str .= " AND lower(c.firstname) = '" . $client_fname . "'";
-    }
-
-    if (strlen($client_lname) > 0) {
-        $query_str .= " AND lower(c.lastname) = '" . $client_lname . "'";
-    }
-
-    if ($cid != -1) {
-        $query_str .= " AND c.id = " . $cid;
-    }
-
-    $query_str .= " ORDER BY a.appt_date LIMIT " . $rfr . "," . $page_size;
-
-    $result = query($conn, $query_str);
-
-    $appointments = [];
-    $xml_sig_contents = "";
-    
     try {
+ 
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+       if ($conn->connect_errno) {
+            printf("DB Connection Failure %s\n", $conn->connect_error);
+            exit();
+        }
+
+        $query_str = "SELECT a.id as aid, s.id as sid, a.sig_filename as sig, c.id as cid, c.dob as dob, a.mva as mva, staff_id,
+                                    c.firstname, c.lastname, DATE_FORMAT(a.appt_date, '%e-%M-%Y %h:%i%p') as dt, 
+                                    DATE_FORMAT(a.signout_date, '%e-%M-%Y  %h:%i%p') as dtto, s.firstname as s_fname, s.lastname as s_lname
+                                    FROM 
+                                        Clients c, Appointments a
+                                    LEFT JOIN Staff s ON a.staff_id = s.id 
+                                    WHERE 
+                                        a.client_id = c.id
+                                        AND a.appt_date >= date('" . $dtfrom . "') 
+                                        AND a.appt_date <= date('" . $dtto . "')";
+
+
+        if (strlen($client_fname) > 0) {
+            $query_str .= " AND lower(c.firstname) = '" . $client_fname . "'";
+        }
+
+        if (strlen($client_lname) > 0) {
+            $query_str .= " AND lower(c.lastname) = '" . $client_lname . "'";
+        }
+
+        if (strlen($client_dob) > 0) {
+            $query_str .= " AND c.dob = '" . $client_dob . "'";
+        }
+
+        if (strlen($staff_id) > 0 && $staff_id != '1') {
+            $query_str .= " AND (a.staff_id = " . $staff_id . " OR  a.staff_id is null)";
+        }
+
+        if ($cid != -1) {
+            $query_str .= " AND c.id = " . $cid;
+        }
+
+        $query_str .= " ORDER BY a.appt_date LIMIT " . $rfr . "," . $page_size;
+
+        $result = query($conn, $query_str);
+
+        $appointments = [];
+        $xml_sig_contents = "";
+        
         while ($row = $result->fetch_assoc()) {
 
             try {
@@ -165,6 +176,7 @@ $app->get('/(:cid)', function ($cid=-1) use ($app) {
                 }
 
             } catch (Exception $e) {
+                print $e->getMessage();
                 $xml_sig_contents = "";
             }
 
