@@ -93,7 +93,8 @@
       border-spacing: 0px;
       border-width: 0px;
       border-color: #009aff;
-      width: 90%;
+      width: 1200px;
+      align-self: center;
   }
 
   #services-table td, #appointments-table td, #providers-table td {
@@ -156,6 +157,36 @@
   #appointments-table td {
       height: 80px;
   }
+  .filter-category {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 300;
+      text-align: center;
+      letter-spacing: 0.34000;
+      width: calc((100% - 258px) / 3);
+      display: inline-block;
+      height: 160px;
+      border: 3px dotted black;
+      border-radius: 5px;
+      padding: 20px;
+      margin: 20px;
+      background-color: white;
+      float: left;
+  }
+  .filter-category button {
+    font-size: 16px;
+    font-family: 'helvetica neue';
+    padding: 6px;
+  }
+  .filter-category input {
+      font-size: 16px;
+      font-family: 'helvetica neue';
+      font-weight: 300;
+      border: 1px solid darkgray;
+      padding: 10px;
+      width: 120px;
+      text-align: center;
+      margin: 5px;
+   }   
   .filter-left {
       padding: 10px;
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -224,8 +255,8 @@
   }
   .filters {
       width: 100%;
-      height: 160px;
-      background-color: whitesmoke;
+      height: 280px;
+      background-color: ivory;
       border-style: solid none solid none;
       border-width: 1px;
       /* border-color: #007ACC; */
@@ -234,20 +265,21 @@
       border-radius: 0px;
       align-self: center;
       padding: 0px;
-      margin: 0px;
+      margin: 0 auto;
   }
   .filter-heading {
       padding: 5px 80px 5px 80px; 
       border: 1px solid darkgray; 
       border-radius: 5px;
       
-      background: linear-gradiant(white, whitesmoke);
-      background: -webkit-linear-gradient(white, whitesmoke);
-      background: -o-linear-gradient(white, whitesmoke);
-      background: -moz-linear-gradient(white, whitesmoke);
-      background: linear-gradient(white, whitesmoke);
-      /* Standard syntax */
+      background-color: rgba(39, 169, 225, 1.0);
+      background: linear-gradiant(#606c88, #3f4c6b);
+      background: -webkit-linear-gradient(#606c88, #3f4c6b);
+      background: -o-linear-gradient(#606c88, #3f4c6b);
+      background: -moz-linear-gradient(#606c88, #3f4c6b);
+      background: linear-gradient(#606c88, #3f4c6b);
 
+      color: white;
   }
   #clients-table {
       position:inherit;
@@ -593,6 +625,21 @@
       right:0px;
       /* height: 300px; */
   }
+  .dropdown {
+        position: relative;
+        background-color: ghostwhite;
+        margin-top: 5px;
+        padding: 10px;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        text-align: left;
+        padding-top: 5px;
+        padding-left: 5px;
+        font-family: "Helvetica Neue", sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+
+  }  
   .service-footer {
       width: inherit;
       position: fixed;
@@ -854,6 +901,40 @@
     
 }
 
+.dobfield { 
+    display: inline-block; 
+    padding: 8px;
+    background: #FFF; 
+    border: 1px solid darkgrey;
+    border-radius: 0;
+    color: #666;
+    text-overflow: wrap;
+    width: 248px;
+    margin: 0px;
+}
+
+.dobfield * { 
+    display: inline-block;
+}
+
+.dobfield input { 
+    width: 4em;
+    padding: 2px 2px; 
+    border: none; 
+    font-family: 'helvetica neue';
+    font-weight: 300;
+    font-size: 16px; 
+    background: none;
+    color:#4C6680;
+}
+
+
+.dobfield input#year { width:70px; }
+.dobfield input#month { width:50px; }
+.dobfield input#day { width:50px; }
+.dobfield input:focus { outline:none; }
+
+
 .blue-signature {
   stroke: mediumblue;
   fill: none;
@@ -905,6 +986,15 @@
       }
       #printheader {
           display: inline-block;
+      }
+      #search-by-client {
+        font-size: 8pt;
+      }
+      #search-by-staff {
+        display: none;
+      }
+      #search-by-date {
+        font-size: 8pt;
       }
 
   }
