@@ -149,7 +149,7 @@ var SigninAppView = Backbone.View.extend({
     },
     events: {
         'keypress #lastname': 'updateOnEnter',
-        'keyup #lastname': 'isItComplete',
+//        'keyup #lastname': 'isItComplete',
         'click #signinbtn': 'signin',
         'click #signoutbtn': 'signout',
         'click #cancelbtn': 'cancelSignin',
@@ -165,7 +165,7 @@ var SigninAppView = Backbone.View.extend({
     isItComplete: function(e) {
 
             var matchingPatients = allPatients.filter(function(a) {
-                if (a.get('firstname').toLowerCase().startsWith($('#firstname').val().toLowerCase()) && 
+                if (a.get('firstname').toLowerCase() == $('#firstname').val().toLowerCase() && 
                    a.get('lastname').toLowerCase().startsWith($('#lastname').val().toLowerCase()))
                    return true;
             });
