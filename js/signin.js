@@ -83,6 +83,7 @@ var SigninAppView = Backbone.View.extend({
             wait: true,
             success: function(c, r, o) {
                 //console.log("data retrieved successfully");
+                errorsdialog.show('All data is downloaded.  Go ahead and use the sytem now.', false);
             },
             error: function(c, r, o) {
                 //console.log("failed to retreive data");

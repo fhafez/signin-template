@@ -74,7 +74,7 @@ $app->post('/', function () use ($app) {
         $result =  query($conn, "select id from Clients where firstname='" . $firstname . "' and lastname='" . $lastname . "' and dob = '" . $dob . "'");
     
         if ($result->num_rows > 0) {
-            echo "Error: A patient with that Name and Date of Birth already exists.";
+            echo "{\"Error\": \"A patient with that Name and Date of Birth already exists.\"}";
             $app->response()->status(403);
             $conn->close();
             return;

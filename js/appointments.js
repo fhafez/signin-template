@@ -206,6 +206,13 @@ function AppointmentsApp(el) {
             this.setRange({date_from: this.date_from, date_to: this.date_to});
             //console.log("init: url is " + this.url());
 
+            this.comparator = function(appointment_a, appointment_b) {
+                var signin_a = moment(appointment_a.get('start_datetime'), "DD-MMMM-YYYY hh:mmA").unix();
+                var signin_b = moment(appointment_b.get('start_datetime'), "DD-MMMM-YYYY hh:mmA").unix()
+                return [ (signin_a > signin_b) ? -1 : 1 ];
+            }
+
+
         },
         /*
         url: function() { 
@@ -540,7 +547,7 @@ function AppointmentsApp(el) {
                 this.descending = false;
             }
             
-            var sortedBy = e.currentTarget.id;
+            this.sortedBy = e.currentTarget.id;
             var multiple;
             
             if (this.descending) {
@@ -550,7 +557,7 @@ function AppointmentsApp(el) {
             }
             
             this.appointmentsCollection.comparator = function(appointment_a, appointment_b) {
-                
+                /*                
                 if (!this.descending) {
                     
                     if (e.currentTarget.id === 'firstname') {
@@ -569,6 +576,10 @@ function AppointmentsApp(el) {
                     }
                     
                 }
+                */
+                var signin_a = moment(appointment_a.get('start_datetime'), "DD-MMMM-YYYY hh:mmA").unix();
+                var signin_b = moment(appointment_b.get('start_datetime'), "DD-MMMM-YYYY hh:mmA").unix()
+                return [ (signin_a > signin_b) ? -1 : 1 ];
             }
 
             this.appointmentsCollection.sort();
