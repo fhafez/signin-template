@@ -33,41 +33,35 @@ class Appointment {
 
         $datastore = new DatastoreClient();
 
-//        try {
+        $key = $datastore->key('Patient', $patientID);
 
-            $key = $datastore->key('Patient', $patientID);
+        // get the patient and add the current appointment to it's array of appointments
+        $patientEntity = $datastore->lookup($key);
+        $appointments = $patientEntity['appointments'];
+        $appointments[] = [
+            "signedInAt" => $this->signin_date,
+            "signedOutAt" => $this->signout_date,
+            "signature" => $this->signature
+        ];
 
-/*
-            // query for the patient
-            $datastore->query()->kind('Patient')
-            ->filter('firstname','=',$firstname)
-            ->filter('lastname','=',$lastname)
-            ->filter('dob', '>', new DateTime())
-            ->filter('dob', '<', new DateTime());
-*/
+        $patientEntity['appointments'] = $appointments;
+        $datastore->update($patientEntity);
 
-            // get the patient and add the current appointment to it's array of appointments
-            $patientEntity = $datastore->lookup($key);
-            $appointments = $patientEntity['appointments'];
-            $appointments[] = [
-                "signedInAt" => $this->signin_date,
+        // also add the appointment to the appointments collection
+        $key = $datastore->key('Appointment');
+        $appointment = $datastore->entity(
+            $key,
+            [
+                'patientID' => $patientID,
+                'created' => new DateTime(),
+                'signedInAt' => $this->signin_date,
                 "signedOutAt" => $this->signout_date,
                 "signature" => $this->signature
-            ];
+            ]
+        );
+        $datastore->insert($appointment);
 
-            $patientEntity['appointments'] = $appointments;
-            $datastore->update($patientEntity);
-
-            return $this->toJSON();
-/*
-        } catch (ResourceNotFoundException $e) {
-            $app->response()->status(404);
-            $app->response()->header('X-Status-Reason', $e->getMessage());
-        } catch (Exception $e) {
-            $app->response()->status(400);
-            $app->response()->header('X-Status-Reason', $e->getMessage());
-        }
-*/
+        return $appointment;
     }
 }
 

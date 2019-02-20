@@ -50,16 +50,15 @@ $app->post('/', function () use ($app) {
         $body = $request->getBody();
         $input = json_decode($body);
 
+        if (!isset($input->firstname) || !isset($input->lastname) || !isset($input->patientID) || !isset($input->signature)) {
+            throw new Exception("one of the mandatory parameters missing");
+        }
+
         $firstname = trim((string)$input->firstname);
         $lastname = trim((string)$input->lastname);
         $patientID = (string)$input->patientID;
         $signature = (string)$input->signature;
         $services = $input->services;
-
-
-        if (!isset($firstname) || !isset($lastname) || !isset($patientID) || !isset($signature)) {
-            throw new Exception("one of the mandatory parameters missing");
-        }
         
         //$signature = base64_decode(str_replace("image/svg+xml;base64,","",$signature));
         
@@ -126,7 +125,7 @@ $app->post('/', function () use ($app) {
         */
         $app->response()->status(200);
         $app->response['Content-Type'] = 'application/json';
-        echo("{}");
+        echo("{'appointmentID' : " . $appointmentResult->key()->pathEnd()['id'] . "}");
         //echo json_encode($appointmentResult);        
 
     } catch (ResourceNotFoundException $e) {
