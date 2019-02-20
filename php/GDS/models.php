@@ -55,8 +55,6 @@ class Appointment {
                 "signature" => $this->signature
             ];
 
-            var_dump($appointments);
-
             $patientEntity['appointments'] = $appointments;
             $datastore->update($patientEntity);
 
