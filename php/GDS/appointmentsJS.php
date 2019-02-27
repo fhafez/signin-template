@@ -1,8 +1,11 @@
 <?php
-
-require "Slim/Slim.php";
+require 'vendor/autoload.php';
+require 'Slim/Slim.php';
+require 'models.php';
 \Slim\Slim::registerAutoloader();
 
+use Google\Cloud\Datastore\DatastoreClient;
+/*
 class Appointment {
     
     public $id = 0;
@@ -92,9 +95,17 @@ function query($conn, $sql_query) {
     
     return $result;
 }
+*/
 
 $app = new \Slim\Slim();
 
+$app->get('/', function () use ($app) {
+    var_dump(new DateTime());
+    $appointments = new Appointments('2019-02-19T23:25:00-05:00', '2019-02-19T23:30:00-05:00');
+    //var_dump($app);
+    
+});
+/*
 $app->get('/(:cid)', function ($cid=-1) use ($app) {
     
 //    echo "from " . $fr . " to " . $to;

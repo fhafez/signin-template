@@ -10,6 +10,8 @@ class Appointment {
     public $signin_date = "";
     public $signout_date = "";
     public $signature = "";
+    public $firstname = "";
+    public $lastname = "";
 
     public function __construct($signin_date, $signout_date, $signature) {
         $this->signin_date = $signin_date;
@@ -37,6 +39,9 @@ class Appointment {
 
         // get the patient and add the current appointment to it's array of appointments
         $patientEntity = $datastore->lookup($key);
+        $this->firstname = $patientEntity['firstname'];
+        $this->lastname = $patientEntity['lastname'];
+
         $appointments = $patientEntity['appointments'];
         $appointments[] = [
             "signedInAt" => $this->signin_date,
@@ -56,6 +61,8 @@ class Appointment {
                 'created' => new DateTime(),
                 'signedInAt' => $this->signin_date,
                 "signedOutAt" => $this->signout_date,
+                "firstname" => $this->firstname,
+                "lastname" => $this->lastname,
                 "signature" => $this->signature
             ]
         );
@@ -63,6 +70,41 @@ class Appointment {
 
         return $appointment;
     }
+}
+
+
+class Appointments {
+    public $appointments = [];
+    
+    public function __construct($fromDate, $toDate) {
+        $datastore = new DatastoreClient();
+        
+        $dt_before = new DateTime();
+        $query = $datastore->query()->kind('Appointment')
+            ->filter('signedInAt', '>=', new DateTime($fromDate))
+            ->filter('signedInAt', '<=', new DateTime($toDate));
+        $result = $datastore->runQuery($query);
+        $dt_after = new DateTime();
+        
+        foreach ($result as $appointment) {
+            $appt = [];
+            $appt['created'] = $appointment['created'];
+            $appt['patientID'] = $appointment['patientID'];
+            $appt['signature'] = $appointment['signature'];
+            $appt['signedInAt'] = $appointment['signedInAt'];
+            $appointments[] = $appt;
+            //var_dump($appointment);
+        }
+
+        $dt_final = new DateTime();
+        
+        var_dump($dt_before);
+        var_dump($dt_after);
+        var_dump($dt_final);
+        //var_dump($appointments);
+        
+    }
+
 }
 
 class Available_Appointments {
